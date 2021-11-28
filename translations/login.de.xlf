@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="de" target-language="de" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+      <trans-unit id="QoghNQ6" resname="login">
+        <source>login</source>
+        <target>Anmelden</target>
+      </trans-unit>
+      <trans-unit id="tsIwj_B" resname="loginBtn">
+        <source>loginBtn</source>
+        <target>Einloggen</target>
+      </trans-unit>
+      <trans-unit id="ruQIhH0" resname="success">
+        <source>success</source>
+        <target>Erfolgreich eingeloggt!</target>
+      </trans-unit>
+      <trans-unit id="giREF.l" resname="email">
+        <source>email</source>
+        <target>E-Mail Adresse</target>
+      </trans-unit>
+      <trans-unit id="XohImNo" resname="password">
+        <source>password</source>
+        <target>Passwort</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
