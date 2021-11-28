@@ -132,7 +132,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getSalt(){
         return $this->salt;
     }
- 
+
     /**
      * @inheritDoc
      */
@@ -167,7 +167,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         list (
             $this->id,
-        ) = unserialize($serialized);
+            ) = unserialize($serialized);
     }
 
     /**
@@ -208,6 +208,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getIsActive() : bool {
         return $this->isActive;
+    }
+
+    public function setSalt($salt) {
+        return $this->salt = $salt;
     }
 
     // used internally in Symfony Admin Bundle
