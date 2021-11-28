@@ -1,0 +1,3 @@
+register: Register
+registerBtn: Register
+success: Successfully registered!
