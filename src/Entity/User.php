@@ -65,6 +65,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * */
     private $plainPassword = "";
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Modul::class, inversedBy="tutor")
+     */
+    private $module;
+
 
     public function __construct()  {
         $this->isActive = true;
@@ -132,7 +137,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getSalt(){
         return $this->salt;
     }
-
+ 
     /**
      * @inheritDoc
      */
@@ -167,7 +172,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         list (
             $this->id,
-            ) = unserialize($serialized);
+        ) = unserialize($serialized);
     }
 
     /**
@@ -211,7 +216,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     public function setSalt($salt) {
-        return $this->salt = $salt;
+        $this->salt = $salt;
+        return $this;
     }
 
     // used internally in Symfony Admin Bundle
@@ -222,5 +228,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     // used internally in Symfony Admin Bundle
     public function getPlainPassword() {
         return $this->plainPassword;
+    }
+
+    public function getModule(): ?Modul
+    {
+        return $this->module;
+    }
+
+    public function setModule(?Modul $module): self
+    {
+        $this->module = $module;
+
+        return $this;
     }
 }
