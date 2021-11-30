@@ -27,8 +27,9 @@ class Fehler
      */
     private $seite;
 
+    //alt: (targetEntity=Fehler::class, inversedBy="fehlers")
     /**
-     * @ORM\ManyToMany(targetEntity=Fehler::class, inversedBy="fehlers")
+     * @ORM\ManyToMany(targetEntity=Fehler::class)
      */
     private $verwandteFehler;
 
@@ -40,7 +41,6 @@ class Fehler
     public function __construct()
     {
         $this->verwandteFehler = new ArrayCollection();
-        $this->fehlers = new ArrayCollection();
         $this->kommentare = new ArrayCollection();
     }
 
