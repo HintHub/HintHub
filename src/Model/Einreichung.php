@@ -20,6 +20,12 @@ abstract class Einreichung {
      */
     protected $datumLetzteAenderung;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="eingereichteFehler")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $einreicher;
+
     public function aktualisiereDatum($date) {
         $this->datumLetzteAenderung = $date;
     }

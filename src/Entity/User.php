@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -70,10 +72,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $module;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Fehler::class, mappedBy="einreicher")
+     */
+    private $eingereichteFehler;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Kommentar::class, mappedBy="einreicher")
+     */
+    private $eingereichteKommentare;
+
 
     public function __construct()  {
         $this->isActive = true;
         $this->salt = hash('sha512', uniqid(null, true));
+        $this->eingereichteFehler = new ArrayCollection();
+        $this->eingereichteKommentare = new ArrayCollection();
     }
 
     public function setID(int $i) {
@@ -238,6 +252,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setModule(?Modul $module): self
     {
         $this->module = $module;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Fehler[]
+     */
+    public function getEingereichteFehler(): Collection
+    {
+        return $this->eingereichteFehler;
+    }
+
+    public function addEingereichteFehler(Fehler $eingereichteFehler): self
+    {
+        if (!$this->eingereichteFehler->contains($eingereichteFehler)) {
+            $this->eingereichteFehler[] = $eingereichteFehler;
+            $eingereichteFehler->setEinreicher($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEingereichteFehler(Fehler $eingereichteFehler): self
+    {
+        if ($this->eingereichteFehler->removeElement($eingereichteFehler)) {
+            // set the owning side to null (unless already changed)
+            if ($eingereichteFehler->getEinreicher() === $this) {
+                $eingereichteFehler->setEinreicher(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Kommentar[]
+     */
+    public function getEingereichteKommentare(): Collection
+    {
+        return $this->eingereichteKommentare;
+    }
+
+    public function addEingereichteKommentare(Kommentar $eingereichteKommentare): self
+    {
+        if (!$this->eingereichteKommentare->contains($eingereichteKommentare)) {
+            $this->eingereichteKommentare[] = $eingereichteKommentare;
+            $eingereichteKommentare->setEinreicher($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEingereichteKommentare(Kommentar $eingereichteKommentare): self
+    {
+        if ($this->eingereichteKommentare->removeElement($eingereichteKommentare)) {
+            // set the owning side to null (unless already changed)
+            if ($eingereichteKommentare->getEinreicher() === $this) {
+                $eingereichteKommentare->setEinreicher(null);
+            }
+        }
 
         return $this;
     }

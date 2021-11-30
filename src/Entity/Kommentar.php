@@ -57,4 +57,16 @@ class Kommentar extends Einreichung
 
         return $this;
     }
+
+    public function getEinreicher(): ?User
+    {
+        return $this->einreicher;
+    }
+
+    public function setEinreicher(?User $einreicher): self
+    {
+        $this->einreicher = $einreicher;
+
+        return $this;
+    }
 }

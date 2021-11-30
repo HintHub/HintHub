@@ -40,6 +40,7 @@ class Fehler extends Einreichung
      */
     private $verwandteFehler;
 
+
     public function __construct()
     {
         $this->kommentare = new ArrayCollection();
@@ -125,6 +126,18 @@ class Fehler extends Einreichung
     public function removeVerwandteFehler(self $verwandteFehler): self
     {
         $this->verwandteFehler->removeElement($verwandteFehler);
+
+        return $this;
+    }
+
+    public function getEinreicher(): ?User
+    {
+        return $this->einreicher;
+    }
+
+    public function setEinreicher(?User $einreicher): self
+    {
+        $this->einreicher = $einreicher;
 
         return $this;
     }
