@@ -68,7 +68,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $plainPassword = "";
 
     /**
-     * @ORM\ManyToOne(targetEntity=Modul::class, inversedBy="tutor")
+     * @ORM\OneToMany(targetEntity=Modul::class, mappedBy="tutor")
      */
     private $module;
 

@@ -22,7 +22,7 @@ class Modul
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $kuerzeÃl;
+    private $kuerzeï¿½l;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -40,7 +40,7 @@ class Modul
     private $aktuellesSkript;
 
     /**
-     * @ORM\OneToMany(targetEntity=User::class, mappedBy="module")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="module")
      */
     private $tutor;
 
@@ -55,14 +55,14 @@ class Modul
         return $this->id;
     }
 
-    public function getKuerzeÃl(): ?string
+    public function getKuerzeï¿½l(): ?string
     {
-        return $this->kuerzeÃl;
+        return $this->kuerzeï¿½l;
     }
 
-    public function setKuerzeÃl(string $kuerzeÃl): self
+    public function setKuerzeï¿½l(string $kuerzeï¿½l): self
     {
-        $this->kuerzeÃl = $kuerzeÃl;
+        $this->kuerzeï¿½l = $kuerzeï¿½l;
 
         return $this;
     }
