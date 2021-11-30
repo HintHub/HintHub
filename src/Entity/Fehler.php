@@ -19,9 +19,7 @@ class Fehler
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="status")
-     */
+    /** @Column(type="string", columnDefinition="ENUM('CLOSED', 'ESCALATED', 'OPEN', 'REJECTED', 'WAITING')") */
     private $status;
 
     /**
