@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Model\Einreichung;
 use App\Repository\FehlerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=FehlerRepository::class)
  */
-class Fehler
+class Fehler extends Einreichung
 {
     /**
      * @ORM\Id
@@ -19,7 +20,9 @@ class Fehler
      */
     private $id;
 
-    /** @Column(type="string", columnDefinition="ENUM('CLOSED', 'ESCALATED', 'OPEN', 'REJECTED', 'WAITING')") */
+    /**
+     * @ORM\Column(type="string", length=1)
+     */
     private $status;
 
     /**
@@ -27,21 +30,20 @@ class Fehler
      */
     private $seite;
 
-    //alt: (targetEntity=Fehler::class, inversedBy="fehlers")
-    /**
-     * @ORM\ManyToMany(targetEntity=Fehler::class)
-     */
-    private $verwandteFehler;
-
     /**
      * @ORM\OneToMany(targetEntity=Kommentar::class, mappedBy="fehler", orphanRemoval=true)
      */
     private $kommentare;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Fehler::class)
+     */
+    private $verwandteFehler;
+
     public function __construct()
     {
-        $this->verwandteFehler = new ArrayCollection();
         $this->kommentare = new ArrayCollection();
+        $this->verwandteFehler = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -74,30 +76,6 @@ class Fehler
     }
 
     /**
-     * @return Collection|self[]
-     */
-    public function getVerwandteFehler(): Collection
-    {
-        return $this->verwandteFehler;
-    }
-
-    public function addVerwandteFehler(self $verwandteFehler): self
-    {
-        if (!$this->verwandteFehler->contains($verwandteFehler)) {
-            $this->verwandteFehler[] = $verwandteFehler;
-        }
-
-        return $this;
-    }
-
-    public function removeVerwandteFehler(self $verwandteFehler): self
-    {
-        $this->verwandteFehler->removeElement($verwandteFehler);
-
-        return $this;
-    }
-
-    /**
      * @return Collection|Kommentar[]
      */
     public function getKommentare(): Collection
@@ -123,6 +101,30 @@ class Fehler
                 $kommentare->setFehler(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|self[]
+     */
+    public function getVerwandteFehler(): Collection
+    {
+        return $this->verwandteFehler;
+    }
+
+    public function addVerwandteFehler(self $verwandteFehler): self
+    {
+        if (!$this->verwandteFehler->contains($verwandteFehler)) {
+            $this->verwandteFehler[] = $verwandteFehler;
+        }
+
+        return $this;
+    }
+
+    public function removeVerwandteFehler(self $verwandteFehler): self
+    {
+        $this->verwandteFehler->removeElement($verwandteFehler);
 
         return $this;
     }
