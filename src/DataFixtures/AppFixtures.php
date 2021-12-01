@@ -2,6 +2,11 @@
 
 namespace App\DataFixtures;
 
+use App\Repository\FehlerRepository;
+use App\Repository\KommentarRepository;
+use App\Repository\ModulRepository;
+use App\Repository\SkriptRepository;
+use App\Repository\UserRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -12,8 +17,23 @@ use App\Entity\User;
 class AppFixtures extends Fixture
 {
     private $pwHasher;
-    public function __construct(UserPasswordHasherInterface $pwHasher){
+    private $userRepository;
+    private $fehlerRepository;
+    private $kommentarRepository;
+    private $modulRepository;
+    private $skriptRepository;
+
+
+    public function __construct(UserPasswordHasherInterface $pwHasher, UserRepository $userRepository,
+                                FehlerRepository $fehlerRepository, KommentarRepository $kommentarRepository,
+                                ModulRepository $modulRepository, SkriptRepository $skriptRepository)
+    {
     	$this->pwHasher = $pwHasher;
+        $this->fehlerRepository = $fehlerRepository;
+        $this->userRepository = $userRepository;
+        $this->kommentarRepository = $kommentarRepository;
+        $this->modulRepository = $modulRepository;
+        $this->skriptRepository = $skriptRepository;
     }
     
     public function load(ObjectManager $manager): void
@@ -33,9 +53,31 @@ class AppFixtures extends Fixture
 	$user->setPassword($hashedPassword);
 	$user->setRoles(["ROLE_ADMIN"]);
 	
-	
-	
 	$manager->persist($user);
         $manager->flush();
+    }
+
+    private function mockData(): void {
+        //TODO TEST ENTITIES
+
+        //ID 2 User
+
+        //Id 1 modul
+
+        //Id 1,2 Skript
+
+        //skript loeschen
+
+        //ID neu 2 Skript
+
+        //Fehler ID1
+
+        //Kommentare 1-3
+
+        //Fehler bearbeiten
+
+        //Fehler loeschen
+
+        //ID 1 modul loeschen
     }
 }

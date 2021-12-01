@@ -82,7 +82,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $eingereichteKommentare;
 
-
     public function __construct()  {
         $this->isActive = true;
         $this->salt = hash('sha512', uniqid(null, true));
@@ -314,5 +313,39 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    //TODO: isUniPerson()
+
+    public function isUniPerson() {
+        return !$this->isAdmin() && ($this->isTutor() || $this->isStudent());
+    }
+
+    public function isTutor() {
+        return in_array("Tutor", $this->getROLES());
+    }
+
+    public function isStudent() {
+        return in_array("Student", $this->getROLES());
+    }
+
+    public function isAdmin() {
+        return in_array("Admin", $this->getROLES());
+    }
+
+    public function setAdmin() {
+        $this->setRole('Admin');
+    }
+
+    public function setStudent() {
+        $this->setRole('Student');
+    }
+
+    public function setTutor() {
+        $this->setRole('Tutor');
+    }
+
+    private function setRole(string $role) {
+        $this->setROLES($role);
     }
 }

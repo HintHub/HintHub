@@ -21,7 +21,7 @@ class Fehler extends Einreichung
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=1)
+     * @ORM\Column(type="string", columnDefinition="ENUM('CLOSED', 'ESCALATED', 'OPEN', 'REJECTED', 'WAITING')")
      */
     private $status;
 
@@ -140,5 +140,21 @@ class Fehler extends Einreichung
         $this->einreicher = $einreicher;
 
         return $this;
+    }
+
+    public function open() {
+        $this->setStatus('OPEN');
+    }
+
+    public function close() {
+        $this->setStatus('CLOSED');
+    }
+
+    public function escalate() {
+        $this->setStatus('ESCALATED');
+    }
+
+    public function wait() {
+        $this->setStatus('WAITING');
     }
 }
