@@ -40,14 +40,14 @@ class Modul
     private $aktuellesSkript;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="module")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="Module")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $tutor;
 
     public function __construct()
     {
         $this->skripte = new ArrayCollection();
-        $this->tutor = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -55,14 +55,14 @@ class Modul
         return $this->id;
     }
 
-    public function getKuerze�l(): ?string
+    public function getKuerzel(): ?string
     {
-        return $this->kuerze�l;
+        return $this->kuerzel;
     }
 
-    public function setKuerze�l(string $kuerze�l): self
+    public function setKuerzel(string $kuerzel): self
     {
-        $this->kuerze�l = $kuerze�l;
+        $this->kuerzel = $kuerzel;
 
         return $this;
     }
@@ -121,32 +121,14 @@ class Modul
         return $this;
     }
 
-    /**
-     * @return Collection|User[]
-     */
-    public function getTutor(): Collection
+    public function getTutor(): ?User
     {
         return $this->tutor;
     }
 
-    public function addTutor(User $tutor): self
+    public function setTutor(?User $tutor): self
     {
-        if (!$this->tutor->contains($tutor)) {
-            $this->tutor[] = $tutor;
-            $tutor->setModule($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTutor(User $tutor): self
-    {
-        if ($this->tutor->removeElement($tutor)) {
-            // set the owning side to null (unless already changed)
-            if ($tutor->getModule() === $this) {
-                $tutor->setModule(null);
-            }
-        }
+        $this->tutor = $tutor;
 
         return $this;
     }

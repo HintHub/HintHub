@@ -68,11 +68,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $plainPassword = "";
 
     /**
-     * @ORM\OneToMany(targetEntity=Modul::class, mappedBy="tutor")
-     */
-    private $module;
-
-    /**
      * @ORM\OneToMany(targetEntity=Fehler::class, mappedBy="einreicher")
      */
     private $eingereichteFehler;
@@ -81,6 +76,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\OneToMany(targetEntity=Kommentar::class, mappedBy="einreicher")
      */
     private $eingereichteKommentare;
+
+
+    /**
+     * @ORM\OneToMany(targetEntity=Modul::class, mappedBy="tutor", orphanRemoval=true)
+     */
+    private $module;
 
     public function __construct()  {
         $this->isActive = true;
@@ -243,18 +244,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->plainPassword;
     }
 
-    public function getModule(): ?Modul
-    {
-        return $this->module;
-    }
-
-    public function setModule(?Modul $module): self
-    {
-        $this->module = $module;
-
-        return $this;
-    }
-
     /**
      * @return Collection|Fehler[]
      */
@@ -347,5 +336,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     private function setRole(string $role) {
         $this->setROLES($role);
+    }
+
+    public function addModule(Modul $modul): self
+    {
+        if (!$this->module->contains($modul)) {
+            $this->module[] = $modul;
+            $modul->setTutor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeModule(Modul $modul): self
+    {
+        if ($this->module->removeElement($modul)) {
+            // set the owning side to null (unless already changed)
+            if ($modul->getTutor() === $this) {
+                $modul->setTutor(null);
+            }
+        }
+
+        return $this;
     }
 }
