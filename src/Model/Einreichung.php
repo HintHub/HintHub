@@ -11,7 +11,7 @@ abstract class Einreichung {
     protected $datumErstellt;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     protected $datumGeschlossen;
 

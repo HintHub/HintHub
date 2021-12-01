@@ -22,7 +22,7 @@ class Modul
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $kuerze�l;
+    private $kuerzel;
 
     /**
      * @ORM\Column(type="string", length=255)
