@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Model\Einreichung;
+use App\Model\DatumTrait;
 use App\Repository\FehlerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=FehlerRepository::class)
  */
-class Fehler extends Einreichung
+class Fehler
 {
     /**
      * @ORM\Id
@@ -40,6 +40,13 @@ class Fehler extends Einreichung
      */
     private $verwandteFehler;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Modul::class, inversedBy="fehler")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $modul;
+
+    use DatumTrait;
 
     public function __construct()
     {
@@ -156,5 +163,21 @@ class Fehler extends Einreichung
 
     public function wait() {
         $this->setStatus('WAITING');
+    }
+
+    public function __toString() {
+        return $this->id."";
+    }
+
+    public function getModul(): ?Modul
+    {
+        return $this->modul;
+    }
+
+    public function setModul(?Modul $modul): self
+    {
+        $this->modul = $modul;
+
+        return $this;
     }
 }

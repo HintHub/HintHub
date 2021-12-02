@@ -45,9 +45,15 @@ class Modul
      */
     private $tutor;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Fehler::class, mappedBy="modul", orphanRemoval=true)
+     */
+    private $fehler;
+
     public function __construct()
     {
         $this->skripte = new ArrayCollection();
+        $this->fehler = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -129,6 +135,40 @@ class Modul
     public function setTutor(?User $tutor): self
     {
         $this->tutor = $tutor;
+
+        return $this;
+    }
+
+    public function __toString() {
+        return $this->id."";
+    }
+
+    /**
+     * @return Collection|Fehler[]
+     */
+    public function getFehler(): Collection
+    {
+        return $this->fehler;
+    }
+
+    public function addFehler(Fehler $fehler): self
+    {
+        if (!$this->fehler->contains($fehler)) {
+            $this->fehler[] = $fehler;
+            $fehler->setModul($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFehler(Fehler $fehler): self
+    {
+        if ($this->fehler->removeElement($fehler)) {
+            // set the owning side to null (unless already changed)
+            if ($fehler->getModul() === $this) {
+                $fehler->setModul(null);
+            }
+        }
 
         return $this;
     }

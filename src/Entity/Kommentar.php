@@ -2,14 +2,14 @@
 
 namespace App\Entity;
 
-use App\Model\Einreichung;
+use App\Model\DatumTrait;
 use App\Repository\KommentarRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=KommentarRepository::class)
  */
-class Kommentar extends Einreichung
+class Kommentar
 {
     /**
      * @ORM\Id
@@ -28,6 +28,8 @@ class Kommentar extends Einreichung
      * @ORM\JoinColumn(nullable=false)
      */
     private $fehler;
+
+    use DatumTrait;
 
     public function getId(): ?int
     {
@@ -68,5 +70,9 @@ class Kommentar extends Einreichung
         $this->einreicher = $einreicher;
 
         return $this;
+    }
+
+    public function __toString() {
+        return $this->id."";
     }
 }

@@ -304,8 +304,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    //TODO: isUniPerson()
-
     public function isUniPerson() {
         return !$this->isAdmin() && ($this->isTutor() || $this->isStudent());
     }
