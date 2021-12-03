@@ -39,4 +39,3 @@ class FehlerCrudController extends AbstractCrudController
         ]];
     }
 }
-///'CLOSED', 'ESCALATED', 'OPEN', 'REJECTED', 'WAITING'
