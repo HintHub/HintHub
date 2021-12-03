@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -65,10 +67,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * */
     private $plainPassword = "";
 
+    /**
+     * @ORM\OneToMany(targetEntity=Fehler::class, mappedBy="einreicher")
+     */
+    private $eingereichteFehler;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Kommentar::class, mappedBy="einreicher")
+     */
+    private $eingereichteKommentare;
+
+
+    /**
+     * @ORM\OneToMany(targetEntity=Modul::class, mappedBy="tutor", orphanRemoval=true)
+     */
+    private $module;
 
     public function __construct()  {
         $this->isActive = true;
         $this->salt = hash('sha512', uniqid(null, true));
+        $this->eingereichteFehler = new ArrayCollection();
+        $this->eingereichteKommentare = new ArrayCollection();
     }
 
     public function setID(int $i) {
@@ -132,7 +151,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getSalt(){
         return $this->salt;
     }
-
+ 
     /**
      * @inheritDoc
      */
@@ -167,7 +186,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         list (
             $this->id,
-            ) = unserialize($serialized);
+        ) = unserialize($serialized);
     }
 
     /**
@@ -211,7 +230,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     public function setSalt($salt) {
-        return $this->salt = $salt;
+        $this->salt = $salt;
+        return $this;
     }
 
     // used internally in Symfony Admin Bundle
@@ -222,5 +242,119 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     // used internally in Symfony Admin Bundle
     public function getPlainPassword() {
         return $this->plainPassword;
+    }
+
+    /**
+     * @return Collection|Fehler[]
+     */
+    public function getEingereichteFehler(): Collection
+    {
+        return $this->eingereichteFehler;
+    }
+
+    public function addEingereichteFehler(Fehler $eingereichteFehler): self
+    {
+        if (!$this->eingereichteFehler->contains($eingereichteFehler)) {
+            $this->eingereichteFehler[] = $eingereichteFehler;
+            $eingereichteFehler->setEinreicher($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEingereichteFehler(Fehler $eingereichteFehler): self
+    {
+        if ($this->eingereichteFehler->removeElement($eingereichteFehler)) {
+            // set the owning side to null (unless already changed)
+            if ($eingereichteFehler->getEinreicher() === $this) {
+                $eingereichteFehler->setEinreicher(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Kommentar[]
+     */
+    public function getEingereichteKommentare(): Collection
+    {
+        return $this->eingereichteKommentare;
+    }
+
+    public function addEingereichteKommentare(Kommentar $eingereichteKommentare): self
+    {
+        if (!$this->eingereichteKommentare->contains($eingereichteKommentare)) {
+            $this->eingereichteKommentare[] = $eingereichteKommentare;
+            $eingereichteKommentare->setEinreicher($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEingereichteKommentare(Kommentar $eingereichteKommentare): self
+    {
+        if ($this->eingereichteKommentare->removeElement($eingereichteKommentare)) {
+            // set the owning side to null (unless already changed)
+            if ($eingereichteKommentare->getEinreicher() === $this) {
+                $eingereichteKommentare->setEinreicher(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function isUniPerson() {
+        return !$this->isAdmin() && ($this->isTutor() || $this->isStudent());
+    }
+
+    public function isTutor() {
+        return in_array("Tutor", $this->getROLES());
+    }
+
+    public function isStudent() {
+        return in_array("Student", $this->getROLES());
+    }
+
+    public function isAdmin() {
+        return in_array("Admin", $this->getROLES());
+    }
+
+    public function setAdmin() {
+        $this->setRole('Admin');
+    }
+
+    public function setStudent() {
+        $this->setRole('Student');
+    }
+
+    public function setTutor() {
+        $this->setRole('Tutor');
+    }
+
+    private function setRole(string $role) {
+        $this->setROLES($role);
+    }
+
+    public function addModule(Modul $modul): self
+    {
+        if (!$this->module->contains($modul)) {
+            $this->module[] = $modul;
+            $modul->setTutor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeModule(Modul $modul): self
+    {
+        if ($this->module->removeElement($modul)) {
+            // set the owning side to null (unless already changed)
+            if ($modul->getTutor() === $this) {
+                $modul->setTutor(null);
+            }
+        }
+
+        return $this;
     }
 }
