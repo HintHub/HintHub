@@ -7,6 +7,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 
 class UserCrudController extends AbstractCrudController
 {
@@ -22,7 +23,17 @@ class UserCrudController extends AbstractCrudController
             IdField::new('id'),
             TextField::new('email'),
             TextEditorField::new('salt'),
+            ChoiceField::new('ROLES')
+                ->setChoices($this->getRoleChoices())
+                ->allowMultipleChoices()
         ];
     }
 
+    public function getRoleChoices() {
+        return [
+                'Admin' => 'ROLE_ADMIN',
+                'Student' => 'ROLE_STUDENT',
+                'Tutor' => 'Tutor'
+            ];
+    }
 }
