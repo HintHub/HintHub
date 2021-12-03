@@ -332,7 +332,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->setRole('Tutor');
     }
 
-    private function setRole(string $role) {
+    private function setRole($role) {
         $this->setROLES($role);
     }
 
