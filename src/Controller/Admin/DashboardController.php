@@ -35,19 +35,19 @@ class DashboardController extends AbstractDashboardController
     	@$appName = !empty($_ENV['APP_NAME']) ? $_ENV['APP_NAME'] : 'Missing in env';
     	
         return Dashboard::new()
-            ->setTitle('Www');
+            ->setTitle('HintHub');
     }
 
     public function configureMenuItems(): iterable
     {
         return [
-            MenuItem::linktoDashboard('Dashboard', 'fa fa-home'),
-            
-            MenuItem::linkToCrud('User Crud Controller', 'fas fa-list', User::class),
-            MenuItem::linkToCrud('Modul Crud Controller', 'fas fa-list', Modul::class),
-            MenuItem::linkToCrud('Skript Crud Controller', 'fas fa-list', Skript::class),
-            MenuItem::linkToCrud('Fehler Crud Controller', 'fas fa-list', Fehler::class),
-            MenuItem::linkToCrud('Kommentar Crud Controller', 'fas fa-list', Kommentar::class),
+            MenuItem::linktoDashboard   ( 'Dashboard', 'fa fa-home' ),
+
+            MenuItem::linkToCrud ( 'User Crud Controller',        'fas fa-list',  User::class      ),
+            MenuItem::linkToCrud ( 'Modul Crud Controller',       'fas fa-list',  Modul::class     ),
+            MenuItem::linkToCrud ( 'Skript Crud Controller',      'fas fa-list',  Skript::class    ),
+            MenuItem::linkToCrud ( 'Fehler Crud Controller',      'fas fa-list',  Fehler::class    ),
+            MenuItem::linkToCrud ( 'Kommentar Crud Controller',   'fas fa-list',  Kommentar::class ),
         ];
     }
 }
