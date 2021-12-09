@@ -23,7 +23,6 @@ class KommentarCrudController extends AbstractCrudController
             IdField::new('id'),
             TextField::new('text'),
             AssociationField::new('fehler')
-
         ];
     }
 
