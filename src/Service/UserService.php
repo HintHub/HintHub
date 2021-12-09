@@ -6,7 +6,10 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-
+/**
+ * @author Ali Kemal Yalama (ali-kemal.yalama@iubh.de)
+ * @date 03.12.2021
+ */
 class UserService {
 
     private UserRepository $userRepository;
