@@ -41,8 +41,9 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
         return [
-         MenuItem::linktoDashboard('Dashboard', 'fa fa-home'),
-         MenuItem::linkToCrud('User Crud Controller', 'fas fa-list', User::class),
+            MenuItem::linktoDashboard('Dashboard', 'fa fa-home'),
+            
+            MenuItem::linkToCrud('User Crud Controller', 'fas fa-list', User::class),
             MenuItem::linkToCrud('Modul Crud Controller', 'fas fa-list', Modul::class),
             MenuItem::linkToCrud('Skript Crud Controller', 'fas fa-list', Skript::class),
             MenuItem::linkToCrud('Fehler Crud Controller', 'fas fa-list', Fehler::class),
