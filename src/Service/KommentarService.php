@@ -2,7 +2,7 @@
 namespace App\Service;
 
 use App\Entity\Kommentar;
-use App\Repository\UserRepository;
+use App\Repository\kommentarRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 
@@ -30,13 +30,13 @@ class KommentarService
     //findById
     public function findById (int $id): Kommentar 
     {
-        return $this -> userRepository -> find ($id);
+        return $this -> kommentarRepository -> find ($id);
     }
 
     //findAll
     public function findAll(): array 
     {
-        return $this -> userRepository -> findAll();
+        return $this -> kommentarRepository -> findAll();
     }
 
     //save
