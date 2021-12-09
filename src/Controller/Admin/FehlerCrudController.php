@@ -10,7 +10,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 
-
+/**
+ * CrudController for Fehler generated via php bin/console make:admin:crud
+ * compare https://symfony.com/bundles/EasyAdminBundle/current/crud.html
+ * 
+ * @author ali-kemal.yalama ( ali-kemal.yalama@iubh.de )
+ */
 class FehlerCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string

@@ -14,6 +14,12 @@ use Symfony\Component\Routing\Annotation\Route;
 
 use App\Entity\User;
 
+/**
+ * DashboardController for AdminDashboard generated via php bin/console make:admin:dashboard
+ * compare https://symfony.com/doc/current/EasyAdminBundle/dashboards.html
+ * 
+ * @author ali-kemal.yalama ( ali-kemal.yalama@iubh.de )
+ */
 class DashboardController extends AbstractDashboardController
 {
     /**

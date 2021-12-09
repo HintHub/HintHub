@@ -1,9 +1,16 @@
 <?php
+
 namespace App\Model;
 
 use Doctrine\ORM\Mapping as ORM;
 
-trait DatumTrait {
+/**
+ * Provides Entity Properties like "datumErstellt", "datumGeschlossen" etc.
+ * 
+ * @author ali-kemal.yalama (ali-kemal.yalama@iubh.de)
+ */
+trait DatumTrait
+{
 
     /**
      * @ORM\Column(type="datetime")

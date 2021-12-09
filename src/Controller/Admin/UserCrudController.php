@@ -9,6 +9,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 
+/**
+ * CrudController for user generated via php bin/console make:admin:crud
+ * compare https://symfony.com/bundles/EasyAdminBundle/current/crud.html
+ * 
+ * @author ali-kemal.yalama ( ali-kemal.yalama@iubh.de )
+ */
 class UserCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string

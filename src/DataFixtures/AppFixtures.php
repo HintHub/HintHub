@@ -14,6 +14,13 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 use App\Entity\User;
 
+/**
+ * Loads all the AppFixtures defined here
+ * It's for dev testing purposes (filling it with most possible randomized data)
+ * 
+ * @author ali-kemal.yalama ( ali-kemal.yalama@iubh.de  )
+ * @author karim.saad       ( karim.saad@iubh.de        )
+ */
 class AppFixtures extends Fixture
 {
     private $pwHasher;

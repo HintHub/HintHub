@@ -1,16 +1,19 @@
 <?php
-
 namespace App\Service;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
+ * Provides the User Service
+ *  
  * @author Ali Kemal Yalama (ali-kemal.yalama@iubh.de)
  * @date 03.12.2021
  */
-class UserService {
+class UserService 
+{
 
     private UserRepository $userRepository;
     private EntityManager $entityManager;

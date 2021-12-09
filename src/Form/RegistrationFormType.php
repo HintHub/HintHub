@@ -12,6 +12,12 @@ use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
+/**
+ * Created by Symfony RegistrationFormType::class handles the Registration form 
+ * part of php bin/console make:auth (compare https://symfony.com/doc/current/security.html#the-user)
+ * 
+ * @author karim.saad ( karim.saad@ubh.de )
+ */
 class RegistrationFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
