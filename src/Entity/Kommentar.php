@@ -31,12 +31,6 @@ class Kommentar
 
     use DatumTrait;
 
-    public function __construct ( ) 
-    {
-        if ($this->datumErstellt )
-        $this->setDatumErstellt(new \DateTime());
-    }
-
     public function getId(): ?int
     {
         return $this->id;

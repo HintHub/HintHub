@@ -31,13 +31,13 @@ class KommentarService
     //findById
     public function findById (int $id): Kommentar 
     {
-        return $this -> kommentarRepository -> find ($id);
+        return $this -> kommentarRepository -> find     ($id);
     }
 
     //findAll
     public function findAll(): array 
     {
-        return $this -> kommentarRepository -> findAll();
+        return $this -> kommentarRepository -> findAll  ();
     }
 
     //save
@@ -63,7 +63,7 @@ class KommentarService
     //delete
     public function delete(int $id): int 
     {
-        $toDelete = $this -> findById       ( $id       );
+        $toDelete = $this      -> findById       ( $id       );
         $this -> entityManager -> remove    ( $toDelete );
         $this -> entityManager -> flush     ();
         return $id;
