@@ -46,7 +46,6 @@ class UserService
         $toUpdate   =   $this   ->      findById($user  ->  getId());
 
         $toUpdate   ->  setROLES        ($user  ->  getROLES());
-        $toUpdate   ->  setSalt         ();
         $toUpdate   ->  setEmail        ();
         $toUpdate   ->  setIsActive     ($user  ->  getIsActive());
         $toUpdate   ->  setIsVerified   ($user  ->  getIsVerified());
