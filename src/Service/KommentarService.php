@@ -48,13 +48,15 @@ class KommentarService
         return $kommentar;
     }
 
-    //update
-    //TODO: Datum Trait setter nutzen
+    // update
     public function update(Kommentar $kommentar)
     {
-        $toUpdate  = $this -> findById ( $kommentar -> getId()    );
-        $toUpdate -> setText           ( $kommentar -> getText()  );
-        $toUpdate -> setFehler         ( $kommentar -> getFehler()  );
+        $toUpdate  = $this -> findById          ( $kommentar -> getId()                     );
+        $toUpdate -> setText                    ( $kommentar -> getText()                   );
+        $toUpdate -> setFehler                  ( $kommentar -> getFehler()                 );
+
+        // Setting the DatumTrait Properties
+        $toUpdate -> setDatumLetzteAenderung  ( $kommentar -> getDatumLetzteAenderung() );
         return $toUpdate;
     }
 
