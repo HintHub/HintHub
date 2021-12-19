@@ -37,9 +37,22 @@ class Skript
      */
     private $fehler;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $name;
+
     public function __construct()
     {
         $this->fehler = new ArrayCollection();
+    }
+
+
+    public function __toString() 
+    {
+        $id     = $this -> getId();
+        $name   = $this -> getName();
+        return $name . ' ('. $id. ')';
     }
 
     public function getId(): ?int
@@ -101,7 +114,15 @@ class Skript
         return $this;
     }
 
-    public function __toString() {
-        return $this->id."";
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(?string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
     }
 }

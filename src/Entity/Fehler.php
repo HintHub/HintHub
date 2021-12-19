@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 
-
 /**
  * @ORM\Entity(repositoryClass=FehlerRepository::class)
  */
@@ -43,11 +42,18 @@ class Fehler
     private $verwandteFehler;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Modul::class, inversedBy="fehler")
+     * @ORM\ManyToOne(targetEntity=Skript::class, inversedBy="fehler")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $modul;
+    private $skript;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $name;
+
+
+    
     use DatumTrait;
 
     public function __construct()
@@ -171,14 +177,26 @@ class Fehler
         return $this->id."";
     }
 
-    public function getModul(): ?Modul
+    public function getSkript(): ?Modul
     {
-        return $this->modul;
+        return $this->skript;
     }
 
-    public function setModul(?Modul $modul): self
+    public function setSkript(?Modul $modul): self
     {
-        $this->modul = $modul;
+        $this->skript = $skript;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(?string $name): self
+    {
+        $this->name = $name;
 
         return $this;
     }

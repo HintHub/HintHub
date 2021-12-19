@@ -25,11 +25,24 @@ class ModulCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
+        /*
+            Fields:
+                id,
+                kuerzel,
+                name
+                skripte,
+                aktuellesSkript,
+                tutor,
+                fehler
+        */
         return [
-            IdField::new('id'),
+            IdField::new('id') -> hideOnForm(),
+            IdField::new('id') -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption('disabled','disabled'),
+            TextField::new('name'),
+            TextField::new('kuerzel'),
+            AssociationField::new('skripte'),
             AssociationField::new('aktuellesSkript'),
             AssociationField::new('tutor'),
-            TextField::new('name')
         ];
     }
 

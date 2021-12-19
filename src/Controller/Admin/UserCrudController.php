@@ -61,18 +61,35 @@ class UserCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
+        /*
+            Fields:
+                id
+                email
+                password
+                ROLES
+                salt
+                isActive
+                isVerified
+                plainPassword
+                eingereichteFehler
+                eingereichteKommentare
+                module
+        */
         return [
-            IdField::new('id'),
+            IdField::new('id') -> hideOnForm(),
+            IdField::new('id') -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption('disabled','disabled'),
             TextField::new('email'),
             TextEditorField::new('salt'),
             ChoiceField::new('ROLES')
                 ->setChoices($this->getRoleChoices())
                 ->allowMultipleChoices(),
-            TextField::new('plainPassword')->setFormType(PasswordType::class)->onlyOnforms()
+            TextField::new('plainPassword')->setFormType(PasswordType::class)->onlyOnforms(),
+            AssociationField::new('module')
         ];
     }
 
-    public function getRoleChoices() {
+    public function getRoleChoices() 
+    {
         return [
                 'Admin' => 'ROLE_ADMIN',
                 'Student' => 'ROLE_STUDENT',

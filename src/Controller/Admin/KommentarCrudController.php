@@ -25,9 +25,16 @@ class KommentarCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
+        /*
+            Fields:
+                id,
+                text,
+                fehler
+        */
         return [
-            IdField::new('id'),
-            TextField::new('text'),
+            IdField::new('id') -> hideOnForm(),
+            IdField::new('id') -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption('disabled','disabled'),
+            TextEditorField::new('text'),
             AssociationField::new('fehler')
         ];
     }
