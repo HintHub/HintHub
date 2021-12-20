@@ -44,11 +44,11 @@ class DashboardController extends AbstractDashboardController
         return [
             MenuItem::linktoDashboard   ( 'Home', 'fa fa-home' ),
 
-            MenuItem::linkToCrud ( 'Fehler Meldungen',      'fas fa-list',  Fehler::class    ),
-            MenuItem::linkToCrud ( 'Benutzer',              'fas fa-list',  User::class      ),
-            MenuItem::linkToCrud ( 'Module',                'fas fa-list',  Modul::class     ),
-            MenuItem::linkToCrud ( 'Skripte',               'fas fa-list',  Skript::class    ),
-            MenuItem::linkToCrud ( 'Kommentare',            'fas fa-list',  Kommentar::class ),
+            MenuItem::linkToCrud ( 'Fehler Meldungen',      'fas fa-exclamation',  Fehler::class    ),
+            MenuItem::linkToCrud ( 'Benutzer',              'fas fa-users',  User::class      ),
+            MenuItem::linkToCrud ( 'Module',                'fas fa-layer-group',  Modul::class     ),
+            MenuItem::linkToCrud ( 'Skripte',               'fas fa-scroll',  Skript::class    ),
+            MenuItem::linkToCrud ( 'Kommentare',            'fas fa-comments',  Kommentar::class ),
         ];
     }
 }
