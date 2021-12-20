@@ -17,47 +17,53 @@ use Doctrine\ORM\EntityManagerInterface;
 class FehlerService
 {
     public FehlerRepository $fehlerRepository;
-    public EntityManager $entityManager;
+    public EntityManager    $entityManager;
 
-    public function __construct(FehlerRepository $fehlerRepository, EntityManagerInterface $entityManager) {
-        $this   ->  entityManager       = $entityManager;
-        $this   ->  fehlerRepository    = $fehlerRepository;
+    public function __construct ( FehlerRepository $fehlerRepository, EntityManagerInterface $entityManager ) 
+    {
+        $this -> entityManager      = $entityManager;
+        $this -> fehlerRepository   = $fehlerRepository;
     }
 
-    public function findById(int $id): Fehler {
-        return $this    ->  fehlerRepository    ->  find    ($id);
+    public function findById ( int $id ): Fehler 
+    {
+        return $this -> fehlerRepository -> find ( $id );
     }
 
-    public function findAll(): array {
-        return $this    ->  fehlerRepository    ->  findAll ();
+    public function findAll (): array
+    {
+        return $this -> fehlerRepository -> findAll ();
     }
 
-    public function save(Fehler $fehler): Fehler {
-        $this   ->  entityManager   ->  persist ($fehler);
-        $this   ->  entityManager   ->  flush   ();
+    public function save ( Fehler $fehler ): Fehler
+    {
+        $this -> entityManager ->  persist ( $fehler );
+        $this -> entityManager ->  flush   ();
 
         return $fehler;
     }
 
-    public function update(Fehler $fehler): Fehler {
-        $toUpdate   =   $this   ->  fehlerRepository ->  find($fehler->getId());
+    public function update ( Fehler $fehler ): Fehler
+    {
+        $toUpdate   =   $this -> fehlerRepository -> find   ( $fehler -> getId () );
 
-        $toUpdate   ->  setStatus                   ($fehler    ->  getStatus());
-        //$toUpdate ->  setEinreicher               ($fehler    ->  getEinreicher());
-        //$toUpdate ->  setModul                    ($fehler    ->  getModul());
-        $toUpdate   ->  setSeite                    ($fehler    ->  getSeite());
-        $toUpdate   ->  setStatus                   ($fehler    ->  getStatus());
-        //$toUpdate ->  setDatumErstellt            ($fehler    ->  getDatumErstellt());
-        $toUpdate   ->  setDatumLetzteAenderung     ($fehler    ->  getDatumLetzteAenderung());
-        $toUpdate   ->  setDatumGeschlossen         ($fehler    ->  getDatumGeschlossen());
+        $toUpdate   ->  setStatus                   ( $fehler    ->  getStatus               () );
+        //$toUpdate ->  setEinreicher               ( $fehler    ->  getEinreicher           () );
+        //$toUpdate ->  setModul                    ( $fehler    ->  getModul                () );
+        $toUpdate   ->  setSeite                    ( $fehler    ->  getSeite                () );
+        $toUpdate   ->  setStatus                   ( $fehler    ->  getStatus               () );
+        //$toUpdate ->  setDatumErstellt            ( $fehler    ->  getDatumErstellt        () );
+        $toUpdate   ->  setDatumLetzteAenderung     ( $fehler    ->  getDatumLetzteAenderung () );
+        $toUpdate   ->  setDatumGeschlossen         ( $fehler    ->  getDatumGeschlossen     () );
 
         return $toUpdate;
     }
 
-    public function delete(int $id): Fehler {
-        $toDelete =     $this             ->    findById    ($id);
-        $this     ->    entityManager     ->    remove      ($toDelete);
-
-        return $toDelete    ->  getId  ();
+    public function delete ( int $id ): Fehler
+    {
+        $toDelete = $this -> findById   ( $id );
+        $this -> entityManager -> remove ( $toDelete );
+        
+        return $toDelete -> getId ();
     }
 }

@@ -29,27 +29,27 @@ class KommentarService
     }
 
     //findById
-    public function findById (int $id): Kommentar 
+    public function findById ( int $id ): Kommentar 
     {
         return $this -> kommentarRepository -> find     ($id);
     }
 
     //findAll
-    public function findAll(): array 
+    public function findAll (): array 
     {
         return $this -> kommentarRepository -> findAll  ();
     }
 
     //save
-    public function save(Kommentar $kommentar): Kommentar 
+    public function save ( Kommentar $kommentar ): Kommentar 
     {
-        $this -> entityManager -> persist ($kommentar);
+        $this -> entityManager -> persist ( $kommentar );
         $this -> entityManager -> flush   ();
         return $kommentar;
     }
 
     // update
-    public function update(Kommentar $kommentar)
+    public function update ( Kommentar $kommentar )
     {
         $toUpdate  = $this -> findById          ( $kommentar -> getId()                     );
         $toUpdate -> setText                    ( $kommentar -> getText()                   );
@@ -57,15 +57,18 @@ class KommentarService
 
         // Setting the DatumTrait Properties
         $toUpdate -> setDatumLetzteAenderung    ( $kommentar -> getDatumLetzteAenderung() );
+        
         return $toUpdate;
     }
 
     //delete
-    public function delete(int $id): int 
+    public function delete ( int $id ): int 
     {
-        $toDelete = $this      -> findById       ( $id       );
+        $toDelete = $this -> findById ( $id );
+        
         $this -> entityManager -> remove    ( $toDelete );
         $this -> entityManager -> flush     ();
+        
         return $id;
     }
 }

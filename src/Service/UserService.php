@@ -22,7 +22,7 @@ class UserService
     private EntityManager   $entityManager;
     private                 $tokenStorage;
 
-    public function __construct (UserRepository $userRepository, EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage)
+    public function __construct ( UserRepository $userRepository, EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage )
     {
         $this   ->  userRepository  = $userRepository;
         $this   ->  entityManager   = $entityManager;
@@ -30,41 +30,46 @@ class UserService
     }
 
     //findById
-    public function findById(int $id): User {
-        return $this    ->  userRepository  ->  find    ($id);
+    public function findById(int $id): User 
+    {
+        return $this -> userRepository -> find ( $id );
     }
 
     //findAll
-    public function findAll(): array {
-        return $this    ->  userRepository  ->  findAll ();
+    public function findAll (): array
+    {
+        return $this -> userRepository -> findAll ();
     }
 
     //save
-    public function save(User $user): User {
-        $this   ->  entityManager   ->  persist ($user);
-        $this   ->  entityManager   ->  flush   ();
+    public function save ( User $user ): User 
+    {
+        $this -> entityManager -> persist ( $user );
+        $this -> entityManager -> flush   ();
 
         return $user;
     }
 
     //update
-    public function update(User $user) {
-        $toUpdate   =   $this   ->      findById($user  ->  getId());
+    public function update ( User $user )
+    {
+        $toUpdate = $this -> findById ( $user -> getId ( ) );
 
-        $toUpdate   ->  setROLES        ($user  ->  getROLES());
-        $toUpdate   ->  setEmail        ();
-        $toUpdate   ->  setIsActive     ($user  ->  getIsActive());
-        $toUpdate   ->  setIsVerified   ($user  ->  getIsVerified());
+        $toUpdate   ->  setROLES        ($user  ->  getROLES        () );
+        $toUpdate   ->  setEmail        (); 
+        $toUpdate   ->  setIsActive     ($user  ->  getIsActive     () );
+        $toUpdate   ->  setIsVerified   ($user  ->  getIsVerified   () );
 
         return $toUpdate;
     }
 
     //delete
-    public function delete(int $id): int {
-        $toDelete   =   $this       ->  findById    ($id);
+    public function delete ( int $id ): int
+    {
+        $toDelete = $this -> findById ($id);
 
-        $this   ->  entityManager   ->  remove      ($toDelete);
-        $this   ->  entityManager   ->  flush       ();
+        $this -> entityManager -> remove      ( $toDelete );
+        $this -> entityManager -> flush       ();
 
         return $id;
     }
@@ -73,12 +78,12 @@ class UserService
      * Gets the current User via tokenStorage object
      * @return User currentUser
      */
-    public function getCurrentUser()
+    public function getCurrentUser ()
     {
-        if ($this -> tokenStorage === null)                             return null;
-        if ($this -> tokenStorage -> getToken() === null)               return null;
-        if ($this -> tokenStorage -> getToken() -> getUser() === null)  return null;
+        if ( $this -> tokenStorage === null                               ) return null;
+        if ( $this -> tokenStorage -> getToken () === null                ) return null;
+        if ( $this -> tokenStorage -> getToken () -> getUser () === null  ) return null;
 
-        return $this->tokenStorage -> getToken() -> getUser();
+        return $this -> tokenStorage -> getToken () -> getUser ();
     }
 }
