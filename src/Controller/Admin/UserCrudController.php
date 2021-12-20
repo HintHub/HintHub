@@ -4,37 +4,38 @@ namespace App\Controller\Admin;
 
 use App\Entity\User;
 
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
-
-
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\PasswordHasher;
 use Symfony\Component\Form\FormEvents;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+
+
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use Symfony\Component\Form\FormBuilderInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 
 /* add */
-use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
+use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
 
 // For password Hashing
-use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactory;
 use Symfony\Component\Security\Core\Encoder\PasswordHasherInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherAwareInterface;
 
 /**
@@ -58,6 +59,22 @@ class UserCrudController extends AbstractCrudController
         return User::class;
     }
 
+    public function configureCrud ($crud): Crud
+    {
+        return Crud::new()
+            -> setPageTitle ( 'index',  'Benutzer'  )
+            -> setPageTitle ( 'new',    'Benutzer anlegen'     )
+            -> setPageTitle ( 'detail', fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> betrachten',    $user -> __toString() ) )
+            -> setPageTitle ( 'edit',   fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> bearbeiten',    $user -> __toString() ) )
+
+            -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
+
+            // ->overrideTemplates([
+            //     'crud/index' => 'admin/pages/index.html.twig',
+            //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
+            // ])
+        ;
+    }
 
     public function configureFields(string $pageName): iterable
     {

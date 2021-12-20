@@ -40,6 +40,11 @@ class FehlerCrudController extends AbstractCrudController
     public function configureCrud ($crud): Crud
     {
         return Crud::new()
+            -> setPageTitle ( 'index',  'Fehlermeldungen'  )
+            -> setPageTitle ( 'new',    'Fehler melden'     )
+            -> setPageTitle ( 'detail', fn ( Fehler $fehler ) => sprintf ( 'Fehlermeldung <b>%s</b> betrachten',    $fehler -> __toString() ) )
+            -> setPageTitle ( 'edit',   fn ( Fehler $fehler ) => sprintf ( 'Fehler <b>%s</b> bearbeiten',           $fehler -> __toString() ) )
+
             -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
 
             // ->overrideTemplates([

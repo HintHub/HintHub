@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Skript;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
@@ -23,6 +24,22 @@ class SkriptCrudController extends AbstractCrudController
         return Skript::class;
     }
 
+    public function configureCrud ($crud): Crud
+    {
+        return Crud::new()
+            -> setPageTitle ( 'index',  'Skripte'  )
+            -> setPageTitle ( 'new',    'Skript anlegen'     )
+            -> setPageTitle ( 'detail', fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> betrachten',    $skript -> __toString() ) )
+            -> setPageTitle ( 'edit',   fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> bearbeiten',    $skript -> __toString() ) )
+
+            -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
+
+            // ->overrideTemplates([
+            //     'crud/index' => 'admin/pages/index.html.twig',
+            //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
+            // ])
+        ;
+    }
 
     public function configureFields(string $pageName): iterable
     {

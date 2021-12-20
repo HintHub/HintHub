@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Kommentar;
 use App\Service\UserService;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
@@ -28,6 +29,23 @@ class KommentarCrudController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return Kommentar::class;
+    }
+
+    public function configureCrud ($crud): Crud
+    {
+        return Crud::new()
+            -> setPageTitle ( 'index',  'Kommentare'                )
+            -> setPageTitle ( 'new', 'Kommentar erstellen'       )
+            -> setPageTitle ( 'detail', fn ( Kommentar $kommentar ) => sprintf ( 'Kommentar <b>%s</b> betrachten',    $kommmentar -> __toString() ) )
+            -> setPageTitle ( 'edit',   fn ( Kommentar $kommentar ) => sprintf ( 'Kommentar <b>%s</b> bearbeiten',    $kommentar  -> __toString() ) )
+
+            -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
+
+            // ->overrideTemplates([
+            //     'crud/index' => 'admin/pages/index.html.twig',
+            //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
+            // ])
+        ;
     }
 
     public function configureFields(string $pageName): iterable
