@@ -27,7 +27,8 @@ class DashboardController extends AbstractDashboardController
      */
     public function index(): Response
     {
-        return parent::index();
+        return $this->render('bundles/EasyAdminBundle/crud/DashboardController.html.twig');
+        // return parent::index();
     }
 
     public function configureDashboard(): Dashboard
@@ -44,11 +45,11 @@ class DashboardController extends AbstractDashboardController
         return [
             MenuItem::linktoDashboard   ( 'Home', 'fa fa-home' ),
 
-            MenuItem::linkToCrud ( 'Fehler Meldungen',      'fas fa-exclamation',  Fehler::class    ),
-            MenuItem::linkToCrud ( 'Benutzer',              'fas fa-users',  User::class      ),
-            MenuItem::linkToCrud ( 'Module',                'fas fa-layer-group',  Modul::class     ),
-            MenuItem::linkToCrud ( 'Skripte',               'fas fa-scroll',  Skript::class    ),
-            MenuItem::linkToCrud ( 'Kommentare',            'fas fa-comments',  Kommentar::class ),
+            MenuItem::linkToCrud ( 'Fehler Meldungen',      'fas fa-exclamation',   Fehler      ::class ),
+            MenuItem::linkToCrud ( 'Benutzer',              'fas fa-users',         User        ::class ),
+            MenuItem::linkToCrud ( 'Module',                'fas fa-layer-group',   Modul       ::class ),
+            MenuItem::linkToCrud ( 'Skripte',               'fas fa-scroll',        Skript      ::class ),
+            MenuItem::linkToCrud ( 'Kommentare',            'fas fa-comments',      Kommentar   ::class ),
         ];
     }
 }
