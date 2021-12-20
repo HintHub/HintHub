@@ -1,0 +1,49 @@
+{% extends '@!EasyAdmin/crud/detail.html.twig' %}
+
+{#
+{% block page_actions %}
+    <b></b>
+{% endblock %}
+#}
+
+{% block content_footer_wrapper %}
+    <style>
+        .kommentar_header
+        {
+            background-color:white;
+            color:black;
+        }
+
+        .kommentar
+        {
+            width: 100%;
+            height: 120px;
+            background-color: #040404d4;
+            color: #b9b9b9;
+        }
+
+        .kommentar_user_link
+        {
+            color: red;
+            text-decoration: none;
+        }
+    </style>
+    {% for kommentar in entity.instance.getKommentare() | reverse %}
+    <div class = "kommentar" id="kommentar_{{ kommentar.getId() }}">
+        <div class="kommentar_header">
+            {% 
+                set url = ea_url()
+                .setController('App\\Controller\\Admin\\UserCrudController')
+                .setAction('detail')
+                .setEntityId( kommentar.getEinreicher().getId() )
+            %}
+
+            <a href="{{url}}" class="kommentar_user_link">{{ kommentar.getEinreicher()}}</a> schrieb am {{ kommentar.getDatumErstellt() | date('d.m.Y')}} um {{ kommentar.getDatumErstellt() | date ('H:i:s') }}:
+        </div>
+
+        <div id="text_kommenar">
+            {{ kommentar.getText() | raw }}
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}

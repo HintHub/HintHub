@@ -4,7 +4,10 @@ namespace App\Controller\Admin;
 
 use App\Entity\Fehler;
 use App\Service\UserService;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
@@ -31,6 +34,28 @@ class FehlerCrudController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return Fehler::class;
+    }
+
+
+    public function configureCrud ($crud): Crud
+    {
+        return Crud::new()
+            -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
+
+            // ->overrideTemplates([
+            //     'crud/index' => 'admin/pages/index.html.twig',
+            //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
+            // ])
+        ;
+    }
+
+    public function configureActions ( Actions $actions ): Actions
+    {
+        return $actions
+            // ...
+            -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
+            -> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
+        ;
     }
 
     //TODO field fuer status
