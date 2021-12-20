@@ -36,13 +36,13 @@ class ModulCrudController extends AbstractCrudController
                 fehler
         */
         return [
-            IdField::new('id') -> hideOnForm(),
-            IdField::new('id') -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption('disabled','disabled'),
-            TextField::new('name'),
-            TextField::new('kuerzel'),
-            AssociationField::new('skripte'),
-            AssociationField::new('aktuellesSkript'),
-            AssociationField::new('tutor'),
+            IdField::new            ( 'id'              ) -> hideOnForm(),
+            IdField::new            ( 'id'              ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+            TextField::new          ( 'name'            ),
+            TextField::new          ( 'kuerzel'         ),
+            AssociationField::new   ( 'skripte'         ),
+            AssociationField::new   ( 'aktuellesSkript' ),
+            AssociationField::new   ( 'tutor'           ),
         ];
     }
 

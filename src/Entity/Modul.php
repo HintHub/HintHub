@@ -52,129 +52,127 @@ class Modul
      */
     private $fehler;
 
-    public function __construct()
+    public function __construct ()
     {
-        $this->skripte = new ArrayCollection();
-        $this->fehler = new ArrayCollection();
+        $this -> skripte    = new ArrayCollection ();
+        $this -> fehler     = new ArrayCollection ();
     }
 
-    public function __toString()
+    public function __toString ()
     {
-        $name   = $this -> getName();
-        $id     = $this -> getId();
+        $name   = $this -> getName  ();
+        $id     = $this -> getId    ();
         return "$name ($id)";
     }
 
-    public function getId(): ?int
+    public function getId (): ?int
     {
-        return $this->id;
+        return $this -> id;
     }
 
-    public function getKuerzel(): ?string
+    public function getKuerzel (): ?string
     {
-        return $this->kuerzel;
+        return $this -> kuerzel;
     }
 
-    public function setKuerzel(string $kuerzel): self
+    public function setKuerzel ( string $kuerzel ): self
     {
-        $this->kuerzel = $kuerzel;
-
+        $this -> kuerzel = $kuerzel;
         return $this;
     }
 
-    public function getName(): ?string
+    public function getName (): ?string
     {
-        return $this->name;
+        return $this -> name;
     }
 
-    public function setName(string $name): self
+    public function setName ( string $name ): self
     {
-        $this->name = $name;
-
+        $this -> name = $name;
         return $this;
     }
 
     /**
      * @return Collection|Skript[]
      */
-    public function getSkripte(): Collection
+    public function getSkripte (): Collection
     {
-        return $this->skripte;
+        return $this -> skripte;
     }
 
-    public function addSkripte(Skript $skripte): self
+    public function addSkripte ( Skript $skripte ): self
     {
-        if (!$this->skripte->contains($skripte)) {
-            $this->skripte[] = $skripte;
-            $skripte->setModul($this);
+        if (! $this -> skripte -> contains ( $skripte ) )
+        {
+            $this    -> skripte[] = $skripte;
+            $skripte -> setModul    ( $this );
         }
-
         return $this;
     }
 
-    public function removeSkripte(Skript $skripte): self
+    public function removeSkripte ( Skript $skripte ): self
     {
-        if ($this->skripte->removeElement($skripte)) {
+        if ( $this -> skripte -> removeElement ( $skripte ) )
+        {
             // set the owning side to null (unless already changed)
-            if ($skripte->getModul() === $this) {
-                $skripte->setModul(null);
+            if ( $skripte -> getModul () === $this ) 
+            {
+                $skripte -> setModul    ( null );
             }
         }
-
         return $this;
     }
 
-    public function getAktuellesSkript(): ?Skript
+    public function getAktuellesSkript (): ?Skript
     {
-        return $this->aktuellesSkript;
+        return $this -> aktuellesSkript;
     }
 
-    public function setAktuellesSkript(?Skript $aktuellesSkript): self
+    public function setAktuellesSkript ( ?Skript $aktuellesSkript ): self
     {
-        $this->aktuellesSkript = $aktuellesSkript;
-
+        $this -> aktuellesSkript = $aktuellesSkript;
         return $this;
     }
 
-    public function getTutor(): ?User
+    public function getTutor (): ?User
     {
-        return $this->tutor;
+        return $this -> tutor;
     }
 
-    public function setTutor(?User $tutor): self
+    public function setTutor ( ?User $tutor ): self
     {
-        $this->tutor = $tutor;
-
+        $this -> tutor = $tutor;
         return $this;
     }
 
     /**
      * @return Collection|Fehler[]
      */
-    public function getFehler(): Collection
+    public function getFehler (): Collection
     {
-        return $this->fehler;
+        return $this -> fehler;
     }
 
-    public function addFehler(Fehler $fehler): self
+    public function addFehler ( Fehler $fehler ): self
     {
-        if (!$this->fehler->contains($fehler)) {
-            $this->fehler[] = $fehler;
-            $fehler->setModul($this);
+        if ( ! $this -> fehler -> contains ( $fehler ) )
+        {
+            $this   -> fehler[] = $fehler;
+            $fehler -> setModul     ( $this );
         }
-
         return $this;
     }
 
-    public function removeFehler(Fehler $fehler): self
+    public function removeFehler ( Fehler $fehler ): self
     {
-        if ($this->fehler->removeElement($fehler)) {
+        if ( $this -> fehler -> removeElement ( $fehler ) )
+        {
             // set the owning side to null (unless already changed)
-            if ($fehler->getModul() === $this) {
-                $fehler->setModul(null);
+            if ( $fehler -> getModul () === $this )
+            {
+                $fehler -> setModul     ( null );
             }
         }
-
         return $this;
     }
 }

@@ -42,44 +42,44 @@ class Skript
      */
     private $name;
 
-    public function __construct()
+    public function __construct ()
     {
-        $this->fehler = new ArrayCollection();
+        $this -> fehler = new ArrayCollection();
     }
 
 
     public function __toString() 
     {
-        $id     = $this -> getId();
-        $name   = $this -> getName();
+        $id     = $this -> getId    ();
+        $name   = $this -> getName  ();
         return $name . ' ('. $id. ')';
     }
 
-    public function getId(): ?int
+    public function getId (): ?int
     {
-        return $this->id;
+        return $this -> id;
     }
 
-    public function getVersion(): ?int
+    public function getVersion (): ?int
     {
-        return $this->version;
+        return $this -> version;
     }
 
-    public function setVersion(int $version): self
+    public function setVersion ( int $version ): self
     {
-        $this->version = $version;
+        $this -> version = $version;
 
         return $this;
     }
 
-    public function getModul(): ?Modul
+    public function getModul (): ?Modul
     {
-        return $this->modul;
+        return $this -> modul;
     }
 
-    public function setModul(?Modul $modul): self
+    public function setModul (?Modul $modul): self
     {
-        $this->modul = $modul;
+        $this -> modul = $modul;
 
         return $this;
     }
@@ -87,42 +87,44 @@ class Skript
     /**
      * @return Collection|Fehler[]
      */
-    public function getFehler(): Collection
+    public function getFehler (): Collection
     {
-        return $this->fehler;
+        return $this -> fehler;
     }
 
-    public function addFehler(Fehler $fehler): self
+    public function addFehler ( Fehler $fehler ): self
     {
-        if (!$this->fehler->contains($fehler)) {
-            $this->fehler[] = $fehler;
-            $fehler->setSkript($this);
+        if ( ! $this -> fehler -> contains ( $fehler ) )
+        {
+            $this   -> fehler[] = $fehler;
+            $fehler -> setSkript  ( $this );
         }
 
         return $this;
     }
 
-    public function removeFehler(Fehler $fehler): self
+    public function removeFehler ( Fehler $fehler ): self
     {
-        if ($this->fehler->removeElement($fehler)) {
+        if ( $this -> fehler -> removeElement ( $fehler ) )
+        {
             // set the owning side to null (unless already changed)
-            if ($fehler->getSkript() === $this) {
-                $fehler->setSkript(null);
+            if ( $fehler -> getSkript () === $this ) 
+            {
+                $fehler -> setSkript    ( null );
             }
         }
 
         return $this;
     }
 
-    public function getName(): ?string
+    public function getName (): ?string
     {
-        return $this->name;
+        return $this -> name;
     }
 
-    public function setName(?string $name): self
+    public function setName ( ?string $name ): self
     {
-        $this->name = $name;
-
+        $this -> name = $name;
         return $this;
     }
 }

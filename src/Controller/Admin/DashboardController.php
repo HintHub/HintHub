@@ -32,10 +32,11 @@ class DashboardController extends AbstractDashboardController
 
     public function configureDashboard(): Dashboard
     {
-    	@$appName = !empty($_ENV['APP_NAME']) ? $_ENV['APP_NAME'] : 'Missing in env';
+    	// @$appName = !empty ( $_ENV['APP_NAME'] ) ? $_ENV['APP_NAME'] : 'Missing in env';
     	
         return Dashboard::new()
-            ->setTitle('HintHub');
+            ->setTitle('HintHub')
+        ;
     }
 
     public function configureMenuItems(): iterable

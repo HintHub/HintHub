@@ -33,36 +33,37 @@ class Kommentar
     use DatumTrait;
     use EinreicherTrait;
 
-    public function getId(): ?int
+
+    public function __toString ()
     {
-        return $this->id;
+        $id = $this -> getId ();
+        return "$id";
     }
 
-    public function getText(): ?string
+    public function getId (): ?int
     {
-        return $this->text;
+        return $this -> id;
     }
 
-    public function setText(string $text): self
+    public function getText (): ?string
     {
-        $this->text = $text;
+        return $this -> text;
+    }
 
+    public function setText ( string $text ): self
+    {
+        $this -> text = $text;
         return $this;
     }
 
-    public function getFehler(): ?Fehler
+    public function getFehler (): ?Fehler
     {
-        return $this->fehler;
+        return $this -> fehler;
     }
 
-    public function setFehler(?Fehler $fehler): self
+    public function setFehler ( ?Fehler $fehler ): self
     {
-        $this->fehler = $fehler;
-
+        $this -> fehler = $fehler;
         return $this;
-    }
-
-    public function __toString() {
-        return $this -> id . "";
     }
 }

@@ -34,12 +34,12 @@ class SkriptCrudController extends AbstractCrudController
                 fehler
         */
         return [
-            IdField::new('id') -> hideOnForm(),
-            IdField::new('id') -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption('disabled','disabled'),
-            TextField::new('name'),
-            NumberField::new('version'),
-            AssociationField::new('fehler'),
-            AssociationField::new('modul')
+            IdField::new            ( 'id'      ) -> hideOnForm(),
+            IdField::new            ( 'id'      ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+            TextField::new          ( 'name'    ),
+            NumberField::new        ( 'version' ),
+            AssociationField::new   ( 'fehler'  ),
+            AssociationField::new   ( 'modul'   )
         ];
     }
 }

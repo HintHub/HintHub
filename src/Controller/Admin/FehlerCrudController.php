@@ -46,15 +46,15 @@ class FehlerCrudController extends AbstractCrudController
                 skript - fixed by KS, 19 Dez 2021 01:13
         */
         return [
-            IdField::new('id') -> hideOnForm(),
-            IdField::new('id') -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption('disabled','disabled'),
-            TextField::new('name'),
-            ChoiceField::new('status') -> setChoices ( $this -> getStatusChoices() ),
-            NumberField::new('seite'),
-            AssociationField::new('kommentare'),
-            AssociationField::new('verwandteFehler'),
-            AssociationField::new('skript'),
-            DateField::new('datum_erstellt')
+            IdField::new            (   'id'               )    -> hideOnForm(),
+            IdField::new            (   'id'               )    -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ('disabled','disabled'),
+            TextField::new          (   'name'             ),
+            ChoiceField::new        (   'status'           )    -> setChoices ( $this -> getStatusChoices() ),
+            NumberField::new        (   'seite'            ),
+            AssociationField::new   (   'kommentare'       ),
+            AssociationField::new   (   'verwandteFehler'  ),
+            AssociationField::new   (   'skript'           ),
+            DateField::new          (   'datum_erstellt'   )
         ];
     }
 

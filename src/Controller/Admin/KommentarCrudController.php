@@ -39,10 +39,10 @@ class KommentarCrudController extends AbstractCrudController
                 fehler
         */
         return [
-            IdField::new('id') -> hideOnForm(),
-            IdField::new('id') -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption('disabled','disabled'),
-            TextEditorField::new('text'),
-            AssociationField::new('fehler')
+            IdField::new            ( 'id'      ) -> hideOnForm(),
+            IdField::new            ( 'id'      ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+            TextEditorField::new    ( 'text'    ),
+            AssociationField::new   ( 'fehler'  )
         ];
     }
 

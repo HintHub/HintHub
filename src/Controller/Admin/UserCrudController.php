@@ -76,15 +76,13 @@ class UserCrudController extends AbstractCrudController
                 module
         */
         return [
-            IdField::new('id') -> hideOnForm(),
-            IdField::new('id') -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption('disabled','disabled'),
-            TextField::new('email'),
-            TextEditorField::new('salt'),
-            ChoiceField::new('ROLES')
-                -> setChoices ( $this -> getRoleChoices() )
-                -> allowMultipleChoices(),
-            TextField::new('plainPassword') -> setFormType ( PasswordType::class ) -> onlyOnforms(),
-            AssociationField::new('module')
+            IdField::new            ( 'id'            ) -> hideOnForm(),
+            IdField::new            ( 'id'            ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+            TextField::new          ( 'email'         ),
+            TextEditorField::new    ( 'salt'          ),
+            ChoiceField::new        ( 'ROLES'         ) -> setChoices ( $this -> getRoleChoices() ) -> allowMultipleChoices(),
+            TextField::new          ( 'plainPassword' ) -> setFormType ( PasswordType::class ) -> onlyOnforms(),
+            AssociationField::new   ( 'module'        )
         ];
     }
 
@@ -104,44 +102,51 @@ class UserCrudController extends AbstractCrudController
 
     public function createEditFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
     {
-        $formBuilder = parent::createEditFormBuilder($entityDto, $formOptions, $context);
+        $formBuilder = parent::createEditFormBuilder ($entityDto, $formOptions, $context);
 
-        $this->addHashPasswordEventListener($formBuilder);
+        $this -> addHashPasswordEventListener ($formBuilder);
 
         return $formBuilder;
     }
 
     public function createNewFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
     {
-        $formBuilder = parent::createNewFormBuilder($entityDto, $formOptions, $context);
+        $formBuilder = parent::createNewFormBuilder ($entityDto, $formOptions, $context);
 
-        $this->addHashPasswordEventListener($formBuilder);
+        $this -> addHashPasswordEventListener ($formBuilder);
 
         return $formBuilder;
     }
 
     protected function addHashPasswordEventListener(FormBuilderInterface $formBuilder)
     {
-        $formBuilder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
-            /** @var User $user */
-            $obj = $event->getData();
-            if ($obj instanceof User) {
-                $user = $obj;
-                $plainPW = $user->getPlainPassword();
-                if ($plainPW) {
-                    $user->setPassword($this->passwordHasher->getPasswordHasher('user')->hash($plainPW));
+        $formBuilder -> addEventListener (
+            FormEvents::SUBMIT, 
+            function (FormEvent $event) 
+            {
+                /** @var User $user */
+                $obj = $event -> getData();
+                if ($obj instanceof User) 
+                {
+                    $user = $obj;
+                    $plainPW = $user -> getPlainPassword();
+                    if ( $plainPW ) 
+                    {
+                        $user -> setPassword ( $this -> passwordHasher -> getPasswordHasher ( 'user' ) -> hash ( $plainPW ) );
+                    }
                 }
+        
             }
-        });
+        );
     }
 
     public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters) :QueryBuilder
     {
-        parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+        parent::createIndexQueryBuilder ($searchDto, $entityDto, $fields, $filters);
 
-        $request     = $searchDto->getRequest();
+        $request     = $searchDto -> getRequest();
 
-        $qb = $this->get(EntityRepository::class)->createQueryBuilder($searchDto, $entityDto, $fields, $filters);
+        $qb = $this -> get ( EntityRepository::class ) -> createQueryBuilder ($searchDto, $entityDto, $fields, $filters);
 
         /*$deletedOnly = $request->query->get('deletedOnly') == 1;
         if ($deletedOnly)

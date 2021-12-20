@@ -53,71 +53,76 @@ class Fehler
      */
     private $name;
 
-
-    
     // Traits
     use DatumTrait;
     use EinreicherTrait; // added by karim.saad (karim.saad@iubh.de) - 20.12.2021 03:26
 
-    public function __construct()
+    public function __construct ()
     {
-        $this->kommentare = new ArrayCollection();
-        $this->verwandteFehler = new ArrayCollection();
+        $this -> kommentare      = new ArrayCollection();
+        $this -> verwandteFehler = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function __toString ()
     {
-        return $this->id;
+        $id = $this -> getId    ();
+        return "$id";
     }
 
-    public function getStatus(): ?string
+    public function getId (): ?int
     {
-        return $this->status;
+        return $this -> id;
     }
 
-    public function setStatus(string $status): self
+    public function getStatus (): ?string
     {
-        $this->status = $status;
+        return $this -> status;
+    }
 
+    public function setStatus ( string $status ): self
+    {
+        $this -> status = $status;
         return $this;
     }
 
-    public function getSeite(): ?int
+    public function getSeite (): ?int
     {
-        return $this->seite;
+        return $this -> seite;
     }
 
-    public function setSeite(int $seite): self
+    public function setSeite ( int $seite ): self
     {
-        $this->seite = $seite;
-
+        $this -> seite = $seite;
         return $this;
     }
 
     /**
      * @return Collection|Kommentar[]
      */
-    public function getKommentare(): Collection
+    public function getKommentare (): Collection
     {
-        return $this->kommentare;
+        return $this -> kommentare;
     }
 
-    public function addKommentare(Kommentar $kommentare): self
+    public function addKommentare ( Kommentar $kommentare ): self
     {
-        if (!$this->kommentare->contains($kommentare)) {
-            $this->kommentare[] = $kommentare;
-            $kommentare->setFehler($this);
+        if ( ! $this -> kommentare -> contains ( $kommentare ) ) 
+        {
+            $this       -> kommentare[] = $kommentare;
+            $kommentare -> setFehler    ( $this );
         }
 
         return $this;
     }
 
-    public function removeKommentare(Kommentar $kommentare): self
+    public function removeKommentare ( Kommentar $kommentare ): self
     {
-        if ($this->kommentare->removeElement($kommentare)) {
+        if ( $this -> kommentare -> removeElement ( $kommentare ) )
+        {
             // set the owning side to null (unless already changed)
-            if ($kommentare->getFehler() === $this) {
-                $kommentare->setFehler(null);
+            if ( $kommentare -> getFehler () === $this ) 
+            {
+                $kommentare -> setFehler    ( null );
             }
         }
 
@@ -127,68 +132,65 @@ class Fehler
     /**
      * @return Collection|self[]
      */
-    public function getVerwandteFehler(): Collection
+    public function getVerwandteFehler (): Collection
     {
-        return $this->verwandteFehler;
+        return $this -> verwandteFehler;
     }
 
-    public function addVerwandteFehler(self $verwandteFehler): self
+    public function addVerwandteFehler ( self $verwandteFehler ): self
     {
-        if (!$this->verwandteFehler->contains($verwandteFehler)) {
-            $this->verwandteFehler[] = $verwandteFehler;
+        if (! $this -> verwandteFehler -> contains ( $verwandteFehler ) )
+        {
+            $this -> verwandteFehler[] = $verwandteFehler;
         }
-
         return $this;
     }
 
-    public function removeVerwandteFehler(self $verwandteFehler): self
+    public function removeVerwandteFehler ( self $verwandteFehler ): self
     {
-        $this->verwandteFehler->removeElement($verwandteFehler);
-
+        $this -> verwandteFehler -> removeElement ( $verwandteFehler );
         return $this;
     }
 
-    public function open() {
-        $this->setStatus('OPEN');
-    }
-
-    public function close() {
-        $this->setStatus('CLOSED');
-    }
-
-    public function escalate() {
-        $this->setStatus('ESCALATED');
-    }
-
-    public function wait() {
-        $this->setStatus('WAITING');
-    }
-
-    public function __toString() {
-        return $this->id."";
-    }
-
-    public function getSkript(): ?Skript
+    public function open ()
     {
-        return $this->skript;
+        $this -> setStatus ( 'OPEN' );
     }
 
-    public function setSkript(?Skript $skript): self
+    public function close () 
     {
-        $this->skript = $skript;
+        $this -> setStatus ( 'CLOSED' );
+    }
 
+    public function escalate () 
+    {
+        $this -> setStatus ( 'ESCALATED' );
+    }
+
+    public function wait ()
+    {
+        $this -> setStatus ( 'WAITING' );
+    }
+
+    public function getSkript (): ?Skript
+    {
+        return $this -> skript;
+    }
+
+    public function setSkript ( ?Skript $skript ): self
+    {
+        $this -> skript = $skript;
         return $this;
     }
 
-    public function getName(): ?string
+    public function getName (): ?string
     {
-        return $this->name;
+        return $this -> name;
     }
 
-    public function setName(?string $name): self
+    public function setName ( ?string $name ): self
     {
-        $this->name = $name;
-
+        $this -> name = $name;
         return $this;
     }
 }

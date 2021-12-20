@@ -17,9 +17,12 @@ class HomepageController extends AbstractController
     public function index(): Response
     {
         @$appName = $_ENV['APP_NAME'];
-        return $this->render('homepage/index.html.twig', [
-            'controller_name' => 'HomepageController',
-            'APP_NAME' => $appName,
-        ]);
+        return $this -> render(
+            'homepage/index.html.twig', 
+            [
+                'controller_name'   => 'HomepageController',
+                'APP_NAME'          => $appName,
+            ]
+        );
     }
 }
