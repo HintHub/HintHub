@@ -81,9 +81,9 @@ class UserCrudController extends AbstractCrudController
             TextField::new('email'),
             TextEditorField::new('salt'),
             ChoiceField::new('ROLES')
-                ->setChoices($this->getRoleChoices())
-                ->allowMultipleChoices(),
-            TextField::new('plainPassword')->setFormType(PasswordType::class)->onlyOnforms(),
+                -> setChoices ( $this -> getRoleChoices() )
+                -> allowMultipleChoices(),
+            TextField::new('plainPassword') -> setFormType ( PasswordType::class ) -> onlyOnforms(),
             AssociationField::new('module')
         ];
     }
@@ -91,16 +91,16 @@ class UserCrudController extends AbstractCrudController
     public function getRoleChoices() 
     {
         return [
-                'Admin' => 'ROLE_ADMIN',
-                'Student' => 'ROLE_STUDENT',
-                'Tutor' => 'Tutor'
-            ];
+            'Admin'     => 'ROLE_ADMIN',
+            'Student'   => 'ROLE_STUDENT',
+            'Tutor'     => 'Tutor'
+        ];
     }
 
     /*
-    Taken out of:
-    https://github.com/EasyCorp/EasyAdminBundle/issues/3349#issuecomment-695214741
-*/
+        Taken out of:
+        https://github.com/EasyCorp/EasyAdminBundle/issues/3349#issuecomment-695214741
+    */
 
     public function createEditFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
     {

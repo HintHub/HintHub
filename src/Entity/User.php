@@ -336,6 +336,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->setROLES($role);
     }
 
+    public function getModule() 
+    {
+        return $this->module;
+    }
+    
     public function addModule(Modul $modul): self
     {
         if (!$this->module->contains($modul)) {

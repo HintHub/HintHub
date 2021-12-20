@@ -2,11 +2,13 @@
 namespace App\Service;
 
 use App\Entity\User;
+use Doctrine\ORM\EntityManager;
+
 use App\Repository\UserRepository;
-
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-
+ 
 /**
  * Provides the User Service
  *  
@@ -18,7 +20,7 @@ class UserService
 
     private UserRepository  $userRepository;
     private EntityManager   $entityManager;
-    private TokenStorage    $tokenStorage;
+    private                 $tokenStorage;
 
     public function __construct (UserRepository $userRepository, EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage)
     {

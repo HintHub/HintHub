@@ -3,11 +3,12 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Kommentar;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use App\Service\UserService;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
 /**
  * CrudController for Kommentar generated via php bin/console make:admin:crud
@@ -17,11 +18,17 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
  */
 class KommentarCrudController extends AbstractCrudController
 {
+    private UserService $userService;
+
+    public function __construct (UserService $userService) 
+    {
+        $this -> userService = $userService;
+    }
+    
     public static function getEntityFqcn(): string
     {
         return Kommentar::class;
     }
-
 
     public function configureFields(string $pageName): iterable
     {
@@ -37,6 +44,26 @@ class KommentarCrudController extends AbstractCrudController
             TextEditorField::new('text'),
             AssociationField::new('fehler')
         ];
+    }
+
+        /*
+        When a Fehler gets added to DB (persisted)
+        @author Karim Saad (karim.saad@iubh.de)
+        @date 20.12.2021 03:05
+    */
+    public function createEntity (string $entityFqcn) {
+        $currentUser    = $this -> userService -> getCurrentUser();
+        $entity          = new Kommentar    ();
+        $currentDateTime = new \DateTime ();
+
+        // Datum Trait
+        $entity -> setDatumLetzteAenderung   ( $currentDateTime );
+        $entity -> setDatumErstellt          ( $currentDateTime );
+
+        // Einreicher Trait
+        $entity -> setEinreicher             ( $currentUser     );
+
+        return $entity;
     }
 
 }

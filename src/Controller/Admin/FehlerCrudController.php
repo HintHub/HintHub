@@ -60,14 +60,11 @@ class FehlerCrudController extends AbstractCrudController
 
     public function getStatusChoices() {
         return [
-            'choices'  => 
-            [
-                'geschlossen'   =>  'CLOSED',
-                'offen'         =>  'OPEN',
-                'abgelehnt'     =>  'REJECTED',
-                'eskaliert'     =>  'ESCALATED',
-                'wartend'       =>  'WAITING'
-            ]
+            'geschlossen'   =>  'CLOSED',
+            'offen'         =>  'OPEN',
+            'abgelehnt'     =>  'REJECTED',
+            'eskaliert'     =>  'ESCALATED',
+            'wartend'       =>  'WAITING'
         ];
     }
 
