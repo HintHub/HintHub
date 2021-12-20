@@ -50,9 +50,12 @@
     }
 }
 
-
-
 .responsive-header 
 {
     background-color: #7DA0CD;
+}
+
+.user-menu-wrapper .user-details .user-name
+{
+    color: black;
 }
