@@ -1,0 +1,37 @@
+.sidebar 
+{
+    background-color: #7A9ECC !important;
+}
+
+.menu-item 
+{
+    color:black !important;
+}
+
+#main-menu .menu a
+{
+    color: black !important;
+    text-decoration: none;
+    padding: 5px;
+    font-size: 1.2em;
+}
+
+#main-menu .menu .menu-item.active a span
+{
+    color: black !important;
+    text-decoration: none;
+    background-color: #d5d5d540;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 1.2em;
+}
+
+.content-top
+{
+    background-color: #7A9ECC !important;
+}
+
+.content-top .content-search .content-search-label input.is-blank
+{
+    background-color: #7DA0CD;
+}

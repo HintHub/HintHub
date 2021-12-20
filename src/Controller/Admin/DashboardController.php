@@ -2,17 +2,18 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Fehler;
-use App\Entity\Kommentar;
+use App\Entity\User;
 use App\Entity\Modul;
+use App\Entity\Fehler;
 use App\Entity\Skript;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
-use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use App\Entity\Kommentar;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 
-use App\Entity\User;
+use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 
 /**
  * DashboardController for AdminDashboard generated via php bin/console make:admin:dashboard
@@ -36,8 +37,13 @@ class DashboardController extends AbstractDashboardController
     	// @$appName = !empty ( $_ENV['APP_NAME'] ) ? $_ENV['APP_NAME'] : 'Missing in env';
     	
         return Dashboard::new()
-            ->setTitle('HintHub')
+            ->setTitle('<img src="hinthub_logo.png" alt="HintHub"/>')
         ;
+    }
+
+    public function configureAssets(): Assets
+    {
+        return Assets::new()->addCssFile('admin.css');
     }
 
     public function configureMenuItems(): iterable
