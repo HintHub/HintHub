@@ -3,10 +3,11 @@
 namespace App\Entity;
 
 use App\Model\DatumTrait;
-use App\Repository\FehlerRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Model\EinreicherTrait;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\FehlerRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 
 /**
@@ -54,7 +55,9 @@ class Fehler
 
 
     
+    // Traits
     use DatumTrait;
+    use EinreicherTrait; // added by karim.saad (karim.saad@iubh.de) - 20.12.2021 03:26
 
     public function __construct()
     {
@@ -145,18 +148,6 @@ class Fehler
         return $this;
     }
 
-    public function getEinreicher(): ?User
-    {
-        return $this->einreicher;
-    }
-
-    public function setEinreicher(?User $einreicher): self
-    {
-        $this->einreicher = $einreicher;
-
-        return $this;
-    }
-
     public function open() {
         $this->setStatus('OPEN');
     }
@@ -177,12 +168,12 @@ class Fehler
         return $this->id."";
     }
 
-    public function getSkript(): ?Modul
+    public function getSkript(): ?Skript
     {
         return $this->skript;
     }
 
-    public function setSkript(?Modul $modul): self
+    public function setSkript(?Skript $skript): self
     {
         $this->skript = $skript;
 

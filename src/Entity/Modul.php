@@ -58,6 +58,13 @@ class Modul
         $this->fehler = new ArrayCollection();
     }
 
+    public function __toString()
+    {
+        $name   = $this -> getName();
+        $id     = $this -> getId();
+        return "$name ($id)";
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -139,10 +146,6 @@ class Modul
         $this->tutor = $tutor;
 
         return $this;
-    }
-
-    public function __toString() {
-        return $this->id."";
     }
 
     /**

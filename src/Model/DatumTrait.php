@@ -28,76 +28,72 @@ trait DatumTrait
     protected $datumLetzteAenderung;
 
     /**
-     * @return mixed
+     * Gets the created date
+     * @return DateTime
      */
-    public function getDatumErstellt()
+    public function getDatumErstellt() : \DateTime
     {
-        return $this->datumErstellt;
+        return $this -> datumErstellt;
     }
 
     /**
+     * Sets the created date
      * @param mixed $datumErstellt
+     * @return Entity
      */
-    public function setDatumErstellt($datumErstellt): void
+    public function setDatumErstellt ($datumErstellt)
     {
-        $this->datumErstellt = $datumErstellt;
+        $this -> datumErstellt = $datumErstellt;
+        return $this;
     }
 
     /**
-     * @return mixed
+     * Gets the closed date
+     * @return DateTime datumGeschlossen
      */
-    public function getDatumGeschlossen()
+    public function getDatumGeschlossen () : \DateTime
     {
         return $this->datumGeschlossen;
     }
 
     /**
-     * @param mixed $datumGeschlossen
+     * Sets the closed date
+     * @param DateTime $datumGeschlossen
+     * @return mixed Entity
      */
-    public function setDatumGeschlossen($datumGeschlossen): void
+    public function setDatumGeschlossen(\DateTime $datumGeschlossen)
     {
-        $this->datumGeschlossen = $datumGeschlossen;
+        $this -> datumGeschlossen = $datumGeschlossen;
+        return $this;
     }
 
     /**
-     * @return mixed
+     * Gets the last changed date
+     * @return DateTime datumLetzteAenderung
      */
-    public function getDatumLetzteAenderung()
+    public function getDatumLetzteAenderung() : \DateTime
     {
-        return $this->datumLetzteAenderung;
+        return $this -> datumLetzteAenderung;
     }
 
     /**
-     * @param mixed $datumLetzteAenderung
+     * Sets the last changed date
+     * @param DateTime $datumLetzteAenderung
+     * @return mixed Entity
      */
-    public function setDatumLetzteAenderung($datumLetzteAenderung): void
+    public function setDatumLetzteAenderung (\DateTime $datumLetzteAenderung)
     {
-        $this->datumLetzteAenderung = $datumLetzteAenderung;
+        $this -> datumLetzteAenderung = $datumLetzteAenderung;
+        return $this;
     }
 
     /**
-     * @return mixed
+     * updates the last changed date
+     * @return mixed Entity
      */
-    public function getEinreicher()
+    public function aktualisiereDatum (\DateTime $date)
     {
-        return $this->einreicher;
-    }
-
-    /**
-     * @param mixed $einreicher
-     */
-    public function setEinreicher($einreicher): void
-    {
-        $this->einreicher = $einreicher;
-    }
-
-    /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="eingereichteFehler")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $einreicher;
-
-    public function aktualisiereDatum($date) {
-        $this->datumLetzteAenderung = $date;
+        $this -> datumLetzteAenderung = $date;
+        return $this;
     }
 }

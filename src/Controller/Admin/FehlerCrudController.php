@@ -3,7 +3,9 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Fehler;
+use App\Service\UserService;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
@@ -19,6 +21,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
  */
 class FehlerCrudController extends AbstractCrudController
 {
+    private UserService $userService;
+
+    public function __construct (UserService $userService) 
+    {
+        $this -> userService = $userService;
+    }
+    
     public static function getEntityFqcn(): string
     {
         return Fehler::class;
@@ -44,18 +53,41 @@ class FehlerCrudController extends AbstractCrudController
             NumberField::new('seite'),
             AssociationField::new('kommentare'),
             AssociationField::new('verwandteFehler'),
-            AssociationField::new('skript')
+            AssociationField::new('skript'),
+            DateField::new('datum_erstellt')
         ];
     }
 
     public function getStatusChoices() {
         return [
-        'choices'  => [
-            'geschlossen' => 'CLOSED',
-            'offen' => 'OPEN',
-            'abgelehnt' => 'REJECTED',
-            'eskaliert' => 'ESCALATED',
-            'wartend' => 'WAITING'
-        ]];
+            'choices'  => 
+            [
+                'geschlossen'   =>  'CLOSED',
+                'offen'         =>  'OPEN',
+                'abgelehnt'     =>  'REJECTED',
+                'eskaliert'     =>  'ESCALATED',
+                'wartend'       =>  'WAITING'
+            ]
+        ];
+    }
+
+    /*
+        When a Fehler gets added to DB (persisted)
+        @author Karim Saad (karim.saad@iubh.de)
+        @date 20.12.2021 03:05
+    */
+    public function createEntity (string $entityFqcn) {
+        $currentUser    = $this -> userService -> getCurrentUser();
+        $entity          = new Fehler    ();
+        $currentDateTime = new \DateTime ();
+
+        // Datum Trait
+        $entity -> setDatumLetzteAenderung   ( $currentDateTime );
+        $entity -> setDatumErstellt          ( $currentDateTime );
+
+        // Einreicher Trait
+        $entity -> setEinreicher             ( $currentUser     );
+
+        return $entity;
     }
 }

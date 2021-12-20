@@ -56,7 +56,7 @@ class KommentarService
         $toUpdate -> setFehler                  ( $kommentar -> getFehler()                 );
 
         // Setting the DatumTrait Properties
-        $toUpdate -> setDatumLetzteAenderung  ( $kommentar -> getDatumLetzteAenderung() );
+        $toUpdate -> setDatumLetzteAenderung    ( $kommentar -> getDatumLetzteAenderung() );
         return $toUpdate;
     }
 

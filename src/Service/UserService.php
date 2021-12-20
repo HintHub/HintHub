@@ -5,6 +5,7 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Provides the User Service
@@ -15,12 +16,15 @@ use Doctrine\ORM\EntityManagerInterface;
 class UserService 
 {
 
-    private UserRepository $userRepository;
-    private EntityManager $entityManager;
+    private UserRepository  $userRepository;
+    private EntityManager   $entityManager;
+    private TokenStorage    $tokenStorage;
 
-    public function __construct(UserRepository $userRepository, EntityManagerInterface $entityManager) {
+    public function __construct (UserRepository $userRepository, EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage)
+    {
         $this   ->  userRepository  = $userRepository;
         $this   ->  entityManager   = $entityManager;
+        $this   ->  tokenStorage    = $tokenStorage;
     }
 
     //findById
@@ -61,5 +65,18 @@ class UserService
         $this   ->  entityManager   ->  flush       ();
 
         return $id;
+    }
+
+    /**
+     * Gets the current User via tokenStorage object
+     * @return User currentUser
+     */
+    public function getCurrentUser()
+    {
+        if ($this -> tokenStorage === null)                             return null;
+        if ($this -> tokenStorage -> getToken() === null)               return null;
+        if ($this -> tokenStorage -> getToken() -> getUser() === null)  return null;
+
+        return $this->tokenStorage -> getToken() -> getUser();
     }
 }

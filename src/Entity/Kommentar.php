@@ -4,8 +4,9 @@
 namespace App\Entity;
 
 use App\Model\DatumTrait;
-use App\Repository\KommentarRepository;
+use App\Model\EinreicherTrait;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\KommentarRepository;
 /**
  * @ORM\Entity(repositoryClass=KommentarRepository::class)
  */
@@ -30,6 +31,7 @@ class Kommentar
     private $fehler;
 
     use DatumTrait;
+    use EinreicherTrait;
 
     public function getId(): ?int
     {
@@ -60,19 +62,7 @@ class Kommentar
         return $this;
     }
 
-    public function getEinreicher(): ?User
-    {
-        return $this->einreicher;
-    }
-
-    public function setEinreicher(?User $einreicher): self
-    {
-        $this->einreicher = $einreicher;
-
-        return $this;
-    }
-
     public function __toString() {
-        return $this->id."";
+        return $this -> id . "";
     }
 }
