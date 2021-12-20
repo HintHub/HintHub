@@ -35,3 +35,24 @@
 {
     background-color: #7DA0CD;
 }
+
+@media only screen and (max-width: 600px) {
+	.logo
+    {
+        max-width:100% !important;
+    }
+}
+
+@media only screen and (min-width: 600px) {
+	.logo
+    {
+        max-width:100% !important;
+    }
+}
+
+
+
+.responsive-header 
+{
+    background-color: #7DA0CD;
+}

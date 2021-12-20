@@ -37,7 +37,7 @@ class DashboardController extends AbstractDashboardController
     	// @$appName = !empty ( $_ENV['APP_NAME'] ) ? $_ENV['APP_NAME'] : 'Missing in env';
     	
         return Dashboard::new()
-            ->setTitle('<img src="hinthub_logo.png" alt="HintHub"/>')
+            ->setTitle('<img class="logo" src="hinthub_logo.png" alt="HintHub"/>')
         ;
     }
 
