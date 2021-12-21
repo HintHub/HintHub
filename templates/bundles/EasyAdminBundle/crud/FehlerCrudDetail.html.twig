@@ -27,7 +27,69 @@
             color: red;
             text-decoration: none;
         }
+
+        .kommentar_new 
+        {
+
+        }
     </style>
+
+    <script>
+        /*function post (url, data) 
+        {
+            var q = confirm('Möchten Sie den Kommentar hinzufügen?');
+            if ( !q )
+            {
+                // aborted
+                return false;
+            }
+
+            var x = fetch(url, { method: "POST", headers: { 'Content-Type': "multipart/form-data; charset=utf-8; boundary=" + Math.random().toString().substr(2) }, body: data } );
+            x.then(
+                (x1) => {
+                    console.log(x1);
+                    if ( x1.status == 200 )
+                    {
+                        window.location += "#kommentare";
+                        window.location.reload (true);
+                    }
+                    return false;
+                }
+            );
+            return false;
+        }
+        */
+
+        window.doRequest = async function doRequest() 
+        {
+            var html = document.getElementById('kommentar_new_text').innerHTML;
+
+            const data = {
+                "fehlerId": '{{ entity.instance.getId() }}',
+                "text":  html.replace(" ", "\t"),
+                "token": '{{ csrf_token("addKommentar") }}'
+            };
+
+            // var x =  post ( '/kommentar/add', data);
+            const rawResponse = await fetch('/kommentar/add', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    //'Content-Type': 'application/x-www-form-urlencoded',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify (data)
+            });
+            const content = await rawResponse.json();
+            if ( rawResponse.status == 200 )
+            {
+                window.location.href = window.location.href.replace("#kommentare","") + "#kommentare";
+                window.location.reload ( true );
+            }
+        }
+    </script>
+
+    <div class="kommentare" id="kommentare">
     {% for kommentar in entity.instance.getKommentare() | reverse %}
     <div class = "kommentar" id="kommentar_{{ kommentar.getId() }}">
         <div class="kommentar_header">
@@ -46,4 +108,12 @@
         </div>
     </div>
     {% endfor %}
+    </div>
+    <br/>
+    <div class="kommentar_new">
+        <textarea id="kommentar_new_text" class="kommentar_new_text" border="0">
+            test
+        </textarea>
+        <button onclick="return window.doRequest();" class="btn btn-success">Kommentieren</button>
+    </div>
 {% endblock %}

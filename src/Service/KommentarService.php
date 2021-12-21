@@ -2,8 +2,9 @@
 namespace App\Service;
 
 use App\Entity\Kommentar;
-use App\Repository\kommentarRepository;
+use Doctrine\ORM\EntityManager;
 
+use App\Repository\KommentarRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 
