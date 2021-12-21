@@ -3,39 +3,118 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Fehler;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use App\Service\UserService;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
-
+/**
+ * CrudController for Fehler generated via php bin/console make:admin:crud
+ * compare https://symfony.com/bundles/EasyAdminBundle/current/crud.html
+ * 
+ * @author ali-kemal.yalama ( ali-kemal.yalama@iubh.de )
+ */
 class FehlerCrudController extends AbstractCrudController
 {
+    private UserService $userService;
+
+    public function __construct (UserService $userService) 
+    {
+        $this -> userService = $userService;
+    }
+    
     public static function getEntityFqcn(): string
     {
         return Fehler::class;
     }
 
+
+    public function configureCrud ($crud): Crud
+    {
+        return Crud::new()
+            -> setPageTitle ( 'index',  'Fehlermeldungen'  )
+            -> setPageTitle ( 'new',    'Fehler melden'     )
+            -> setPageTitle ( 'detail', fn ( Fehler $fehler ) => sprintf ( 'Fehlermeldung <b>%s</b> betrachten',    $fehler -> __toString() ) )
+            -> setPageTitle ( 'edit',   fn ( Fehler $fehler ) => sprintf ( 'Fehler <b>%s</b> bearbeiten',           $fehler -> __toString() ) )
+
+            -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
+
+            // ->overrideTemplates([
+            //     'crud/index' => 'admin/pages/index.html.twig',
+            //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
+            // ])
+        ;
+    }
+
+    public function configureActions ( Actions $actions ): Actions
+    {
+        return $actions
+            // ...
+            -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
+            -> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
+        ;
+    }
+
     //TODO field fuer status
     public function configureFields(string $pageName): iterable
     {
+        /*
+            Fields:
+                id
+                status
+                seite
+                kommentare
+                verwandteFehler
+                skript - fixed by KS, 19 Dez 2021 01:13
+        */
         return [
-            IdField::new('id'),
-            AssociationField::new('modul'),
-            ChoiceField::new('status')->setChoices($this->getStatusChoices())
+            IdField::new            (   'id'               )    -> hideOnForm(),
+            IdField::new            (   'id'               )    -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ('disabled','disabled'),
+            TextField::new          (   'name'             ),
+            ChoiceField::new        (   'status'           )    -> setChoices ( $this -> getStatusChoices() ),
+            NumberField::new        (   'seite'            ),
+            AssociationField::new   (   'kommentare'       ),
+            AssociationField::new   (   'verwandteFehler'  ),
+            AssociationField::new   (   'skript'           ),
+            DateField::new          (   'datum_erstellt'   )
         ];
     }
 
     public function getStatusChoices() {
         return [
-        'choices'  => [
-            'geschlossen' => 'CLOSED',
-            'offen' => 'OPEN',
-            'abgelehnt' => 'REJECTED',
-            'eskaliert' => 'ESCALATED',
-            'wartend' => 'WAITING'
-        ]];
+            'geschlossen'   =>  'CLOSED',
+            'offen'         =>  'OPEN',
+            'abgelehnt'     =>  'REJECTED',
+            'eskaliert'     =>  'ESCALATED',
+            'wartend'       =>  'WAITING'
+        ];
+    }
+
+    /*
+        When a Fehler gets added to DB (persisted)
+        @author Karim Saad (karim.saad@iubh.de)
+        @date 20.12.2021 03:05
+    */
+    public function createEntity (string $entityFqcn) {
+        $currentUser    = $this -> userService -> getCurrentUser();
+        $entity          = new Fehler    ();
+        $currentDateTime = new \DateTime ();
+
+        // Datum Trait
+        $entity -> setDatumLetzteAenderung   ( $currentDateTime );
+        $entity -> setDatumErstellt          ( $currentDateTime );
+
+        // Einreicher Trait
+        $entity -> setEinreicher             ( $currentUser     );
+
+        return $entity;
     }
 }
