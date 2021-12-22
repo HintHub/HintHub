@@ -190,7 +190,7 @@ class FehlerCrudController extends AbstractCrudController
 
     /*
         When a Fehler gets added to DB (persisted)
-        @author Karim Saad (karim.saad@iubh.de)
+        @author Karim Saad ( karim.saad@iubh.de )
         @date 20.12.2021 03:05
     */
     public function createEntity ( string $entityFqcn ) 
@@ -209,7 +209,11 @@ class FehlerCrudController extends AbstractCrudController
         return $entity;
     }
 
-
+    /*
+        Nachdem das Entity persisted/erstellt wurde
+        @author karim.saad ( karim.saad@iubh.de )
+        @date 22.12.2021 13:45
+    */
     public function persistEntity ( EntityManagerInterface $em, $entity) : void
     {
         $currentUser     = $this -> userService -> getCurrentUser ();
