@@ -48,10 +48,13 @@ class UserCrudController extends AbstractCrudController
 {
     private $passwordHasher;
 
-    public function __construct () {
-        $this->passwordHasher = new PasswordHasherFactory ([
-            "user" => ['algorithm' => 'auto']
-        ]);
+    public function __construct () 
+    {
+        $this->passwordHasher = new PasswordHasherFactory (
+            [
+                "user" => [ 'algorithm' => 'auto' ]
+            ]
+        );
     }
 
     public static function getEntityFqcn(): string
@@ -62,8 +65,8 @@ class UserCrudController extends AbstractCrudController
     public function configureCrud ($crud): Crud
     {
         return Crud::new()
-            -> setPageTitle ( 'index',  'Benutzer'  )
-            -> setPageTitle ( 'new',    'Benutzer anlegen'     )
+            -> setPageTitle ( 'index',  'Benutzer'         )
+            -> setPageTitle ( 'new',    'Benutzer anlegen' )
             -> setPageTitle ( 'detail', fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> betrachten',    $user -> __toString() ) )
             -> setPageTitle ( 'edit',   fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> bearbeiten',    $user -> __toString() ) )
 
@@ -96,7 +99,7 @@ class UserCrudController extends AbstractCrudController
             IdField::new            ( 'id'            ) -> hideOnForm(),
             IdField::new            ( 'id'            ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
             TextField::new          ( 'email'         ),
-            TextEditorField::new    ( 'salt'          ),
+            TextEditorField::new    ( 'salt'          ) -> hideOnForm(),
             ChoiceField::new        ( 'ROLES'         ) -> setChoices ( $this -> getRoleChoices() ) -> allowMultipleChoices(),
             TextField::new          ( 'plainPassword' ) -> setFormType ( PasswordType::class ) -> onlyOnforms(),
             AssociationField::new   ( 'module'        )
@@ -108,7 +111,7 @@ class UserCrudController extends AbstractCrudController
         return [
             'Admin'     => 'ROLE_ADMIN',
             'Student'   => 'ROLE_STUDENT',
-            'Tutor'     => 'Tutor'
+            'Tutor'     => 'ROLE_TUTOR'
         ];
     }
 

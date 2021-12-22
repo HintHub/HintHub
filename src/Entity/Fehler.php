@@ -33,7 +33,7 @@ class Fehler
     private $seite;
 
     /**
-     * @ORM\OneToMany(targetEntity=Kommentar::class, mappedBy="fehler", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Kommentar::class, mappedBy="fehler", orphanRemoval=true, cascade={"persist"})
      */
     private $kommentare;
 
@@ -53,6 +53,9 @@ class Fehler
      */
     private $name;
 
+    // unmapped fields
+    private $kommentar; // added by karim.saad@iubh.de - 22.12.2021 10:33 - used for FehlerCrudController (as ROLE_STUDENT)
+    
     // Traits
     use DatumTrait;
     use EinreicherTrait; // added by karim.saad (karim.saad@iubh.de) - 20.12.2021 03:26
@@ -61,6 +64,7 @@ class Fehler
     {
         $this -> kommentare      = new ArrayCollection();
         $this -> verwandteFehler = new ArrayCollection();
+        $this -> kommentar       = "";
     }
 
     public function __toString ()
@@ -102,6 +106,17 @@ class Fehler
     public function getKommentare (): Collection
     {
         return $this -> kommentare;
+    }
+    
+    public function setKommentar (String $kommentar)
+    {
+        $this -> kommentar = $kommentar;
+        return $this;
+    }
+
+    public function getKommentar () :string
+    {
+        return $this -> kommentar;
     }
 
     public function addKommentare ( Kommentar $kommentare ): self

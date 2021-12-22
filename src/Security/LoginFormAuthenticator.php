@@ -30,61 +30,70 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
     public const LOGIN_ROUTE = 'app_login';
 
-    private UrlGeneratorInterface $urlGenerator;
-    private LoggerInterface $logger;
+    private UrlGeneratorInterface   $urlGenerator;
+    private LoggerInterface         $logger;
 
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, LoggerInterface $logger)
+    public function __construct ( UrlGeneratorInterface $urlGenerator, LoggerInterface $logger )
     {
-        $this->urlGenerator = $urlGenerator;
-        $this->logger = $logger;
+        $this -> urlGenerator = $urlGenerator;
+        $this -> logger       = $logger;
     }
 
-    public function authenticate(Request $request): PassportInterface
+    public function authenticate ( Request $request ): PassportInterface
     {
-        $email = $request->request->get('email', '');
+        $email = $request -> request -> get('email', '');
 
-        $request->getSession()->set(Security::LAST_USERNAME, $email);
+        $request -> getSession() -> set ( Security::LAST_USERNAME, $email );
 
         return new Passport(
-            new UserBadge($email),
-            new PasswordCredentials($request->request->get('password', '')),
+            new UserBadge ( $email ),
+            new PasswordCredentials ( $request -> request -> get ( 'password', '' ) ),
             [
-                new CsrfTokenBadge('authenticate', $request->get('_csrf_token')),
+                new CsrfTokenBadge ( 'authenticate', $request -> get ( '_csrf_token' ) ),
             ]
         );
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
+    public function onAuthenticationSuccess ( Request $request, TokenInterface $token, string $firewallName ): ?Response
     {
-        if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
-            return new RedirectResponse($targetPath);
+        if ( $targetPath = $this -> getTargetPath ( $request -> getSession (), $firewallName ) ) 
+        {
+            return new RedirectResponse ( $targetPath );
         }
 
-        $user = $token->getUser();
-        $roles = $user->getROLES();
-        $roles = array_values($roles);
+        $user  = $token -> getUser  ();
+        $roles = $user  -> getROLES ();
+        $roles = array_values ( $roles );
 
-        if (count($roles) > 0 ){
-            if($roles[0] == "ROLE_ADMIN") {
-                return new RedirectResponse($this->urlGenerator->generate('admin'));
-            } else if($roles[0] == "ROLE_KUNDE") {
-                return new RedirectResponse($this->urlGenerator->generate('kundenbereich'));
-            } else {
+        if ( count ( $roles ) > 0 )
+        {
+            if ( $roles[0] == "ROLE_ADMIN" ) 
+            {
+                return new RedirectResponse ( $this -> urlGenerator -> generate ( 'admin' ) );
+            } 
+            else if ( $roles[0] == "ROLE_KUNDE" )
+            {
+                return new RedirectResponse ( $this -> urlGenerator -> generate ( 'kundenbereich' ) );
+            }
+            else
+            {
                 //throw new \Exception('TODO: provide a valid redirect inside for other than ROLE_ADMIN or ROLE_KUNDE');
                 $message = "redirect after login failed, no route found for the USER ROLE";
-                $this->$logger->error($message);
-                return new RedirectResponse($this->urlGenerator->generate('app_logout'));
+                $this -> logger -> error ( $message );
+                return new RedirectResponse ( $this -> urlGenerator -> generate ( 'app_logout' ) );
             }
-        } else {
+        } 
+        else
+        {
             $message = "USER ROLE array is empty! (After login)";
-            $this->logger->error($message);
-            return new RedirectResponse($this->urlGenerator->generate('app_logout'));
+            $this -> logger -> error ( $message );
+            return new RedirectResponse ( $this -> urlGenerator -> generate ( 'app_logout' ) );
         }
     }
 
-    protected function getLoginUrl(Request $request): string
+    protected function getLoginUrl ( Request $request ): string
     {
-        return $this->urlGenerator->generate(self::LOGIN_ROUTE);
+        return $this -> urlGenerator -> generate ( self::LOGIN_ROUTE );
     }
 }
