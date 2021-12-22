@@ -3,19 +3,20 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Entity\Modul;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Security\Core\User\UserInterface;
+use App\Repository\UserRepository;
+use Symfony\Component\PasswordHasher;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 // For password Hashing
-use Symfony\Component\PasswordHasher;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactory;
 use Symfony\Component\Security\Core\Encoder\PasswordHasherInterface;
-use Symfony\Component\PasswordHasher\Hasher\PasswordHasherAwareInterface;
 
+use Symfony\Component\PasswordHasher\Hasher\PasswordHasherAwareInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
@@ -327,32 +328,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function isTutor () 
     {
-        return in_array ( "Tutor",      $this -> getROLES()     );
+        return in_array ( "ROLE_TUTOR",     $this -> getROLES () );
     }
 
     public function isStudent () 
     {
-        return in_array ( "Student",    $this -> getROLES()     );
+        return in_array ( "ROLE_STUDENT",   $this -> getROLES () );
     }
 
     public function isAdmin ()
     {
-        return in_array ( "Admin",      $this -> getROLES()     );
+        return in_array ( "ROLE_ADMIN",     $this -> getROLES () );
     }
 
     public function setAdmin () 
     {
-        $this -> setRole ('Admin');
+        $this -> setRole ( 'ROLE_ADMIN' );
     }
 
     public function setStudent () 
     {
-        $this -> setRole ( 'Student' );
+        $this -> setRole ( 'ROLE_STUDENT' );
     }
 
     public function setTutor () 
     {
-        $this -> setRole ( 'Tutor' );
+        $this -> setRole ( 'ROLE_TUTOR' );
     }
 
     private function setRole ( $role )
@@ -367,6 +368,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     
     public function addModule ( Modul $modul ): self
     {
+        if ($modul === null || $this -> module === null)return $this;
+
         if ( !$this -> module -> contains ( $modul ) )
         {
             $this  -> module[] = $modul;
