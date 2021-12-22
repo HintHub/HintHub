@@ -24,6 +24,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
  * compare https://symfony.com/bundles/EasyAdminBundle/current/crud.html
  * 
  * @author ali-kemal.yalama ( ali-kemal.yalama@iubh.de )
+ * @author karim.saad@iubh.de ( karim.saad@iubh.de ) - since UserReporting & easyadmincrud configs
  */
 class FehlerCrudController extends AbstractCrudController
 {
