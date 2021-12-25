@@ -102,7 +102,7 @@ class UserCrudController extends AbstractCrudController
             TextEditorField::new    ( 'salt'          ) -> hideOnForm(),
             ChoiceField::new        ( 'ROLES'         ) -> setChoices ( $this -> getRoleChoices() ) -> allowMultipleChoices(),
             TextField::new          ( 'plainPassword' ) -> setFormType ( PasswordType::class ) -> onlyOnforms(),
-            AssociationField::new   ( 'module'        )
+            AssociationField::new   ( 'module'        ) -> setFormTypeOption ( 'disabled', 'disabled' ) ->  hideWhenCreating()
         ];
     }
 
