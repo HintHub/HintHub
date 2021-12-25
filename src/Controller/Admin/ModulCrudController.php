@@ -28,8 +28,8 @@ class ModulCrudController extends AbstractCrudController
         return Crud::new()
             -> setPageTitle ( 'index',  'Module'  )
             -> setPageTitle ( 'new',    'Modul anlegen'     )
-            -> setPageTitle ( 'detail', fn ( Modul $fehler ) => sprintf ( 'Modul <b>%s</b> betrachten',    $modul -> __toString() ) )
-            -> setPageTitle ( 'edit',   fn ( Modul $fehler ) => sprintf ( 'Modul <b>%s</b> bearbeiten',    $modul -> __toString() ) )
+            -> setPageTitle ( 'detail', fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> betrachten',    $modul -> __toString() ) )
+            -> setPageTitle ( 'edit',   fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> bearbeiten',    $modul -> __toString() ) )
 
             -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
 
