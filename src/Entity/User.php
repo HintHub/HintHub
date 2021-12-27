@@ -129,15 +129,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this -> ROLES;
     }
 
-    public function setRolesString ( array $t )
+    public function setRolesString ( string $t )
     {
-        $this -> ROLES = $t; // array($t);
+        $this -> ROLES = [$t]; // array($t);
         return $this;
     }
 
-    public function getRolesString (): ?array
+    public function getRolesString (): ?string
     {
-        return $this -> ROLES;
+        if (count($this->ROLES) > 0)return $this -> ROLES[0];
+        return "";
         //return join(',', $this->ROLES);
     }
 
