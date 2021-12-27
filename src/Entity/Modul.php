@@ -42,15 +42,9 @@ class Modul
     private $aktuellesSkript;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="Module")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="module")
      */
     private $tutor;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Fehler::class, mappedBy="modul", orphanRemoval=true)
-     */
-    private $fehler;
 
     public function __construct ()
     {
@@ -134,17 +128,6 @@ class Modul
         return $this;
     }
 
-    public function getTutor (): ?User
-    {
-        return $this -> tutor;
-    }
-
-    public function setTutor ( ?User $tutor ): self
-    {
-        $this -> tutor = $tutor;
-        return $this;
-    }
-
     /**
      * @return Collection|Fehler[]
      */
@@ -173,6 +156,18 @@ class Modul
                 $fehler -> setModul     ( null );
             }
         }
+        return $this;
+    }
+
+    public function getTutor(): ?User
+    {
+        return $this->tutor;
+    }
+
+    public function setTutor(?User $tutor): self
+    {
+        $this->tutor = $tutor;
+
         return $this;
     }
 }

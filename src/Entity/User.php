@@ -69,18 +69,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $plainPassword = "";
 
     /**
-     * @ORM\OneToMany(targetEntity=Fehler::class, mappedBy="einreicher")
+     * @ORM\OneToMany(targetEntity=Fehler::class, mappedBy="einreicher", cascade={"persist"})
      */
     private $eingereichteFehler;
 
     /**
-     * @ORM\OneToMany(targetEntity=Kommentar::class, mappedBy="einreicher")
+     * @ORM\OneToMany(targetEntity=Kommentar::class, mappedBy="einreicher", cascade={"persist"})
      */
     private $eingereichteKommentare;
 
-
     /**
-     * @ORM\OneToMany(targetEntity=Modul::class, mappedBy="tutor", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Modul::class, mappedBy="tutor", cascade={"persist"}, orphanRemoval=true)
      */
     private $module;
 
@@ -90,6 +89,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this -> salt                   = hash                  ( 'sha512', uniqid ( null, true ) );
         $this -> eingereichteFehler     = new ArrayCollection   ();
         $this -> eingereichteKommentare = new ArrayCollection   ();
+        $this->module = new ArrayCollection();
     }
 
     public function setID ( int $i )
@@ -129,15 +129,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this -> ROLES;
     }
 
-    public function setRolesString ( array $t )
+    public function setRolesString ( string $t )
     {
-        $this -> ROLES = $t; // array($t);
+        $this -> ROLES = [$t]; // array($t);
         return $this;
     }
 
-    public function getRolesString (): ?array
+    public function getRolesString (): ?string
     {
-        return $this -> ROLES;
+        if (count($this->ROLES) > 0)return $this -> ROLES[0];
+        return "";
         //return join(',', $this->ROLES);
     }
 
@@ -369,32 +370,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this -> setROLES ( $role );
     }
 
-    public function getModule () 
+    /**
+     * @return Collection|Modul[]
+     */
+    public function getModule(): Collection
     {
-        return $this -> module;
+        return $this->module;
     }
-    
-    public function addModule ( Modul $modul ): self
-    {
-        if ($modul === null || $this -> module === null)return $this;
 
-        if ( !$this -> module -> contains ( $modul ) )
-        {
-            $this  -> module[] = $modul;
-            $modul -> setTutor  ( $this );
+    public function addModule(Modul $module): self
+    {
+        if (!$this->module->contains($module)) {
+            $this->module[] = $module;
+            $module->setTutor($this);
         }
 
         return $this;
     }
 
-    public function removeModule ( Modul $modul ): self
+    public function removeModule(Modul $module): self
     {
-        if ($this -> module -> removeElement ( $modul ) )
-        {
+        dd("removeModul");
+        if ($this->module->removeElement($module)) {
             // set the owning side to null (unless already changed)
-            if ( $modul -> getTutor() === $this )
-            {
-                $modul -> setTutor ( null );
+            if ($module->getTutor() === $this) {
+                $module->setTutor(null);
             }
         }
 

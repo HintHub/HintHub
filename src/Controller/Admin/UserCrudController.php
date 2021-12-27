@@ -70,7 +70,7 @@ class UserCrudController extends AbstractCrudController
             -> setPageTitle ( 'detail', fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> betrachten',    $user -> __toString() ) )
             -> setPageTitle ( 'edit',   fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> bearbeiten',    $user -> __toString() ) )
 
-            -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
+            // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
 
             // ->overrideTemplates([
             //     'crud/index' => 'admin/pages/index.html.twig',
@@ -99,10 +99,10 @@ class UserCrudController extends AbstractCrudController
             IdField::new            ( 'id'            ) -> hideOnForm(),
             IdField::new            ( 'id'            ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
             TextField::new          ( 'email'         ),
-            TextEditorField::new    ( 'salt'          ) -> hideOnForm(),
-            ChoiceField::new        ( 'ROLES'         ) -> setChoices ( $this -> getRoleChoices() ) -> allowMultipleChoices(false),
+            TextEditorField::new    ( 'salt'          ) -> hideOnForm() -> hideOnIndex(),
+            ChoiceField::new        ( 'ROLESSTRING'   ) -> setChoices ( $this -> getRoleChoices() ) -> setLabel("Rolle/Funktion"),
             TextField::new          ( 'plainPassword' ) -> setFormType ( PasswordType::class ) -> onlyOnforms(),
-            AssociationField::new   ( 'module'        ) -> setFormTypeOption ( 'disabled', 'disabled' ) ->  hideWhenCreating()
+            AssociationField::new   ( 'module'        ) -> hideWhenCreating()
         ];
     }
 
