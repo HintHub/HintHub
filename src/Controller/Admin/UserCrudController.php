@@ -100,7 +100,7 @@ class UserCrudController extends AbstractCrudController
             IdField::new            ( 'id'            ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
             TextField::new          ( 'email'         ),
             TextEditorField::new    ( 'salt'          ) -> hideOnForm(),
-            ChoiceField::new        ( 'ROLES'         ) -> setChoices ( $this -> getRoleChoices() ) -> allowMultipleChoices(),
+            ChoiceField::new        ( 'ROLES'         ) -> setChoices ( $this -> getRoleChoices() ) -> allowMultipleChoices(false),
             TextField::new          ( 'plainPassword' ) -> setFormType ( PasswordType::class ) -> onlyOnforms(),
             AssociationField::new   ( 'module'        ) -> setFormTypeOption ( 'disabled', 'disabled' ) ->  hideWhenCreating()
         ];
@@ -111,7 +111,8 @@ class UserCrudController extends AbstractCrudController
         return [
             'Admin'     => 'ROLE_ADMIN',
             'Student'   => 'ROLE_STUDENT',
-            'Tutor'     => 'ROLE_TUTOR'
+            'Tutor'     => 'ROLE_TUTOR',
+            'Extern'    => 'ROLE_EXTERN'
         ];
     }
 

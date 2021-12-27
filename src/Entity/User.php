@@ -323,7 +323,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function isUniPerson () 
     {
-        return !$this -> isAdmin() && ( $this -> isTutor() || $this -> isStudent() );
+        return (!$this -> isAdmin() || !$this->isExtern() )  && ( $this -> isTutor() || $this -> isStudent() );
     }
 
     public function isTutor () 
@@ -341,6 +341,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return in_array ( "ROLE_ADMIN",     $this -> getROLES () );
     }
 
+    public function isExtern() {
+        return in_array ( "ROLE_EXTERN",    $this -> getROLES () );
+    }
+
     public function setAdmin () 
     {
         $this -> setRole ( 'ROLE_ADMIN' );
@@ -354,6 +358,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setTutor () 
     {
         $this -> setRole ( 'ROLE_TUTOR' );
+    }
+
+    public function setExtern () {
+        $this -> setRole ( 'ROLE_EXTERN' );
     }
 
     private function setRole ( $role )
