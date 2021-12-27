@@ -27,8 +27,8 @@ class Skript
     private $version;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Modul::class, inversedBy="skripte")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity=Modul::class, inversedBy="skripte", cascade={"persist", "remove"})
+        * @ORM\JoinColumn(name="modul_id", referencedColumnName="id", nullable=false)
      */
     private $modul;
 

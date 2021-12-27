@@ -79,7 +79,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $eingereichteKommentare;
 
     /**
-     * @ORM\OneToMany(targetEntity=Modul::class, mappedBy="tutor", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Modul::class, mappedBy="tutor", cascade={"persist", "remove"})
      */
     private $module;
 

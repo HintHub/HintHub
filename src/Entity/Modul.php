@@ -32,7 +32,7 @@ class Modul
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity=Skript::class, mappedBy="modul", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Skript::class, mappedBy="modul", orphanRemoval=true, cascade={"persist", "remove"})
      */
     private $skripte;
 
@@ -42,7 +42,8 @@ class Modul
     private $aktuellesSkript;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="module")
+    * @ORM\ManyToOne(targetEntity=User::class, cascade={"persist", "remove"})
+    * @ORM\JoinColumn(name="module_id", referencedColumnName="id")
      */
     private $tutor;
 
