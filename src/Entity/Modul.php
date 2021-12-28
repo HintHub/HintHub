@@ -42,6 +42,11 @@ class Modul
      */
     private $studenten;
 
+    /**
+     * @ORM\OneToOne(targetEntity=Skript::class, inversedBy="modul", cascade={"persist", "remove"})
+     */
+    private $skript;
+
     public function __construct ()
     {
         $this -> skripte    = new ArrayCollection ();
@@ -83,82 +88,6 @@ class Modul
         $this -> name = $name;
         return $this;
     }
-
-    /*
-     * @return Collection|Skript[]
-     
-    public function getSkripte (): Collection
-    {
-        return $this -> skripte;
-    }
-
-    private function setSkripte($skripte) {
-        $this->skripte = $skripte;
-    }
-
-    public function addSkripte ( Skript $skripte ): self
-    {
-        if (! $this -> skripte -> contains ( $skripte ) )
-        {
-            $this    -> skripte[] = $skripte;
-            $skripte -> setModul    ( $this );
-            $this->setAktuellesSkript($skripte);
-        }
-        return $this;
-    }
-
-    public function removeSkripte ( Skript $skripte ): self
-    {
-        if ( $this -> skripte -> removeElement ( $skripte ) )
-        {
-            // set the owning side to null (unless already changed)
-            if ( $skripte -> getModul () === $this ) 
-            {
-                $skripte -> setModul    ( null );
-            }
-            $aktuellesSkript = $this->getAktuellesSkript();
-            $this->setAktuellesSkript($aktuellesSkript);
-        }
-
-        return $this;
-    }
-
-    private function getLastIndexedSkript() {
-        $index = count($this->getSkripte()) -1;
-        return ($index < 0) ? null : $this->getSkripte()[$index];
-    }
-
-    public function getAktuellesSkript (): ?Skript
-    {
-        return $this -> getLastIndexedSkript();
-    }
-
-    public function setAktuellesSkript ( ?Skript $aktuellesSkript ): self
-    {
-        
-        $this -> aktuellesSkript = $aktuellesSkript;
-
-        //Loeschen von aktuelles Skript aus array
-
-        $skripteArray = $this->getSkripte()->getValues();
-        $start = $skripteArray;
-
-        $index = array_search($aktuellesSkript, $skripteArray);
-
-        /*if(!$index) {
-            return $this;
-        }
-
-        unset($skripteArray[$index]);
-
-        //Push 
-
-        array_push($skripteArray, $aktuellesSkript);
-
-        $this->setSkripte($skripteArray);
-        dd(['start'=>$start, 'ende' => $this->getSkripte()]);
-        return $this;
-    }*/
 
     /**
      * @return Collection|Fehler[]
@@ -236,6 +165,18 @@ class Modul
         if ($this->studenten->removeElement($studenten)) {
             $studenten->removeStudentIn($this);
         }
+
+        return $this;
+    }
+
+    public function getSkript(): ?Skript
+    {
+        return $this->skript;
+    }
+
+    public function setSkript(?Skript $skript): self
+    {
+        $this->skript = $skript;
 
         return $this;
     }

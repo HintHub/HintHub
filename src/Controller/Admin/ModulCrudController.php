@@ -51,7 +51,7 @@ class ModulCrudController extends AbstractCrudController
         ;
     }
 
-    public function createEditFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
+    /*public function createEditFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
     {
         // +dd("test");
         $formBuilder = parent::createEditFormBuilder ($entityDto, $formOptions, $context);
@@ -62,7 +62,7 @@ class ModulCrudController extends AbstractCrudController
         $formBuilder->add('aktuellesSkript', EntityType::class, ['class' => 'App\Entity\Skript','choices' => $entity->getSkripte()]);
         //$formBuilder->add('aktuellesSkript', ChoiceType::class, ['choices' => ['hi', 'aaa']]);
         return $formBuilder;
-    }
+    }*/
 
     public function configureFields(string $pageName): iterable
     {
@@ -81,8 +81,7 @@ class ModulCrudController extends AbstractCrudController
             IdField::new            ( 'id'              ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
             TextField::new          ( 'name'            ),
             TextField::new          ( 'kuerzel'         ),
-            AssociationField::new   ( 'skripte'         ),
-            // ChoiceField::new        ( 'aktuellesSkript' ) ->setChoices($this->choices),
+            AssociationField::new   ( 'skript'          ),
             AssociationField::new   ( 'tutor'           ),
             AssociationField::new   ( 'studenten'       )
                 -> setFormTypeOptions 
