@@ -60,6 +60,13 @@ class ModulCrudController extends AbstractCrudController
             AssociationField::new   ( 'skripte'         ),
             AssociationField::new   ( 'aktuellesSkript' ),
             AssociationField::new   ( 'tutor'           ),
+            AssociationField::new   ( 'studenten'       )
+            -> setFormTypeOptions 
+            (
+                [
+                   'by_reference' => false,
+                ]
+            ),
         ];
     }
 

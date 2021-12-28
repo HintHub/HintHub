@@ -79,9 +79,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $eingereichteKommentare;
 
     /**
-     * @ORM\OneToMany(targetEntity=Modul::class, mappedBy="tutor", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity=Modul::class, mappedBy="tutor")
      */
-    private $module;
+    private $tutorIn;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Modul::class, inversedBy="studenten")
+     */
+    private $studentIn;
 
     public function __construct ()  
     {
@@ -90,6 +95,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this -> eingereichteFehler     = new ArrayCollection   ();
         $this -> eingereichteKommentare = new ArrayCollection   ();
         $this->module = new ArrayCollection();
+        $this->moduls = new ArrayCollection();
+        $this->tutorIn = new ArrayCollection();
+        $this->studentIn = new ArrayCollection();
     }
 
     public function setID ( int $i )
@@ -373,30 +381,58 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection|Modul[]
      */
-    public function getModule(): Collection
+    public function getTutorIn(): Collection
     {
-        return $this->module;
+        return $this->tutorIn;
     }
 
-    public function addModule(Modul $module): self
+    public function addTutorIn(Modul $tutorIn): self
     {
-        if (!$this->module->contains($module)) {
-            $this->module[] = $module;
-            $module->setTutor($this);
+        if (!$this->tutorIn->contains($tutorIn)) {
+            $this->tutorIn[] = $tutorIn;
+            $tutorIn->setTutor($this);
         }
 
         return $this;
     }
 
-    public function removeModule(Modul $module): self
+    public function removeTutorIn(Modul $tutorIn): self
     {
-        dd("removeModul");
-        if ($this->module->removeElement($module)) {
+        if ($this->tutorIn->removeElement($tutorIn)) {
             // set the owning side to null (unless already changed)
-            if ($module->getTutor() === $this) {
-                $module->setTutor(null);
+            if ($tutorIn->getTutor() === $this) {
+                $tutorIn->setTutor(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Modul[]
+     */
+    public function getStudentIn(): Collection
+    {
+        return $this->studentIn;
+    }
+
+    public function addStudentIn(Modul $studentIn): self
+    {
+        
+        if (!$this->isStudent()) {
+            return $this;
+        }
+
+        if (!$this->studentIn->contains($studentIn)) {
+            $this->studentIn[] = $studentIn;
+        }
+
+        return $this;
+    }
+
+    public function removeStudentIn(Modul $studentIn): self
+    {
+        $this->studentIn->removeElement($studentIn);
 
         return $this;
     }

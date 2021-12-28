@@ -42,15 +42,20 @@ class Modul
     private $aktuellesSkript;
 
     /**
-    * @ORM\ManyToOne(targetEntity=User::class, cascade={"persist", "remove"})
-    * @ORM\JoinColumn(name="module_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="tutorIn")
      */
     private $tutor;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=User::class, mappedBy="studentIn")
+     */
+    private $studenten;
 
     public function __construct ()
     {
         $this -> skripte    = new ArrayCollection ();
         $this -> fehler     = new ArrayCollection ();
+        $this->studenten = new ArrayCollection();
     }
 
     public function __toString ()
@@ -167,7 +172,44 @@ class Modul
 
     public function setTutor(?User $tutor): self
     {
+        if($tutor !== null) {
+            if(!$tutor->isTutor()) {
+                return $this; //TODO ggf. exception
+            }
+        }
+        
         $this->tutor = $tutor;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getStudenten(): Collection
+    {
+        return $this->studenten;
+    }
+
+    public function addStudenten(User $studenten): self
+    {
+        if(!$studenten->isStudent()) {
+            return $this; //TODO: ggf. exception
+        }
+
+        if (!$this->studenten->contains($studenten)) {
+            $this->studenten[] = $studenten;
+            $studenten->addStudentIn($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStudenten(User $studenten): self
+    {
+        if ($this->studenten->removeElement($studenten)) {
+            $studenten->removeStudentIn($this);
+        }
 
         return $this;
     }
