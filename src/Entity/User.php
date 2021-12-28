@@ -79,7 +79,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $eingereichteKommentare;
 
     /**
-     * @ORM\OneToMany(targetEntity=Modul::class, mappedBy="tutor")
+     * @ORM\OneToMany(targetEntity=Modul::class, mappedBy="tutor", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $tutorIn;
 

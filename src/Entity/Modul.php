@@ -42,7 +42,8 @@ class Modul
     private $aktuellesSkript;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="tutorIn")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="tutorIn", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $tutor;
 
