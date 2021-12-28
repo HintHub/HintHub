@@ -26,12 +26,13 @@ class Skript
      */
     private $version;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Modul::class, inversedBy="skripte", cascade={"persist", "remove"})
+    /*
+     * @ORM\ManyToOne(targetEntity=Modul::class, inversedBy="skripte", cascade={"remove"})
         * @ORM\JoinColumn(name="modul_id", referencedColumnName="id", nullable=false)
-     */
+     
     private $modul;
-
+    */
+    
     /**
      * @ORM\OneToMany(targetEntity=Fehler::class, mappedBy="skript", orphanRemoval=true)
      */
@@ -72,7 +73,7 @@ class Skript
         return $this;
     }
 
-    public function getModul (): ?Modul
+    /*public function getModul (): ?Modul
     {
         return $this -> modul;
     }
@@ -82,7 +83,7 @@ class Skript
         $this -> modul = $modul;
 
         return $this;
-    }
+    }*/
 
     /**
      * @return Collection|Fehler[]

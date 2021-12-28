@@ -32,16 +32,6 @@ class Modul
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity=Skript::class, mappedBy="modul", orphanRemoval=true, cascade={"persist", "remove"})
-     */
-    private $skripte;
-
-    /**
-     * @ORM\OneToOne(targetEntity=Skript::class, cascade={"persist", "remove"})
-     */
-    private $aktuellesSkript;
-
-    /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="tutorIn", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
@@ -56,7 +46,8 @@ class Modul
     {
         $this -> skripte    = new ArrayCollection ();
         $this -> fehler     = new ArrayCollection ();
-        $this->studenten = new ArrayCollection();
+        $this -> studenten  = new ArrayCollection();
+        $this -> setAktuellesSkript($this->getLastIndexedSkript());
     }
 
     public function __toString ()
@@ -93,12 +84,16 @@ class Modul
         return $this;
     }
 
-    /**
+    /*
      * @return Collection|Skript[]
-     */
+     
     public function getSkripte (): Collection
     {
         return $this -> skripte;
+    }
+
+    private function setSkripte($skripte) {
+        $this->skripte = $skripte;
     }
 
     public function addSkripte ( Skript $skripte ): self
@@ -107,6 +102,7 @@ class Modul
         {
             $this    -> skripte[] = $skripte;
             $skripte -> setModul    ( $this );
+            $this->setAktuellesSkript($skripte);
         }
         return $this;
     }
@@ -120,20 +116,49 @@ class Modul
             {
                 $skripte -> setModul    ( null );
             }
+            $aktuellesSkript = $this->getAktuellesSkript();
+            $this->setAktuellesSkript($aktuellesSkript);
         }
+
         return $this;
+    }
+
+    private function getLastIndexedSkript() {
+        $index = count($this->getSkripte()) -1;
+        return ($index < 0) ? null : $this->getSkripte()[$index];
     }
 
     public function getAktuellesSkript (): ?Skript
     {
-        return $this -> aktuellesSkript;
+        return $this -> getLastIndexedSkript();
     }
 
     public function setAktuellesSkript ( ?Skript $aktuellesSkript ): self
     {
+        
         $this -> aktuellesSkript = $aktuellesSkript;
+
+        //Loeschen von aktuelles Skript aus array
+
+        $skripteArray = $this->getSkripte()->getValues();
+        $start = $skripteArray;
+
+        $index = array_search($aktuellesSkript, $skripteArray);
+
+        /*if(!$index) {
+            return $this;
+        }
+
+        unset($skripteArray[$index]);
+
+        //Push 
+
+        array_push($skripteArray, $aktuellesSkript);
+
+        $this->setSkripte($skripteArray);
+        dd(['start'=>$start, 'ende' => $this->getSkripte()]);
         return $this;
-    }
+    }*/
 
     /**
      * @return Collection|Fehler[]

@@ -4,9 +4,17 @@ namespace App\Controller\Admin;
 
 use App\Entity\Modul;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
@@ -18,6 +26,9 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
  */
 class ModulCrudController extends AbstractCrudController
 {
+    
+    private $choices = [];
+
     public static function getEntityFqcn(): string
     {
         return Modul::class;
@@ -40,6 +51,19 @@ class ModulCrudController extends AbstractCrudController
         ;
     }
 
+    public function createEditFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
+    {
+        // +dd("test");
+        $formBuilder = parent::createEditFormBuilder ($entityDto, $formOptions, $context);
+
+        $entity = $context->getEntity()->getInstance();
+
+        //$this->choices = $entity->getSkripte();
+        $formBuilder->add('aktuellesSkript', EntityType::class, ['class' => 'App\Entity\Skript','choices' => $entity->getSkripte()]);
+        //$formBuilder->add('aktuellesSkript', ChoiceType::class, ['choices' => ['hi', 'aaa']]);
+        return $formBuilder;
+    }
+
     public function configureFields(string $pageName): iterable
     {
         /*
@@ -58,16 +82,15 @@ class ModulCrudController extends AbstractCrudController
             TextField::new          ( 'name'            ),
             TextField::new          ( 'kuerzel'         ),
             AssociationField::new   ( 'skripte'         ),
-            AssociationField::new   ( 'aktuellesSkript' ),
+            // ChoiceField::new        ( 'aktuellesSkript' ) ->setChoices($this->choices),
             AssociationField::new   ( 'tutor'           ),
             AssociationField::new   ( 'studenten'       )
-            -> setFormTypeOptions 
-            (
-                [
-                   'by_reference' => false,
-                ]
-            ),
+                -> setFormTypeOptions 
+                    (
+                        [
+                        'by_reference' => false,
+                        ]
+                    ),
         ];
     }
-
 }
