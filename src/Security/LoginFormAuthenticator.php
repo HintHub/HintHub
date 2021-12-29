@@ -63,30 +63,15 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         }
 
         $user  = $token -> getUser  ();
-        $roles = $user  -> getROLES ();
-        $roles = array_values ( $roles );
 
-        if ( count ( $roles ) > 0 )
+        if ( $user->isAdmin() || $user->isExtern() || $user->isUniPerson() ) 
         {
-            if ( $roles[0] == "ROLE_ADMIN" ) 
-            {
-                return new RedirectResponse ( $this -> urlGenerator -> generate ( 'admin' ) );
-            } 
-            else if ( $roles[0] == "ROLE_KUNDE" )
-            {
-                return new RedirectResponse ( $this -> urlGenerator -> generate ( 'kundenbereich' ) );
-            }
-            else
-            {
-                //throw new \Exception('TODO: provide a valid redirect inside for other than ROLE_ADMIN or ROLE_KUNDE');
-                $message = "redirect after login failed, no route found for the USER ROLE";
-                $this -> logger -> error ( $message );
-                return new RedirectResponse ( $this -> urlGenerator -> generate ( 'app_logout' ) );
-            }
+            return new RedirectResponse ( $this -> urlGenerator -> generate ( 'admin' ) );
         } 
         else
         {
-            $message = "USER ROLE array is empty! (After login)";
+            //throw new \Exception('TODO: provide a valid redirect inside for other than ROLE_ADMIN or ROLE_KUNDE');
+            $message = "redirect after login failed, no route found for the USER ROLE";
             $this -> logger -> error ( $message );
             return new RedirectResponse ( $this -> urlGenerator -> generate ( 'app_logout' ) );
         }

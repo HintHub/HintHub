@@ -30,6 +30,8 @@ class FehlerCrudController extends AbstractCrudController
 {
     private UserService $userService;
 
+            //TODO isExtern check - siehe anderes TODO
+
     public function __construct ( UserService $userService ) 
     {
         $this -> userService = $userService;
@@ -224,6 +226,8 @@ class FehlerCrudController extends AbstractCrudController
         $statusChoicesKeys   = array_keys   ( $statusChoices );
         $statusChoicesValues = array_values ( $statusChoices );
 
+        //TODO isExtern check
+        
         if ( $currentUser -> isStudent () )
         {
             // Here read the initial kommentar text and convert it to kommentar

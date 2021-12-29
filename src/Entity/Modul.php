@@ -32,7 +32,7 @@ class Modul
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="tutorIn", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="tutorIn", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $tutor;
@@ -44,6 +44,7 @@ class Modul
 
     /**
      * @ORM\OneToOne(targetEntity=Skript::class, inversedBy="modul", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $skript;
 
@@ -52,7 +53,7 @@ class Modul
         $this -> skripte    = new ArrayCollection ();
         $this -> fehler     = new ArrayCollection ();
         $this -> studenten  = new ArrayCollection();
-        $this -> setAktuellesSkript($this->getLastIndexedSkript());
+        // $this -> setAktuellesSkript($this->getLastIndexedSkript());
     }
 
     public function __toString ()

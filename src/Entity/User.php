@@ -333,7 +333,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function isUniPerson () 
     {
-        return (!$this -> isAdmin() || !$this->isExtern() )  && ( $this -> isTutor() || $this -> isStudent() );
+        return $this -> isTutor() || $this -> isStudent();
     }
 
     public function isTutor () 

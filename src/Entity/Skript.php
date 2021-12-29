@@ -37,7 +37,7 @@ class Skript
     private $name;
 
     /**
-     * @ORM\OneToOne(targetEntity=Modul::class, mappedBy="skript", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=Modul::class, mappedBy="skript", cascade={"persist"})
      */
     private $modul;
 
