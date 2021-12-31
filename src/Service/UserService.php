@@ -86,4 +86,17 @@ class UserService
 
         return $this -> tokenStorage -> getToken () -> getUser ();
     }
+
+    /**
+     * Get Roles (centralized)
+     */
+    public function getRoles () 
+    {
+        return [
+            'Admin'     => 'ROLE_ADMIN',
+            'Student'   => 'ROLE_STUDENT',
+            'Tutor'     => 'ROLE_TUTOR',
+            'Extern'    => 'ROLE_EXTERN'
+        ];
+    }
 }
