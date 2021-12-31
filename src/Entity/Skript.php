@@ -27,12 +27,6 @@ class Skript
     private $version;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Modul::class, inversedBy="skripte")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $modul;
-
-    /**
      * @ORM\OneToMany(targetEntity=Fehler::class, mappedBy="skript", orphanRemoval=true)
      */
     private $fehler;
@@ -41,6 +35,11 @@ class Skript
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $name;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Modul::class, mappedBy="skript", cascade={"persist"})
+     */
+    private $modul;
 
     public function __construct ()
     {
@@ -68,18 +67,6 @@ class Skript
     public function setVersion ( int $version ): self
     {
         $this -> version = $version;
-
-        return $this;
-    }
-
-    public function getModul (): ?Modul
-    {
-        return $this -> modul;
-    }
-
-    public function setModul (?Modul $modul): self
-    {
-        $this -> modul = $modul;
 
         return $this;
     }
@@ -125,6 +112,28 @@ class Skript
     public function setName ( ?string $name ): self
     {
         $this -> name = $name;
+        return $this;
+    }
+
+    public function getModul(): ?Modul
+    {
+        return $this->modul;
+    }
+
+    public function setModul(?Modul $modul): self
+    {
+        // unset the owning side of the relation if necessary
+        if ($modul === null && $this->modul !== null) {
+            $this->modul->setSkript(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($modul !== null && $modul->getSkript() !== $this) {
+            $modul->setSkript($this);
+        }
+
+        $this->modul = $modul;
+
         return $this;
     }
 }

@@ -33,7 +33,6 @@ class Kommentar
     use DatumTrait;
     use EinreicherTrait;
 
-
     public function __toString ()
     {
         $id = $this -> getId ();

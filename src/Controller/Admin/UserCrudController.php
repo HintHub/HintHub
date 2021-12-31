@@ -4,29 +4,32 @@ namespace App\Controller\Admin;
 
 use App\Entity\User;
 
+use App\Service\UserService;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\PasswordHasher;
 use Symfony\Component\Form\FormEvents;
+
+
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-
-
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use Symfony\Component\Form\FormBuilderInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+
+/* add */
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
-
-/* add */
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+
+// For password Hashing
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
-
-// For password Hashing
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -46,15 +49,18 @@ use Symfony\Component\PasswordHasher\Hasher\PasswordHasherAwareInterface;
  */
 class UserCrudController extends AbstractCrudController
 {
-    private $passwordHasher;
+    private UserService $userService;
+    private             $passwordHasher;
 
-    public function __construct () 
+    public function __construct (UserService $userService) 
     {
         $this->passwordHasher = new PasswordHasherFactory (
             [
                 "user" => [ 'algorithm' => 'auto' ]
             ]
         );
+
+        $this -> userService = $userService;
     }
 
     public static function getEntityFqcn(): string
@@ -64,23 +70,46 @@ class UserCrudController extends AbstractCrudController
 
     public function configureCrud ($crud): Crud
     {
-        return Crud::new()
-            -> setPageTitle ( 'index',  'Benutzer'         )
-            -> setPageTitle ( 'new',    'Benutzer anlegen' )
-            -> setPageTitle ( 'detail', fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> betrachten',    $user -> __toString() ) )
-            -> setPageTitle ( 'edit',   fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> bearbeiten',    $user -> __toString() ) )
+        $user = $this -> userService -> getCurrentUser ();
 
-            -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
+        if ( $user -> isAdmin () )
+        {
+            return Crud::new()
+                -> setPageTitle ( 'index',  'Benutzer'         )
+                -> setPageTitle ( 'new',    'Benutzer anlegen' )
+                -> setPageTitle ( 'detail', fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> betrachten',    $user -> __toString() ) )
+                -> setPageTitle ( 'edit',   fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> bearbeiten',    $user -> __toString() ) )
 
-            // ->overrideTemplates([
-            //     'crud/index' => 'admin/pages/index.html.twig',
-            //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
-            // ])
-        ;
+                // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
+
+                // ->overrideTemplates([
+                //     'crud/index' => 'admin/pages/index.html.twig',
+                //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
+                // ])
+            ;
+        }
+
+
+        if ( $user -> isStudent () )
+        {
+            // TODO UserCrudController configureCrud isStudent
+        }
+
+        if ( $user -> isTutor () )
+        {
+            // TODO UserCrudController configureCrud isTutor
+        }
+
+        if ( $user -> isExtern () )
+        {
+            // TODO UserCrudController configureCrud isExtern
+        }
     }
 
     public function configureFields(string $pageName): iterable
     {
+        $user = $this -> userService -> getCurrentUser ();
+
         /*
             Fields:
                 id
@@ -95,24 +124,80 @@ class UserCrudController extends AbstractCrudController
                 eingereichteKommentare
                 module
         */
-        return [
-            IdField::new            ( 'id'            ) -> hideOnForm(),
-            IdField::new            ( 'id'            ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
-            TextField::new          ( 'email'         ),
-            TextEditorField::new    ( 'salt'          ) -> hideOnForm() -> hideOnIndex(),
-            ChoiceField::new        ( 'ROLESSTRING'   ) -> setChoices ( $this -> getRoleChoices() ) -> setLabel("Rolle/Funktion"),
-            TextField::new          ( 'plainPassword' ) -> setFormType ( PasswordType::class ) -> onlyOnforms(),
-            AssociationField::new   ( 'module'        )
-        ];
+
+        if ( $user -> isAdmin () )
+        {
+            return [
+                IdField::new            ( 'id'            ) -> hideOnForm(),
+                IdField::new            ( 'id'            ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                TextField::new          ( 'email'         ),
+                TextEditorField::new    ( 'salt'          ) -> hideOnForm() -> hideOnIndex(),
+                ChoiceField::new        ( 'ROLESSTRING'   ) -> setChoices ( $this -> userService -> getRoles() ) -> setLabel("Rolle/Funktion"),
+                TextField::new          ( 'plainPassword' ) -> setFormType ( PasswordType::class ) -> onlyOnforms(),
+                AssociationField::new   ( 'tutorIn'       ) -> hideWhenCreating() -> setLabel('Tutor in') 
+                    -> setFormTypeOptions 
+                    (
+                        [
+                        'by_reference' => false,
+                        ]
+                    ),
+                AssociationField::new   ( 'studentIn'     ) -> hideWhenCreating() -> setLabel('Student in')
+                    -> setFormTypeOptions 
+                    (
+                        [
+                            'by_reference' => false,
+                        ]
+                    ),
+            ];
+
+        }
+
+        if ( $user -> isStudent () )
+        {
+            // TODO UserCrudController configureFields isStudent
+        }
+
+        if ( $user -> isTutor () )
+        {
+            // TODO UserCrudController configureFields isTutor
+        }
+
+        if ( $user -> isExtern () )
+        {
+            // TODO UserCrudController configureFields isExtern
+        }
     }
 
-    public function getRoleChoices() 
+
+    public function configureActions ( Actions $actions ): Actions
     {
-        return [
-            'Admin'     => 'ROLE_ADMIN',
-            'Student'   => 'ROLE_STUDENT',
-            'Tutor'     => 'ROLE_TUTOR'
-        ];
+        $user = $this -> userService -> getCurrentUser ();
+
+        if ( $user -> isAdmin () )
+        {
+            return $actions
+                // ...
+                -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
+                -> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
+            ;
+        }
+
+        if ( $user -> isStudent () )
+        {
+            //TODO UserCrudController configureActions isStudent
+        }
+
+        if ( $user -> isTutor () )
+        {
+            //TODO UserCrudController configureActions isTUtor
+        }
+        
+        if ( $user -> isExtern () )
+        {
+            //TODO UserCrudController configureActions isExtern
+        }
+
+        return $actions;
     }
 
     /*

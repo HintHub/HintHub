@@ -33,7 +33,6 @@ class FehlerCrudController extends AbstractCrudController
     public function __construct ( UserService $userService ) 
     {
         $this -> userService = $userService;
-        // dd ($this->userService->getCurrentUser()->getRoles());
     }
     
     public static function getEntityFqcn (): string
@@ -44,19 +43,40 @@ class FehlerCrudController extends AbstractCrudController
 
     public function configureCrud ( $crud ): Crud
     {
-        return Crud::new()
-            -> setPageTitle ( 'index',  'Fehlermeldungen'   )
-            -> setPageTitle ( 'new',    'Fehler melden'     )
-            -> setPageTitle ( 'detail', fn ( Fehler $fehler ) => sprintf ( 'Fehlermeldung <b>%s</b> betrachten',    $fehler -> __toString () ) )
-            -> setPageTitle ( 'edit',   fn ( Fehler $fehler ) => sprintf ( 'Fehler <b>%s</b> bearbeiten',           $fehler -> __toString () ) )
- 
-            -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
+        $user = $this -> userService -> getCurrentUser ();
 
-            // ->overrideTemplates([
-            //     'crud/index' => 'admin/pages/index.html.twig',
-            //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
-            // ])
-        ;
+        if ( $user -> isAdmin () )
+        {
+            return Crud::new()
+                -> setPageTitle ( 'index',  'Fehlermeldungen'   )
+                -> setPageTitle ( 'new',    'Fehler melden'     )
+                -> setPageTitle ( 'detail', fn ( Fehler $fehler ) => sprintf ( 'Fehlermeldung <b>%s</b> betrachten',    $fehler -> __toString () ) )
+                -> setPageTitle ( 'edit',   fn ( Fehler $fehler ) => sprintf ( 'Fehler <b>%s</b> bearbeiten',           $fehler -> __toString () ) )
+    
+                -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
+
+                // ->overrideTemplates([
+                //     'crud/index' => 'admin/pages/index.html.twig',
+                //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
+                // ])
+            ;
+        }
+
+        if ( $user -> isStudent () )
+        {
+            //TODO FehlerCrudController configureCrud isStudent
+        }
+
+        if ( $user -> isTutor () )
+        {
+            //TODO FehlerCrudController configureCrud isTutor
+        }
+
+        if ( $user -> isExtern () )
+        {
+            //TODO FehlerCrudController configureCrud isExtern
+        }
+        
     }
 
     public function configureActions ( Actions $actions ): Actions
@@ -74,21 +94,19 @@ class FehlerCrudController extends AbstractCrudController
 
         if ( $user -> isStudent () )
         {
-            return $actions
-                // ...
-                -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
-                -> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
-            ;
+            //TODO FehlerCrudController configureActions isStudent
         }
 
         if ( $user -> isTutor () )
         {
-            return $actions
-                // ...
-                -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
-                -> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
-            ;
+            //TODO FehlerCrudController configureActions isTUtor
         }
+        
+        if ( $user -> isExtern () )
+        {
+            //TODO FehlerCrudController configureActions isExtern
+        }
+
         return $actions;
     }
 
@@ -150,6 +168,11 @@ class FehlerCrudController extends AbstractCrudController
                 DateField::new          (   'datum_erstellt'   )    -> hideWhenCreating(),
             ];
         }
+
+        if ( $user -> isExtern () )
+        {
+            //TODO FehlerCrudController configureFields
+        }
     }
 
     /**
@@ -159,15 +182,22 @@ class FehlerCrudController extends AbstractCrudController
     {
         $user = $this -> userService -> getCurrentUser ();
 
-        if ( $user -> isAdmin() )
+        if ( $user -> isAdmin () )
         {
             return [
                 'offen'         =>  'OPEN',
             ];
         }
 
+        if ( $user -> isStudent () )
+        {
+            return [
+                'offen'         =>  'OPEN',
+                'geschlossen'   =>  'CLOSED'
+            ];
+        }
 
-        if ( $user -> isTutor() )
+        if ( $user -> isTutor () )
         {
             return [
                 'offen'         =>  'OPEN',
@@ -178,13 +208,9 @@ class FehlerCrudController extends AbstractCrudController
             ];
         }
 
-
-        if ( $user -> isStudent() )
+        if ( $user -> isExtern () )
         {
-            return [
-                'offen'         =>  'OPEN',
-                'geschlossen'   =>  'CLOSED'
-            ];
+            //TODO FehlerCrudController getStatusChoices isExtern
         }
     }
 
@@ -217,13 +243,19 @@ class FehlerCrudController extends AbstractCrudController
     */
     public function persistEntity ( EntityManagerInterface $em, $entity) : void
     {
-        $currentUser     = $this -> userService -> getCurrentUser ();
         $currentDateTime = new \DateTime ();
 
         $statusChoices       = $this -> getStatusChoices ();
         $statusChoicesKeys   = array_keys   ( $statusChoices );
         $statusChoicesValues = array_values ( $statusChoices );
 
+        $currentUser         = $this -> userService -> getCurrentUser ();
+
+        if ( $currentUser -> isAdmin () ) 
+        {
+            // TODO FehlerCrudController persistEntity isAdmin
+        }
+        
         if ( $currentUser -> isStudent () )
         {
             // Here read the initial kommentar text and convert it to kommentar
@@ -283,6 +315,12 @@ class FehlerCrudController extends AbstractCrudController
             $entity -> setStatus ( $statusChoicesValues [0] );
         
         }
+
+        if ( $currentUser -> isExtern () )
+        {
+            //TODO FehlerCrudController persistEntity isExtern
+        }
+
 
         // $this -> updateSlug     ( $entity );
         parent::persistEntity   ( $em, $entity );

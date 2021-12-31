@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManager;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
  
@@ -17,13 +18,15 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  */
 class UserService 
 {
+    private UserPasswordHasherInterface $pwHasher;
+    private UserRepository              $userRepository;
+    private EntityManager               $entityManager;
+    private                             $tokenStorage;
 
-    private UserRepository  $userRepository;
-    private EntityManager   $entityManager;
-    private                 $tokenStorage;
-
-    public function __construct ( UserRepository $userRepository, EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage )
+    public function __construct ( UserPasswordHasherInterface $pwHasher, UserRepository $userRepository, EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage )
     {
+        $this   ->  pwHasher        = $pwHasher;
+
         $this   ->  userRepository  = $userRepository;
         $this   ->  entityManager   = $entityManager;
         $this   ->  tokenStorage    = $tokenStorage;
@@ -85,5 +88,30 @@ class UserService
         if ( $this -> tokenStorage -> getToken () -> getUser () === null  ) return null;
 
         return $this -> tokenStorage -> getToken () -> getUser ();
+    }
+
+    /**
+     * Get Roles (centralized)
+     */
+    public function getRoles () 
+    {
+        return [
+            'Admin'     => 'ROLE_ADMIN',
+            'Student'   => 'ROLE_STUDENT',
+            'Tutor'     => 'ROLE_TUTOR',
+            'Extern'    => 'ROLE_EXTERN'
+        ];
+    }
+
+    /**
+     * Gets the Hashed PW
+     */
+    public function getHashedPW ($user, $pw)
+    {
+        return $this -> pwHasher -> hashPassword
+        (
+            $user,
+            "test"
+        );
     }
 }

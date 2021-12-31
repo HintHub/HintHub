@@ -7,10 +7,11 @@ use App\Entity\Modul;
 use App\Entity\Fehler;
 use App\Entity\Skript;
 use App\Entity\Kommentar;
+use App\Service\UserService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -23,6 +24,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
  */
 class DashboardController extends AbstractDashboardController
 {
+    private UserService $userService;
+
+    public function __construct ( UserService $userService ) 
+    {
+        $this -> userService = $userService;
+    }
+    
     /**
      * @Route("/admin", name="admin")
      */
@@ -48,14 +56,19 @@ class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-        return [
-            MenuItem::linktoDashboard   ( 'Home', 'fa fa-home' ),
+        $user = $this -> userService -> getCurrentUser ();
 
-            MenuItem::linkToCrud ( 'Fehler Meldungen',      'fas fa-exclamation',   Fehler      ::class ),
-            MenuItem::linkToCrud ( 'Benutzer',              'fas fa-users',         User        ::class ),
-            MenuItem::linkToCrud ( 'Module',                'fas fa-layer-group',   Modul       ::class ),
-            MenuItem::linkToCrud ( 'Skripte',               'fas fa-scroll',        Skript      ::class ),
-            MenuItem::linkToCrud ( 'Kommentare',            'fas fa-comments',      Kommentar   ::class ),
-        ];
+        if ( $user -> isAdmin () )
+        {
+            return [
+                MenuItem::linktoDashboard   ( 'Home', 'fa fa-home' ),
+    
+                MenuItem::linkToCrud ( 'Fehler Meldungen',      'fas fa-exclamation',   Fehler      ::class ),
+                MenuItem::linkToCrud ( 'Benutzer',              'fas fa-users',         User        ::class ),
+                MenuItem::linkToCrud ( 'Module',                'fas fa-layer-group',   Modul       ::class ),
+                MenuItem::linkToCrud ( 'Skripte',               'fas fa-scroll',        Skript      ::class ),
+                MenuItem::linkToCrud ( 'Kommentare',            'fas fa-comments',      Kommentar   ::class ),
+            ];
+        }
     }
 }

@@ -69,20 +69,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $plainPassword = "";
 
     /**
-     * @ORM\OneToMany(targetEntity=Fehler::class, mappedBy="einreicher")
+     * @ORM\OneToMany(targetEntity=Fehler::class, mappedBy="einreicher", cascade={"persist"})
      */
     private $eingereichteFehler;
 
     /**
-     * @ORM\OneToMany(targetEntity=Kommentar::class, mappedBy="einreicher")
+     * @ORM\OneToMany(targetEntity=Kommentar::class, mappedBy="einreicher", cascade={"persist"})
      */
     private $eingereichteKommentare;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Modul::class, mappedBy="tutor", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
+     */
+    private $tutorIn;
 
     /**
-     * @ORM\OneToMany(targetEntity=Modul::class, mappedBy="tutor", orphanRemoval=true)
+     * @ORM\ManyToMany(targetEntity=Modul::class, inversedBy="studenten")
      */
-    private $module;
+    private $studentIn;
 
     public function __construct ()  
     {
@@ -90,6 +95,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this -> salt                   = hash                  ( 'sha512', uniqid ( null, true ) );
         $this -> eingereichteFehler     = new ArrayCollection   ();
         $this -> eingereichteKommentare = new ArrayCollection   ();
+        $this->module = new ArrayCollection();
+        $this->moduls = new ArrayCollection();
+        $this->tutorIn = new ArrayCollection();
+        $this->studentIn = new ArrayCollection();
     }
 
     public function setID ( int $i )
@@ -324,7 +333,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function isUniPerson () 
     {
-        return !$this -> isAdmin() && ( $this -> isTutor() || $this -> isStudent() );
+        return $this -> isTutor() || $this -> isStudent();
     }
 
     public function isTutor () 
@@ -342,6 +351,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return in_array ( "ROLE_ADMIN",     $this -> getROLES () );
     }
 
+    public function isExtern() {
+        return in_array ( "ROLE_EXTERN",    $this -> getROLES () );
+    }
+
     public function setAdmin () 
     {
         $this -> setRole ( 'ROLE_ADMIN' );
@@ -357,39 +370,70 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this -> setRole ( 'ROLE_TUTOR' );
     }
 
+    public function setExtern () {
+        $this -> setRole ( 'ROLE_EXTERN' );
+    }
+
     private function setRole ( $role )
     {
         $this -> setROLES ( $role );
     }
 
-    public function getModule () 
+    /**
+     * @return Collection|Modul[]
+     */
+    public function getTutorIn(): Collection
     {
-        return $this -> module;
+        return $this->tutorIn;
     }
-    
-    public function addModule ( Modul $modul ): self
-    {
-        if ($modul === null || $this -> module === null)return $this;
 
-        if ( !$this -> module -> contains ( $modul ) )
-        {
-            $this  -> module[] = $modul;
-            $modul -> setTutor  ( $this );
+    public function addTutorIn(Modul $tutorIn): self
+    {
+        if (!$this->tutorIn->contains($tutorIn)) {
+            $this->tutorIn[] = $tutorIn;
+            $tutorIn->setTutor($this);
         }
 
         return $this;
     }
 
-    public function removeModule ( Modul $modul ): self
+    public function removeTutorIn(Modul $tutorIn): self
     {
-        if ($this -> module -> removeElement ( $modul ) )
-        {
+        if ($this->tutorIn->removeElement($tutorIn)) {
             // set the owning side to null (unless already changed)
-            if ( $modul -> getTutor() === $this )
-            {
-                $modul -> setTutor ( null );
+            if ($tutorIn->getTutor() === $this) {
+                $tutorIn->setTutor(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Modul[]
+     */
+    public function getStudentIn(): Collection
+    {
+        return $this->studentIn;
+    }
+
+    public function addStudentIn(Modul $studentIn): self
+    {
+        
+        if (!$this->isStudent()) {
+            return $this;
+        }
+
+        if (!$this->studentIn->contains($studentIn)) {
+            $this->studentIn[] = $studentIn;
+        }
+
+        return $this;
+    }
+
+    public function removeStudentIn(Modul $studentIn): self
+    {
+        $this->studentIn->removeElement($studentIn);
 
         return $this;
     }

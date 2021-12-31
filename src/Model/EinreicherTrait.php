@@ -15,7 +15,7 @@ trait EinreicherTrait
 {
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="eingereichteFehler")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      */
     private $einreicher;
     

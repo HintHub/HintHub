@@ -32,30 +32,28 @@ class Modul
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity=Skript::class, mappedBy="modul", orphanRemoval=true)
-     */
-    private $skripte;
-
-    /**
-     * @ORM\OneToOne(targetEntity=Skript::class, cascade={"persist", "remove"})
-     */
-    private $aktuellesSkript;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="Module")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="tutorIn", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $tutor;
 
     /**
-     * @ORM\OneToMany(targetEntity=Fehler::class, mappedBy="modul", orphanRemoval=true)
+     * @ORM\ManyToMany(targetEntity=User::class, mappedBy="studentIn")
      */
-    private $fehler;
+    private $studenten;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Skript::class, inversedBy="modul", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
+     */
+    private $skript;
 
     public function __construct ()
     {
         $this -> skripte    = new ArrayCollection ();
         $this -> fehler     = new ArrayCollection ();
+        $this -> studenten  = new ArrayCollection();
+        // $this -> setAktuellesSkript($this->getLastIndexedSkript());
     }
 
     public function __toString ()
@@ -93,59 +91,6 @@ class Modul
     }
 
     /**
-     * @return Collection|Skript[]
-     */
-    public function getSkripte (): Collection
-    {
-        return $this -> skripte;
-    }
-
-    public function addSkripte ( Skript $skripte ): self
-    {
-        if (! $this -> skripte -> contains ( $skripte ) )
-        {
-            $this    -> skripte[] = $skripte;
-            $skripte -> setModul    ( $this );
-        }
-        return $this;
-    }
-
-    public function removeSkripte ( Skript $skripte ): self
-    {
-        if ( $this -> skripte -> removeElement ( $skripte ) )
-        {
-            // set the owning side to null (unless already changed)
-            if ( $skripte -> getModul () === $this ) 
-            {
-                $skripte -> setModul    ( null );
-            }
-        }
-        return $this;
-    }
-
-    public function getAktuellesSkript (): ?Skript
-    {
-        return $this -> aktuellesSkript;
-    }
-
-    public function setAktuellesSkript ( ?Skript $aktuellesSkript ): self
-    {
-        $this -> aktuellesSkript = $aktuellesSkript;
-        return $this;
-    }
-
-    public function getTutor (): ?User
-    {
-        return $this -> tutor;
-    }
-
-    public function setTutor ( ?User $tutor ): self
-    {
-        $this -> tutor = $tutor;
-        return $this;
-    }
-
-    /**
      * @return Collection|Fehler[]
      */
     public function getFehler (): Collection
@@ -173,6 +118,67 @@ class Modul
                 $fehler -> setModul     ( null );
             }
         }
+        return $this;
+    }
+
+    public function getTutor(): ?User
+    {
+        return $this->tutor;
+    }
+
+    public function setTutor(?User $tutor): self
+    {
+        if($tutor !== null) {
+            if(!$tutor->isTutor()) {
+                return $this; //TODO ggf. exception
+            }
+        }
+        
+        $this->tutor = $tutor;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getStudenten(): Collection
+    {
+        return $this->studenten;
+    }
+
+    public function addStudenten(User $studenten): self
+    {
+        if(!$studenten->isStudent()) {
+            return $this; //TODO: ggf. exception
+        }
+
+        if (!$this->studenten->contains($studenten)) {
+            $this->studenten[] = $studenten;
+            $studenten->addStudentIn($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStudenten(User $studenten): self
+    {
+        if ($this->studenten->removeElement($studenten)) {
+            $studenten->removeStudentIn($this);
+        }
+
+        return $this;
+    }
+
+    public function getSkript(): ?Skript
+    {
+        return $this->skript;
+    }
+
+    public function setSkript(?Skript $skript): self
+    {
+        $this->skript = $skript;
+
         return $this;
     }
 }
