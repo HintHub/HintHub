@@ -88,7 +88,14 @@ class FehlerCrudController extends AbstractCrudController
 
         if ( $user -> isTutor () )
         {
-            //TODO FehlerCrudController configureCrud isTutor
+            return Crud::new()
+                -> setPageTitle ( 'index',  'Fehlermeldungen'   )
+                -> setPageTitle ( 'new',    'Fehler melden'     )
+                -> setPageTitle ( 'detail', fn ( Fehler $fehler ) => sprintf ( 'Fehlermeldung <b>%s</b> betrachten',    $fehler -> __toString () ) )
+                -> setPageTitle ( 'edit',   fn ( Fehler $fehler ) => sprintf ( 'Fehler <b>%s</b> bearbeiten',           $fehler -> __toString () ) )
+    
+                -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
+            ;
         }
 
         if ( $user -> isExtern () )
@@ -254,6 +261,10 @@ class FehlerCrudController extends AbstractCrudController
         if($user->isStudent()) {
             $response   ->where('entity.einreicher = :userId')
                         ->setParameter('userId', $userId);
+        }
+
+        if($user->isTutor()) {
+            //TODO transitivitaet
         }
 
         return $response;
