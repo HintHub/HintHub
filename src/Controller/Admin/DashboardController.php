@@ -143,6 +143,7 @@ class DashboardController extends AbstractDashboardController
         [
             $this -> lDashboard  (),
 
+            $this -> mFehler     (),
             $this -> mModul      (),
             $this -> mSkript     (),
         ];
@@ -154,6 +155,7 @@ class DashboardController extends AbstractDashboardController
         [
             $this -> lDashboard  (),
             
+            $this -> mFehler     (),
             $this -> mModul      (),
             $this -> mSkript     (),
         ];

@@ -3,8 +3,9 @@
 namespace App\Service;
 
 use App\Entity\Fehler;
-use Doctrine\ORM\EntityManager;
+use App\Entity\Kommentar;
 
+use Doctrine\ORM\EntityManager;
 use App\Repository\FehlerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 

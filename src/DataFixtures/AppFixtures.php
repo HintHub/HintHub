@@ -63,8 +63,8 @@ class AppFixtures extends Fixture
         $createdUsers = $this -> createUser       ();
         $module       = $this -> createModule     ( $data );
         $skripte      = $this -> createSkripte    ( $data, $module );
-        // $kommentare   = $this -> createKommentare ();
-        // $fehler       = $this -> createFehler     ();
+        $fehler       = $this -> createFehler     ( $createdUsers, $module, $skripte );
+        //$kommentare   = $this -> createKommentare ();
     }
 
     public function createUser ()
@@ -129,17 +129,38 @@ class AppFixtures extends Fixture
         }
     }
 
-    public function createFehler ()
+    public function createFehler ( $user, $module, $skripte )
     {
+        if ( count($user) == 0 )
+            throw new \Exception ( "No User given" );
+
+        if ( count($module) == 0 )
+            throw new \Exception ( "No Modules given" );
+        
+        if ( count($skripte) == 0 )
+            throw new \Exception ( "No Skripte given" );
+
+
+        $fehlerAr = [];
+
         for ( $i=0; $i < 4; $i++ )
         {
             $seite               = rand ( 0, 250 );
-            $text                = $this -> getRandomText (4); // 40 Words
+            $name                = $this -> getRandomText (40); // 40 Words
             $statusChoicesValues = array_values ( $this -> fehlerService -> getStatusChoices () ); 
             $status              = rand ( 0, count ( $statusChoicesValues )-1 );
             
-            $this -> addFehler ( $text, $status, $seite, null, $kommentare=null, $verwandteFehler=null, $skript=null, $einreicher=null, $datum=null );
+            $randomModul         = $module  [ rand ( 0, count ( $module  )-1 ) ];
+            $randomSkript        = $skripte [ rand ( 0, count ( $skripte )-1 ) ];
+            $randomUser          = $user    [ rand ( 0, count ( $user    )-1 ) ];
+
+            $initKommentar = $this->getRandomText ( 150 );
+            
+            $fehler = $this -> addFehler ( $name, $status, $seite, $initKommentar, $kommentare=null, $verwandteFehler=null, $skript=$randomSkript, $einreicher=$randomUser, $datum=new \DateTime() );
+            array_push($fehlerAr, $fehler);
         }
+
+        return $fehlerAr;
     }
 
     public function addFehler ( $name, $status, $seite, $initKommentar=null, $kommentare=null, $verwandteFehler=null, $skript=null, $einreicher=null, $datum=null ) 
