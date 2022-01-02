@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Fehler;
 use App\Entity\Kommentar;
 use App\Service\UserService;
+use App\Service\FehlerService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
@@ -29,10 +30,15 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 class FehlerCrudController extends AbstractCrudController
 {
     private UserService $userService;
+    private FehlerService $fehlerService;
 
-    public function __construct ( UserService $userService ) 
+    public function __construct ( 
+        UserService   $userService,
+        FehlerService $fehlerService,
+    ) 
     {
-        $this -> userService = $userService;
+        $this -> userService   = $userService;
+        $this -> fehlerService = $fehlerService;
     }
     
     public static function getEntityFqcn (): string
@@ -181,37 +187,7 @@ class FehlerCrudController extends AbstractCrudController
     public function getStatusChoices () 
     {
         $user = $this -> userService -> getCurrentUser ();
-
-        if ( $user -> isAdmin () )
-        {
-            return [
-                'offen'         =>  'OPEN',
-            ];
-        }
-
-        if ( $user -> isStudent () )
-        {
-            return [
-                'offen'         =>  'OPEN',
-                'geschlossen'   =>  'CLOSED'
-            ];
-        }
-
-        if ( $user -> isTutor () )
-        {
-            return [
-                'offen'         =>  'OPEN',
-                'geschlossen'   =>  'CLOSED',
-                'abgelehnt'     =>  'REJECTED',
-                'eskaliert'     =>  'ESCALATED',
-                'wartend'       =>  'WAITING'
-            ];
-        }
-
-        if ( $user -> isExtern () )
-        {
-            //TODO FehlerCrudController getStatusChoices isExtern
-        }
+        return $this -> fehlerService -> getStatusChoices ( $user );
     }
 
     /*
@@ -243,84 +219,9 @@ class FehlerCrudController extends AbstractCrudController
     */
     public function persistEntity ( EntityManagerInterface $em, $entity) : void
     {
-        $currentDateTime = new \DateTime ();
-
-        $statusChoices       = $this -> getStatusChoices ();
-        $statusChoicesKeys   = array_keys   ( $statusChoices );
-        $statusChoicesValues = array_values ( $statusChoices );
-
         $currentUser         = $this -> userService -> getCurrentUser ();
 
-        if ( $currentUser -> isAdmin () ) 
-        {
-            // TODO FehlerCrudController persistEntity isAdmin
-        }
-        
-        if ( $currentUser -> isStudent () )
-        {
-            // Here read the initial kommentar text and convert it to kommentar
-            $dt   = new \DateTime();
-            $text = "User (ID:". $currentUser -> getId () . ") hat ein Ticket erstellt";
-            
-            $kommentar  = new Kommentar ( );
-            $kommentar
-            -> setFehler                ( $entity          )
-            -> setText                  ( $text            )
-            -> setDatumLetzteAenderung  ( $currentDateTime )
-            -> setDatumErstellt         ( $currentDateTime )
-            -> setEinreicher            ( $currentUser     );
-            
-            $kommentar1 = new Kommentar ( );
-            $kommentar1 
-            -> setFehler                    ( $entity                    )
-            -> setText                      ( $entity -> getKommentar () )
-            -> setDatumLetzteAenderung      ( $dt                        )
-            -> setDatumErstellt             ( $dt                        )
-            -> setEinreicher                ( $currentUser               );
-
-            $entity -> addKommentare ( $kommentar1 );
-            $entity -> addKommentare ( $kommentar  );
-
-            // set status opened
-            $entity -> setStatus ( $statusChoicesValues [0] );
-        
-        }
-
-        if ( $currentUser -> isTutor () )
-        {
-            // Here read the initial kommentar text and convert it to kommentar
-            $dt   = new \DateTime();
-            $text = "User (ID:". $currentUser -> getId () . ") hat ein Ticket erstellt";
-            
-            $kommentar  = new Kommentar ( );
-            $kommentar
-            -> setFehler                ( $entity          )
-            -> setText                  ( $text            )
-            -> setDatumLetzteAenderung  ( $currentDateTime )
-            -> setDatumErstellt         ( $currentDateTime )
-            -> setEinreicher            ( $currentUser     );
-            
-            $kommentar1 = new Kommentar ( );
-            $kommentar1 
-            -> setFehler                    ( $entity                    )
-            -> setText                      ( $entity -> getKommentar () )
-            -> setDatumLetzteAenderung      ( $dt                        )
-            -> setDatumErstellt             ( $dt                        )
-            -> setEinreicher                ( $currentUser               );
-
-            $entity -> addKommentare ( $kommentar1 );
-            $entity -> addKommentare ( $kommentar  );
-
-            // set status opened
-            $entity -> setStatus ( $statusChoicesValues [0] );
-        
-        }
-
-        if ( $currentUser -> isExtern () )
-        {
-            //TODO FehlerCrudController persistEntity isExtern
-        }
-
+        $entity = $this -> fehlerService -> openWithKommentar ( $entity, $currentUser );
 
         // $this -> updateSlug     ( $entity );
         parent::persistEntity   ( $em, $entity );

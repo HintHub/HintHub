@@ -20,10 +20,15 @@ class UserService
 {
     private UserPasswordHasherInterface $pwHasher;
     private UserRepository              $userRepository;
-    private EntityManager               $entityManager;
+    private                             $entityManager;
     private                             $tokenStorage;
 
-    public function __construct ( UserPasswordHasherInterface $pwHasher, UserRepository $userRepository, EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage )
+    public function __construct ( 
+        UserPasswordHasherInterface $pwHasher, 
+        UserRepository              $userRepository, 
+        EntityManagerInterface      $entityManager,
+        TokenStorageInterface       $tokenStorage 
+    )
     {
         $this   ->  pwHasher        = $pwHasher;
 
@@ -96,10 +101,11 @@ class UserService
     public function getRoles () 
     {
         return [
-            'Admin'     => 'ROLE_ADMIN',
-            'Student'   => 'ROLE_STUDENT',
-            'Tutor'     => 'ROLE_TUTOR',
-            'Extern'    => 'ROLE_EXTERN'
+            'Admin'      => 'ROLE_ADMIN',
+            'Student'    => 'ROLE_STUDENT',
+            'Tutor'      => 'ROLE_TUTOR',
+            'Extern'     => 'ROLE_EXTERN',
+            'Verwaltung' => 'ROLE_VERWALTUNG'
         ];
     }
 
