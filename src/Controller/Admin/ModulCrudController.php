@@ -245,7 +245,11 @@ class ModulCrudController extends AbstractCrudController
 
         if ( $user -> isTutor () )
         {
-            //TODO ModulCrudController configureActions isTUtor
+            return $actions
+                // ...
+                -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
+                //-> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER ))
+            ;
         }
         
         if ( $user -> isExtern () )

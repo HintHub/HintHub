@@ -121,15 +121,21 @@ class FehlerCrudController extends AbstractCrudController
         if ( $user -> isStudent () )
         {
             return $actions
-            // ...
-            -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
-            -> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
-        ;
+                // ...
+                -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
+                -> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
+            ;
         }
 
         if ( $user -> isTutor () )
         {
-            //TODO FehlerCrudController configureActions isTUtor
+            return $actions
+                // ...
+                -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
+                -> remove ( Crud::PAGE_INDEX,   Action::NEW )
+                -> remove ( Crud::PAGE_INDEX,   Action::EDIT )
+                -> remove ( Crud::PAGE_INDEX,   Action::DELETE )
+            ;
         }
         
         if ( $user -> isExtern () )
