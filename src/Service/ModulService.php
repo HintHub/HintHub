@@ -16,9 +16,12 @@ class ModulService
 {
 
     private ModulRepository $modulRepository;
-    private EntityManager   $entityManager;
+    private                 $entityManager;
 
-    public function __construct ( ModulRepository $modulRepository, EntityManagerInterface $entityManager )
+    public function __construct ( 
+        ModulRepository         $modulRepository, 
+        EntityManagerInterface  $entityManager 
+    )
     {
         $this -> modulRepository = $modulRepository;
         $this -> entityManager   = $entityManager;

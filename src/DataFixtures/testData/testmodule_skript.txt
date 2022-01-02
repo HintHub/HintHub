@@ -1,0 +1,35 @@
+modulname, kuerzel
+Mathematik Grundlagen I, IMT101,
+Einführung in das wissenschaftliche Arbeiten, BWIR01-01
+Betriebswirtschaftslehre-01, BBWL01-01
+Betriebswirtschaftslehre-02, BBWL01-02
+Grundlagen der industriellen Softwaretechnik, IGIS01
+Digital Skills, DLBDS01
+Objektorientierte Programmierung, IOBP01
+Objektorientierte Programmierung-02, IOBP02
+Einführung in das Internet of Things, DLBINGEIT01
+Mathematik Grundlagen II, IMT102-01
+Programmierung von Webanwendungen-01, IPWA01
+Programmierung von Webanwendungen-02, IPWA02
+Requirements Engineering, IREN01
+Statistik, BSTA01-01
+Betriebssysteme, Rechnernetze und verteilte Systeme, DLBIBRVS01
+Algorithmen, Datenstrukturen und Programmiersprachen,DLBIADPS01
+Datenmodellierung und Datenbanksysteme, IDBS01
+Spezifikation, ISPE01
+IT-Projektmanagement, IPMG01
+IT-Servicemanagement, IWSM01
+Projekt: IT-Servicemanagement, IWSM02
+Qualitätssicherung im Softwareprozess, IQSS01
+Theoretische Informatik und Mathematische Logik, DLBITIML01
+Projekt: Software Engineering, ISEF01
+IT-Recht, DLBIITR01
+IT-Sicherheit-01, DLBISIC01
+IT-Sicherheit-02, DLBISIC02
+Künstliche Intelligenz, DLBIKI01
+Data Analytics und Big Data, DLBINGDADB01
+Seminar Software Engineering, ISSE01
+Informatik und Gesellschaft, DLBIIUG01
+Bachelorarbeit-01, BBAK01
+Bachelorarbeit-02, BBAK02
+

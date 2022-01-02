@@ -5,6 +5,7 @@ use App\Entity\Kommentar;
 use Doctrine\ORM\EntityManager;
 
 use App\Repository\KommentarRepository;
+
 use Doctrine\ORM\EntityManagerInterface;
 
 
@@ -18,12 +19,12 @@ class KommentarService
 {
 
     private KommentarRepository $kommentarRepository;
-    private EntityManager       $entityManager;
+    private                     $entityManager;
 
     public function __construct (
         KommentarRepository     $kommentarRepository,
         EntityManagerInterface  $entityManager
-    ) 
+    )
     {
         $this -> kommentarRepository = $kommentarRepository;
         $this -> entityManager       = $entityManager;

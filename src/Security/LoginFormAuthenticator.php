@@ -64,7 +64,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
         $user  = $token -> getUser  ();
 
-        if ( $user->isAdmin() || $user->isExtern() || $user->isUniPerson() ) 
+        if ( $user -> isAdmin () || $user -> isExtern () || $user -> isVerwaltung () || $user -> isUniPerson () ) 
         {
             return new RedirectResponse ( $this -> urlGenerator -> generate ( 'admin' ) );
         } 

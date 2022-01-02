@@ -338,21 +338,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function isTutor () 
     {
-        return in_array ( "ROLE_TUTOR",     $this -> getROLES () );
+        return in_array ( "ROLE_TUTOR",      $this -> getROLES () );
     }
 
     public function isStudent () 
     {
-        return in_array ( "ROLE_STUDENT",   $this -> getROLES () );
+        return in_array ( "ROLE_STUDENT",    $this -> getROLES () );
     }
 
     public function isAdmin ()
     {
-        return in_array ( "ROLE_ADMIN",     $this -> getROLES () );
+        return in_array ( "ROLE_ADMIN",      $this -> getROLES () );
     }
 
-    public function isExtern() {
-        return in_array ( "ROLE_EXTERN",    $this -> getROLES () );
+    public function isExtern() 
+    {
+        return in_array ( "ROLE_EXTERN",     $this -> getROLES () );
+    }
+
+    public function isVerwaltung() 
+    {
+        return in_array ( "ROLE_VERWALTUNG", $this -> getROLES () );
     }
 
     public function setAdmin () 
@@ -370,8 +376,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this -> setRole ( 'ROLE_TUTOR' );
     }
 
-    public function setExtern () {
+    public function setExtern () 
+    {
         $this -> setRole ( 'ROLE_EXTERN' );
+    }
+
+    public function setVerwaltung () 
+    {
+        $this -> setRole ( 'ROLE_VERWALTUNG' );
     }
 
     private function setRole ( $role )

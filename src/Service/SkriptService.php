@@ -16,9 +16,12 @@ use Doctrine\ORM\EntityManagerInterface;
 class SkriptService {
 
     private SkriptRepository $skriptRepository;
-    private EntityManager    $entityManager;
+    private                  $entityManager;
 
-    public function __construct ( SkriptRepository $skriptRepository, EntityManagerInterface $entityManager )
+    public function __construct ( 
+        SkriptRepository            $skriptRepository, 
+        EntityManagerInterface      $entityManager, 
+    )
     {
         $this -> skriptRepository   = $skriptRepository;
         $this -> entityManager      = $entityManager;

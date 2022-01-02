@@ -3,8 +3,9 @@
 namespace App\Service;
 
 use App\Entity\Fehler;
-use Doctrine\ORM\EntityManager;
+use App\Entity\Kommentar;
 
+use Doctrine\ORM\EntityManager;
 use App\Repository\FehlerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -35,7 +36,100 @@ class FehlerService
         return $this -> fehlerRepository -> findAll ();
     }
 
-    public function save ( Fehler $fehler ): Fehler
+    public function openWithKommentar ( $entity, $currentUser ) 
+    {
+        if ( $currentUser -> isStudent () || $currentUser -> isTutor () )
+        {
+            $statusChoicesValues = array_values ( $this -> getStatusChoices () );
+
+            $dt   = new \DateTime ();
+            $text = "User (ID:". $currentUser -> getId () . ") hat ein Ticket erstellt";
+            
+            $kommentar  = new Kommentar ( );
+            $kommentar
+            -> setFehler                ( $entity      )
+            -> setText                  ( $text        )
+            -> setDatumLetzteAenderung  ( $dt          )
+            -> setDatumErstellt         ( $dt          )
+            -> setEinreicher            ( $currentUser );
+            
+            $kommentar1 = new Kommentar ( );
+            $kommentar1 
+            -> setFehler                    ( $entity                    )
+            -> setText                      ( $entity -> getKommentar () )
+            -> setDatumLetzteAenderung      ( $dt                        )
+            -> setDatumErstellt             ( $dt                        )
+            -> setEinreicher                ( $currentUser               );
+
+            $entity -> addKommentare ( $kommentar1 );
+            $entity -> addKommentare ( $kommentar  );
+
+            // set status opened
+            $entity -> setStatus ( $statusChoicesValues [0] );
+        }
+
+        return $entity;
+    }
+
+    public function getStatusChoices ( $user = null )
+    {
+        if ( $user === null )
+        {
+            // full
+            return 
+            [
+                'offen'         =>  'OPEN',
+                'geschlossen'   =>  'CLOSED',
+                'abgelehnt'     =>  'REJECTED',
+                'eskaliert'     =>  'ESCALATED',
+                'wartend'       =>  'WAITING'
+            ];
+        }
+
+        // when user is set
+        
+        if ( $user -> isAdmin () )
+        {
+            return
+            [
+                'offen'         =>  'OPEN',
+            ];
+        }
+
+        if ( $user -> isStudent () )
+        {
+            return 
+            [
+                'offen'         =>  'OPEN',
+                'geschlossen'   =>  'CLOSED'
+            ];
+        }
+
+        if ( $user -> isTutor () )
+        {
+            return 
+            [
+                'offen'         =>  'OPEN',
+                'geschlossen'   =>  'CLOSED',
+                'abgelehnt'     =>  'REJECTED',
+                'eskaliert'     =>  'ESCALATED',
+                'wartend'       =>  'WAITING'
+            ];
+        }
+
+        if ( $user -> isExtern () )
+        {
+            //TODO FehlerCrudController getStatusChoices isExtern
+            return [
+                'geschlossen'   =>  'CLOSED',
+                'abgelehnt'     =>  'REJECTED',
+                'eskaliert'     =>  'ESCALATED',
+                'wartend'       =>  'WAITING'
+            ];
+        }
+    }
+
+    public function save ( Fehler $fehler): Fehler
     {
         $this -> entityManager ->  persist ( $fehler );
         $this -> entityManager ->  flush   ();
