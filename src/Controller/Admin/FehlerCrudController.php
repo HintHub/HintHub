@@ -120,7 +120,11 @@ class FehlerCrudController extends AbstractCrudController
 
         if ( $user -> isStudent () )
         {
-            //TODO FehlerCrudController configureActions isStudent
+            return $actions
+            // ...
+            -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
+            -> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
+        ;
         }
 
         if ( $user -> isTutor () )
@@ -172,9 +176,9 @@ class FehlerCrudController extends AbstractCrudController
                 AssociationField::new   (   'skript'           ),
                 TextEditorField::new    (   'kommentar'        )    -> onlyWhenCreating  (),
                 AssociationField::new   (   'kommentare'       )    -> hideWhenCreating  (),
-                AssociationField::new   (   'verwandteFehler'  )    -> hideWhenCreating  (),
-                AssociationField::new   (   'einreicher'       )    -> hideWhenCreating  (),
-                DateField::new          (   'datum_erstellt'   )    -> hideWhenCreating  (),
+                AssociationField::new   (   'verwandteFehler'  )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                AssociationField::new   (   'einreicher'       )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                DateField::new          (   'datum_erstellt'   )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' ),
             ];
         }
 
