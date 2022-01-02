@@ -132,9 +132,7 @@ class FehlerCrudController extends AbstractCrudController
             return $actions
                 // ...
                 -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
-                -> remove ( Crud::PAGE_INDEX,   Action::NEW )
-                -> remove ( Crud::PAGE_INDEX,   Action::EDIT )
-                -> remove ( Crud::PAGE_INDEX,   Action::DELETE )
+                -> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
             ;
         }
         
