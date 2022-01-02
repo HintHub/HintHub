@@ -236,6 +236,7 @@ class AppFixtures extends Fixture
 
         if ( $modul !== null)
             $modul -> setSkript     ( $skript );
+            //$skript -> setModul ($modul);
 
         $this -> modulService -> save ($modul);
         return $modul;

@@ -43,8 +43,7 @@ class Modul
     private $studenten;
 
     /**
-     * @ORM\OneToOne(targetEntity=Skript::class, inversedBy="modul", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
+     * @ORM\OneToOne(targetEntity=Skript::class, mappedBy="modul", cascade={"persist", "remove"})
      */
     private $skript;
 
@@ -177,6 +176,16 @@ class Modul
 
     public function setSkript(?Skript $skript): self
     {
+        // unset the owning side of the relation if necessary
+        if ($skript === null && $this->skript !== null) {
+            $this->skript->setModul(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($skript !== null && $skript->getModul() !== $this) {
+            $skript->setModul($this);
+        }
+
         $this->skript = $skript;
 
         return $this;
