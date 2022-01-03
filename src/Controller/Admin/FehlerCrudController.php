@@ -280,7 +280,7 @@ class FehlerCrudController extends AbstractCrudController
             
             $response
             -> join('entity.skript', 's')
-            -> add ( 'where', $response->expr() -> in ('s.modul', $userModuleIds));
+            -> add ( 'where', $response->expr() -> in ( 's.modul', $userModuleIds ) );
         }
 
         return $response;
