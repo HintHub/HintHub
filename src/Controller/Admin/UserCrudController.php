@@ -148,7 +148,7 @@ class UserCrudController extends AbstractCrudController
                 IdField::new            ( 'id'            ) -> hideOnForm(),
                 IdField::new            ( 'id'            ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          ( 'email'         ),
-                TextEditorField::new    ( 'salt'          ) -> hideOnForm() -> hideOnIndex(),
+                //TextEditorField::new    ( 'salt'          ) -> hideOnForm() -> hideOnIndex(),
                 ChoiceField::new        ( 'ROLESSTRING'   ) -> setChoices ( $this -> userService -> getRoles() ) -> setLabel("Rolle/Funktion"),
                 TextField::new          ( 'plainPassword' ) -> setFormType ( PasswordType::class ) -> onlyOnforms(),
                 AssociationField::new   ( 'tutorIn'       ) -> hideWhenCreating() -> setLabel('Tutor in') 
@@ -190,7 +190,7 @@ class UserCrudController extends AbstractCrudController
                 IdField::new            ( 'id'            ) -> hideOnForm(),
                 IdField::new            ( 'id'            ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          ( 'email'         ),
-                TextEditorField::new    ( 'salt'          ) -> hideOnForm() -> hideOnIndex(),
+                //TextEditorField::new    ( 'salt'          ) -> hideOnForm() -> hideOnIndex(),
                 ChoiceField::new        ( 'ROLESSTRING'   ) -> setChoices ( $this -> userService -> getRoles() ) -> setLabel("Rolle/Funktion"),
                 TextField::new          ( 'plainPassword' ) -> setFormType ( PasswordType::class ) -> onlyOnforms(),
                 AssociationField::new   ( 'tutorIn'       ) -> hideWhenCreating() -> setLabel('Tutor in') 
