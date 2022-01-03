@@ -63,7 +63,9 @@ class SkriptCrudController extends AbstractCrudController
 
         if ( $user -> isStudent () )
         {
-            // TODO SkriptCrudController configureCrud isStudent
+            return Crud::new()
+                -> setPageTitle ( 'detail', fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> betrachten',    $skript -> __toString() ) )
+            ;
         }
 
         if ( $user -> isTutor () )
@@ -123,7 +125,13 @@ class SkriptCrudController extends AbstractCrudController
 
         if ( $user -> isStudent () )
         {
-            // TODO SkriptCrudController configureFields isStudent
+            return [
+                IdField::new            ( 'id'      ) -> hideOnForm(),
+                IdField::new            ( 'id'      ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                TextField::new          ( 'name'    ),
+                NumberField::new        ( 'version' ),
+                AssociationField::new   ( 'modul'   )
+            ];
         }
 
         if ( $user -> isTutor () )
@@ -178,7 +186,13 @@ class SkriptCrudController extends AbstractCrudController
 
         if ( $user -> isStudent () )
         {
-            //TODO SkriptCrudController configureActions isStudent
+            return $actions
+                // ...
+                -> add ( Crud::PAGE_INDEX,  Action::DETAIL )
+                //-> remove ( Crud::PAGE_DETAIL,   Action::ADD )
+                -> remove ( Crud::PAGE_DETAIL,   Action::EDIT )
+                -> remove ( Crud::PAGE_DETAIL,   Action::DELETE )
+            ;
         }
 
         if ( $user -> isTutor () )

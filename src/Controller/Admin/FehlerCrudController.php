@@ -118,22 +118,12 @@ class FehlerCrudController extends AbstractCrudController
             ;
         }
 
-        if ( $user -> isStudent () )
+        if ( $user -> isTutor () || $user -> isStudent () )
         {
             return $actions
                 // ...
                 -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
-                -> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
-                -> remove ( Crud::PAGE_INDEX,   Action::DELETE )
-            ;
-        }
-
-        if ( $user -> isTutor () )
-        {
-            return $actions
-                // ...
-                -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
-                -> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
+                //-> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
                 -> remove ( Crud::PAGE_INDEX,   Action::DELETE )
             ;
         }
@@ -193,14 +183,14 @@ class FehlerCrudController extends AbstractCrudController
             return [
                 IdField::new            (   'id'               )    -> hideOnForm  (),
                 IdField::new            (   'id'               )    -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                AssociationField::new   (   'einreicher'       )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          (   'name'             ),
                 ChoiceField::new        (   'status'           )    -> setChoices ( $statusChoices ),
                 NumberField::new        (   'seite'            ),
                 AssociationField::new   (   'skript'           ),
                 TextEditorField::new    (   'kommentar'        )    -> onlyWhenCreating  (),
-                AssociationField::new   (   'kommentare'       )    -> hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                //AssociationField::new   (   'kommentare'       )    -> hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
                 AssociationField::new   (   'verwandteFehler'  ),
-                AssociationField::new   (   'einreicher'       )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' ),
                 DateField::new          (   'datum_erstellt'   )    -> hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
             ];
         }

@@ -70,7 +70,19 @@ class ModulCrudController extends AbstractCrudController
 
         if ( $user -> isStudent () )
         {
-            // TODO ModulCrudController configureCrud  isStudent
+            return Crud::new()
+                -> setPageTitle ( 'index',  'Module'        )
+                -> setPageTitle ( 'new',    'Modul anlegen' )
+                -> setPageTitle ( 'detail', fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> betrachten',    $modul -> __toString() ) )
+                -> setPageTitle ( 'edit',   fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> bearbeiten',    $modul -> __toString() ) )
+
+                // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
+
+                // ->overrideTemplates([
+                //     'crud/index' => 'admin/pages/index.html.twig',
+                //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
+                // ])
+            ;
         }
 
         if ( $user -> isTutor () )
@@ -163,7 +175,14 @@ class ModulCrudController extends AbstractCrudController
 
         if ( $user -> isStudent () )
         {
-            // TODO ModulCrudController configureFields  isStudent
+            return [
+                IdField::new            ( 'id'              ) -> hideOnForm(),
+                IdField::new            ( 'id'              ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                TextField::new          ( 'name'            ),
+                TextField::new          ( 'kuerzel'         ),
+                AssociationField::new   ( 'skript'          ),
+                AssociationField::new   ( 'tutor'           ),
+            ];
         }
 
         if ( $user -> isTutor () )
@@ -240,7 +259,13 @@ class ModulCrudController extends AbstractCrudController
 
         if ( $user -> isStudent () )
         {
-            //TODO ModulCrudController configureActions isStudent
+            return $actions
+                // ...
+                -> add ( Crud::PAGE_INDEX,  Action::DETAIL )
+                //-> remove ( Crud::PAGE_DETAIL,   Action::ADD )
+                -> remove ( Crud::PAGE_DETAIL,   Action::EDIT )
+                -> remove ( Crud::PAGE_DETAIL,   Action::DELETE )
+        ;
         }
 
         if ( $user -> isTutor () )
