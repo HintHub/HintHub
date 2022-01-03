@@ -241,6 +241,15 @@ class UserCrudController extends AbstractCrudController
             //TODO UserCrudController configureActions isExtern
         }
 
+        if ( $user -> isVerwaltung () )
+        {
+            return $actions
+                // ...
+                -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
+                -> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
+            ;
+        }
+
         return $actions;
     }
 
