@@ -261,9 +261,9 @@ class SkriptCrudController extends AbstractCrudController
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
-            ->add('name')
-            ->add('modul')
-            ->add('version')
+            -> add ( 'name'     )
+            -> add ( 'modul'    )
+            -> add ( 'version'  )
         ;
     }
 }

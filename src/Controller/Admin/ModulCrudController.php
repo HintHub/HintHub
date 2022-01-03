@@ -330,10 +330,10 @@ class ModulCrudController extends AbstractCrudController
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
-            ->add('tutor')
-            ->add('skript')
-            ->add('name')
-            ->add('kuerzel')
+            -> add ( 'name'     )
+            -> add ( 'kuerzel'  )
+            -> add ( 'skript'   )
+            -> add ( 'tutor'    )
         ;
     }
 }

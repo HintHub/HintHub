@@ -283,13 +283,20 @@ class FehlerCrudController extends AbstractCrudController
         return $response;
     }
 
+
+    private function getArrayFilterStatusChoices () 
+    {
+        return ArrayFilter::new ( 'status' ) -> setChoices ( $this -> getStatusChoices () );
+    }
+
     public function configureFilters(Filters $filters): Filters
     {
+        $statusChoices = $this -> getArrayFilterStatusChoices ();
         return $filters
-            ->add('seite')
-            ->add(ArrayFilter::new('status')->setChoices($this->getStatusChoices()))
-            ->add('skript')
-            ->add('name')
+            -> add ( 'name'         )
+            -> add ( 'seite'        )
+            -> add ( 'skript'       )
+            -> add ( $statusChoices )
         ;
     }
 }

@@ -302,16 +302,22 @@ class UserCrudController extends AbstractCrudController
         return $qb;
     }
 
+    private function getRolesArrayFilter()
+    {
+        return ArrayFilter::new ( 'ROLES' ) -> setChoices ( $this -> userService -> getRoles () );
+    }
+
     public function configureFilters(Filters $filters): Filters
     {
+        $rolesArrayFilter = $this -> getRolesArrayFilter();
         return $filters
-            ->add('email')
-            ->add(ArrayFilter::new('ROLES')->setChoices($this->userService->getRoles()))
-            ->add('isVerified')
-            ->add('isActive')
-            ->add('eingereichteFehler')
-            ->add('studentIn')
-            ->add('tutorIn')
+            -> add ( 'email'              )
+            -> add ( $rolesArrayFilter    )
+            -> add ( 'isVerified'         )
+            -> add ( 'isActive'           )
+            -> add ( 'eingereichteFehler' )
+            -> add ( 'studentIn'          )
+            -> add ( 'tutorIn'            )
         ;
     }
 }
