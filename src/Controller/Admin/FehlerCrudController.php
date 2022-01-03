@@ -181,7 +181,7 @@ class FehlerCrudController extends AbstractCrudController
                 NumberField::new        (   'seite'            ),
                 AssociationField::new   (   'skript'           ),
                 TextEditorField::new    (   'kommentar'        )    -> onlyWhenCreating  (),
-                AssociationField::new   (   'kommentare'       )    -> hideWhenCreating  (),
+                AssociationField::new   (   'kommentare'       )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' ),
                 AssociationField::new   (   'verwandteFehler'  )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' ),
                 AssociationField::new   (   'einreicher'       )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' ),
                 DateField::new          (   'datum_erstellt'   )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' ),
