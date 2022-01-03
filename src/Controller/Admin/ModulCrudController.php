@@ -263,7 +263,6 @@ class ModulCrudController extends AbstractCrudController
             return $actions
                 // ...
                 -> add ( Crud::PAGE_INDEX,  Action::DETAIL )
-                //-> remove ( Crud::PAGE_DETAIL,   Action::ADD )
                 -> remove ( Crud::PAGE_DETAIL,   Action::EDIT )
                 -> remove ( Crud::PAGE_DETAIL,   Action::DELETE )
         ;

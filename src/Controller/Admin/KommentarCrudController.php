@@ -157,7 +157,8 @@ class KommentarCrudController extends AbstractCrudController
         @author Karim Saad (karim.saad@iubh.de)
         @date 20.12.2021 03:05
     */
-    public function createEntity (string $entityFqcn) {
+    public function createEntity (string $entityFqcn) 
+    {
         $currentUser    = $this -> userService -> getCurrentUser ();
         $entity          = new Kommentar    ();
         $currentDateTime = new \DateTime ();
