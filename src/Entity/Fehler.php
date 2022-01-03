@@ -69,8 +69,9 @@ class Fehler
 
     public function __toString ()
     {
-        $id = $this -> getId    ();
-        return "$id";
+        $name = $this -> getName    ();
+        $id   = $this -> getId      ();
+        return "$name ($id) ";
     }
 
     public function getId (): ?int
@@ -119,6 +120,13 @@ class Fehler
         return $this -> kommentar;
     }
 
+    public function getDescriptionKommentar ()
+    {
+        if (count($this->getKommentare()) > 0)
+            return $this -> getKommentare()[0];
+        
+        return null;
+    }
     public function addKommentare ( Kommentar $kommentare ): self
     {
         if ( ! $this -> kommentare -> contains ( $kommentare ) ) 

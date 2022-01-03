@@ -6,7 +6,10 @@
 {% endblock %}
 #}
 
-{% block content_footer_wrapper %}
+{#
+main was before content_footer_wrapper
+#}
+{% block main %}
     <style>
         .kommentar_header
         {
@@ -30,7 +33,23 @@
 
         .kommentar_new 
         {
+            
+        }
 
+        .kommentar_new_box
+        {
+            color: green;
+            background-color: black;
+            width: 100%;
+        }
+
+
+        .description
+        {
+            width: 50%;
+            height: 120px;
+            background-color: #040404d4;
+            color: #b9b9b9;
         }
     </style>
 
@@ -62,7 +81,8 @@
 
         window.doRequest = async function doRequest() 
         {
-            var html = document.getElementById('kommentar_new_text').innerHTML;
+            var html = document.getElementById('kommentar_new_text').value;
+            alert(html);
 
             const data = {
                 "fehlerId": '{{ entity.instance.getId() }}',
@@ -89,31 +109,38 @@
         }
     </script>
 
-    <div class="kommentare" id="kommentare">
-    {% for kommentar in entity.instance.getKommentare() | reverse %}
-    <div class = "kommentar" id="kommentar_{{ kommentar.getId() }}">
-        <div class="kommentar_header">
-            {% 
-                set url = ea_url()
-                .setController('App\\Controller\\Admin\\UserCrudController')
-                .setAction('detail')
-                .setEntityId( kommentar.getEinreicher().getId() )
-            %}
-
-            <a href="{{url}}" class="kommentar_user_link">{{ kommentar.getEinreicher()}}</a> schrieb am {{ kommentar.getDatumErstellt() | date('d.m.Y')}} um {{ kommentar.getDatumErstellt() | date ('H:i:s') }}:
+    <div class="main">
+        <div class="description">
+            {{ entity.instance.getDescriptionKommentar().getText() | striptags }}
         </div>
 
-        <div id="text_kommenar">
-            {{ kommentar.getText() | raw }}
+        <br/>
+
+        <div class="kommentare" id="kommentare">
+        {% for kommentar in entity.instance.getKommentare() | reverse %}
+            <div class = "kommentar" id="kommentar_{{ kommentar.getId() }}">
+                <div class="kommentar_header">
+                    {% 
+                        set url = ea_url()
+                        .setController('App\\Controller\\Admin\\UserCrudController')
+                        .setAction('detail')
+                        .setEntityId( kommentar.getEinreicher().getId() )
+                    %}
+
+                    <a href="{{url}}" class="kommentar_user_link">{{ kommentar.getEinreicher()}}</a> schrieb am {{ kommentar.getDatumErstellt() | date('d.m.Y')}} um {{ kommentar.getDatumErstellt() | date ('H:i:s') }}:
+                </div>
+
+                <div id="text_kommenar">
+                    {{ kommentar.getText() | striptags }}
+                </div>
+            </div>
+        {% endfor %}
         </div>
-    </div>
-    {% endfor %}
-    </div>
-    <br/>
-    <div class="kommentar_new">
-        <textarea id="kommentar_new_text" class="kommentar_new_text" border="0">
-            test
-        </textarea>
-        <button onclick="return window.doRequest();" class="btn btn-success">Kommentieren</button>
+        <br/>
+        <div class="kommentar_new">
+            <textarea id="kommentar_new_text" class="kommentar_new_box" border="0">test</textarea>
+            <button onclick="return window.doRequest();" class="btn btn-success">Kommentieren</button>
+        </div>
+
     </div>
 {% endblock %}
