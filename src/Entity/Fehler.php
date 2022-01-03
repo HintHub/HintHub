@@ -123,10 +123,11 @@ class Fehler
     public function getDescriptionKommentar ()
     {
         if (count($this->getKommentare()) > 0)
-            return $this -> getKommentare()[0];
+            return $this -> getKommentare()[0]->getText();
         
         return null;
     }
+
     public function addKommentare ( Kommentar $kommentare ): self
     {
         if ( ! $this -> kommentare -> contains ( $kommentare ) ) 

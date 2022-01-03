@@ -172,16 +172,13 @@ class FehlerCrudController extends AbstractCrudController
                 ChoiceField::new        (   'status'           )    -> hideWhenCreating () -> setChoices ( $statusChoices ),
                 NumberField::new        (   'seite'            ),
                 AssociationField::new   (   'skript'           ),
+                TextField::new    (   'descriptionKommentar'        )    
+                    -> hideWhenCreating  () 
+                    -> setFormTypeOption ( 'disabled', 'disabled' ) 
+                    -> formatValue(function($val, $obj){
+                        return $obj->getDescriptionKommentar();
+                    }),
                 TextEditorField::new    (   'kommentar'        )    -> onlyWhenCreating  (),
-                AssociationField::new   (   'kommentare'       )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' ),
-                AssociationField::new   (   'verwandteFehler'  )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' )
-                -> setFormTypeOptions 
-                (
-                    [
-                    'by_reference' => false,
-                    ]
-                ),
-                AssociationField::new   (   'einreicher'       )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' ),
                 DateField::new          (   'datum_erstellt'   )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' ),
             ];
         }
