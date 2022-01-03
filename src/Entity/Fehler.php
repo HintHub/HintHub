@@ -162,6 +162,11 @@ class Fehler
 
     public function addVerwandteFehler ( self $verwandteFehler ): self
     {
+        if  ( $this ->  getId() == $verwandteFehler ->  getId() ) 
+        {
+            return $this;
+        }
+        
         if (! $this -> verwandteFehler -> contains ( $verwandteFehler ) )
         {
             $this -> verwandteFehler[] = $verwandteFehler;
