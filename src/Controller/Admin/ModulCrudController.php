@@ -284,10 +284,17 @@ class ModulCrudController extends AbstractCrudController
         $user = $this->userService->getCurrentUser();
         $userId = $user->getId();
 
-
         $response = $this->get(EntityRepository::class)->createQueryBuilder($searchDto, $entityDto, $fields, $filters);
 
-        if($user->isTutor()) {
+        if( $user->isTutor() ) 
+        {
+            $userModuleIds = $user -> getOnlyIdsFromTutorIn ();
+
+            if  (   count($userModuleIds) == 0  ) 
+            {
+                throw new \Exception("Sie haben keine Module zugewiesen");
+            }
+
             $response -> where('entity.tutor = :userId')
             ->setParameter('userId', $userId);
         }

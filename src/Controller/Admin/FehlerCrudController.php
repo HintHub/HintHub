@@ -278,9 +278,15 @@ class FehlerCrudController extends AbstractCrudController
         {
             $userModuleIds = $user -> getOnlyIdsFromTutorIn ();
             
+            if  ( count($userModuleIds) == 0  ) 
+            {
+                //dd("tutor hat keine module");
+                throw new \Exception("Sie haben keine Module zugewiesen");
+            }
+
             $response
-            -> join('entity.skript', 's')
-            -> add ( 'where', $response->expr() -> in ( 's.modul', $userModuleIds ) );
+                -> join('entity.skript', 's')
+                -> add ( 'where', $response->expr() -> in ( 's.modul', $userModuleIds ) );
         }
 
         return $response;

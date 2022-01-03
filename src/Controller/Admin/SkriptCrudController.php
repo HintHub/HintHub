@@ -228,6 +228,12 @@ class SkriptCrudController extends AbstractCrudController
         if ( $user -> isTutor () )
         {
             $userModuleIds = $user -> getOnlyIdsFromTutorIn ();
+
+            if  ( count($userModuleIds) == 0  ) 
+            {
+                //dd("tutor hat keine module");
+                throw new \Exception("Sie haben keine Module zugewiesen");
+            }
             
             $response
                 -> join('entity.modul', 'm')
