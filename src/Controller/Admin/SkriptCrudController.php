@@ -219,17 +219,20 @@ class SkriptCrudController extends AbstractCrudController
     {
         parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
 
-        $user = $this->userService->getCurrentUser();
+        $user = $this -> userService -> getCurrentUser ();
         $userId = $user->getId();
 
 
-        $response = $this->get(EntityRepository::class)->createQueryBuilder($searchDto, $entityDto, $fields, $filters);
+        $response = $this -> get ( EntityRepository::class ) -> createQueryBuilder ( $searchDto, $entityDto, $fields, $filters );
 
-        //TODO: Transitivitaet
-        /*if($user->isTutor()) {
-            $response -> where('entity.modul.tutor = :userId')
-            ->setParameter('userId', $userId);
-        }*/
+        if ( $user -> isTutor () )
+        {
+            $userModuleIds = $user -> getOnlyIdsFromTutorIn ();
+            
+            $response
+                -> join('entity.modul', 'm')
+                -> add ( 'where', $response->expr() -> in ( 'm', $userModuleIds ) );
+        }
 
         return $response;
     }
