@@ -35,7 +35,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
  */
 class FehlerCrudController extends AbstractCrudController
 {
-    private UserService $userService;
+    private UserService   $userService;
     private FehlerService $fehlerService;
 
     public function __construct ( 
@@ -43,8 +43,8 @@ class FehlerCrudController extends AbstractCrudController
         FehlerService $fehlerService,
     ) 
     {
-        $this -> userService   = $userService;
-        $this -> fehlerService = $fehlerService;
+        $this -> userService    = $userService;
+        $this -> fehlerService  = $fehlerService;
     }
     
     public static function getEntityFqcn (): string
@@ -262,19 +262,25 @@ class FehlerCrudController extends AbstractCrudController
     {
         parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
 
-        $user = $this->userService->getCurrentUser();
+        $user = $this -> userService -> getCurrentUser ();
         $userId = $user->getId();
 
 
-        $response = $this->get(EntityRepository::class)->createQueryBuilder($searchDto, $entityDto, $fields, $filters);
+        $response = $this -> get ( EntityRepository::class ) -> createQueryBuilder ( $searchDto, $entityDto, $fields, $filters );
 
-        if($user->isStudent()) {
-            $response   ->where('entity.einreicher = :userId')
-                        ->setParameter('userId', $userId);
+        if ( $user -> isStudent () )
+        {
+            $response   -> where        ( 'entity.einreicher = :userId' )
+                        -> setParameter ( 'userId', $userId             );
         }
 
-        if($user->isTutor()) {
-            //TODO transitivitaet
+        if ( $user -> isTutor () )
+        {
+            $userModuleIds = $user -> getOnlyIdsFromTutorIn ();
+            
+            $response
+            -> join('entity.skript', 's')
+            -> add ( 'where', $response->expr() -> in ('s.modul', $userModuleIds));
         }
 
         return $response;
