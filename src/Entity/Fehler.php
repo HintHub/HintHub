@@ -165,13 +165,18 @@ class Fehler
         if (! $this -> verwandteFehler -> contains ( $verwandteFehler ) )
         {
             $this -> verwandteFehler[] = $verwandteFehler;
+            $verwandteFehler -> addVerwandteFehler ($this);
         }
         return $this;
     }
 
     public function removeVerwandteFehler ( self $verwandteFehler ): self
     {
-        $this -> verwandteFehler -> removeElement ( $verwandteFehler );
+        if ( $this -> verwandteFehler -> contains ( $verwandteFehler ) )
+        {
+            $this -> verwandteFehler -> removeElement ( $verwandteFehler );
+            $verwandteFehler -> removeVerwandteFehler ($this);
+        }
         return $this;
     }
 
