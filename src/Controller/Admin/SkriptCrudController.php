@@ -69,8 +69,8 @@ class SkriptCrudController extends AbstractCrudController
         if ( $user -> isTutor () )
         {
             return Crud::new()
-                -> setPageTitle ( 'index',  'Skripte'  )
-                -> setPageTitle ( 'new',    'Skript anlegen'     )
+                -> setPageTitle ( 'index',  'Skripte'        )
+                -> setPageTitle ( 'new',    'Skript anlegen' )
                 -> setPageTitle ( 'detail', fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> betrachten',    $skript -> __toString() ) )
                 -> setPageTitle ( 'edit',   fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> bearbeiten',    $skript -> __toString() ) )
             ;
@@ -79,8 +79,8 @@ class SkriptCrudController extends AbstractCrudController
         if ( $user -> isExtern () )
         {
             return Crud::new()
-                -> setPageTitle ( 'index',  'Skripte'  )
-                -> setPageTitle ( 'new',    'Skript anlegen'     )
+                -> setPageTitle ( 'index',  'Skripte'         )
+                -> setPageTitle ( 'new',    'Skript anlegen'  )
                 -> setPageTitle ( 'detail', fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> betrachten',    $skript -> __toString() ) )
                 -> setPageTitle ( 'edit',   fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> bearbeiten',    $skript -> __toString() ) )
             ;
@@ -89,8 +89,8 @@ class SkriptCrudController extends AbstractCrudController
         if ( $user -> isVerwaltung () )
         {
             return Crud::new()
-                -> setPageTitle ( 'index',  'Skripte'  )
-                -> setPageTitle ( 'new',    'Skript anlegen'     )
+                -> setPageTitle ( 'index',  'Skripte'         )
+                -> setPageTitle ( 'new',    'Skript anlegen'  )
                 -> setPageTitle ( 'detail', fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> betrachten',    $skript -> __toString() ) )
                 -> setPageTitle ( 'edit',   fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> bearbeiten',    $skript -> __toString() ) )
             ;

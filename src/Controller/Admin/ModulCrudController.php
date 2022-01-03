@@ -54,8 +54,8 @@ class ModulCrudController extends AbstractCrudController
         if ( $user -> isAdmin () )
         {
             return Crud::new()
-                -> setPageTitle ( 'index',  'Module'  )
-                -> setPageTitle ( 'new',    'Modul anlegen'     )
+                -> setPageTitle ( 'index',  'Module'        )
+                -> setPageTitle ( 'new',    'Modul anlegen' )
                 -> setPageTitle ( 'detail', fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> betrachten',    $modul -> __toString() ) )
                 -> setPageTitle ( 'edit',   fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> bearbeiten',    $modul -> __toString() ) )
 
@@ -76,12 +76,12 @@ class ModulCrudController extends AbstractCrudController
         if ( $user -> isTutor () )
         {
             return Crud::new()
-                -> setPageTitle ( 'index',  'Module'  )
-                -> setPageTitle ( 'new',    'Modul anlegen'     )
+                -> setPageTitle ( 'index',  'Module'        )
+                -> setPageTitle ( 'new',    'Modul anlegen' )
                 -> setPageTitle ( 'detail', fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> betrachten',    $modul -> __toString() ) )
                 -> setPageTitle ( 'edit',   fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> bearbeiten',    $modul -> __toString() ) )
 
-                -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
+                // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
 
                 // ->overrideTemplates([
                 //     'crud/index' => 'admin/pages/index.html.twig',
@@ -93,24 +93,24 @@ class ModulCrudController extends AbstractCrudController
         if ( $user -> isExtern () )
         {
             return Crud::new()
-                -> setPageTitle ( 'index',  'Module'  )
-                -> setPageTitle ( 'new',    'Modul anlegen'     )
+                -> setPageTitle ( 'index',  'Module'         )
+                -> setPageTitle ( 'new',    'Modul anlegen'  )
                 -> setPageTitle ( 'detail', fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> betrachten',    $modul -> __toString() ) )
                 -> setPageTitle ( 'edit',   fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> bearbeiten',    $modul -> __toString() ) )
 
-                -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
+                // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
             ;
         }
 
         if ( $user -> isVerwaltung () )
         {
             return Crud::new()
-                -> setPageTitle ( 'index',  'Module'  )
-                -> setPageTitle ( 'new',    'Modul anlegen'     )
+                -> setPageTitle ( 'index',  'Module'        )
+                -> setPageTitle ( 'new',    'Modul anlegen' )
                 -> setPageTitle ( 'detail', fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> betrachten',    $modul -> __toString() ) )
                 -> setPageTitle ( 'edit',   fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> bearbeiten',    $modul -> __toString() ) )
 
-                -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
+                // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
             ;
         }
     }
