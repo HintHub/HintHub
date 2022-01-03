@@ -21,12 +21,14 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 
 /* add */
+use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 
 // For password Hashing
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\ArrayFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
@@ -310,5 +312,18 @@ class UserCrudController extends AbstractCrudController
             $qb->andWhere('entity.deleted_at IS NULL');
         }*/
         return $qb;
+    }
+
+    public function configureFilters(Filters $filters): Filters
+    {
+        return $filters
+            ->add('email')
+            ->add(ArrayFilter::new('ROLES')->setChoices($this->userService->getRoles()))
+            ->add('isVerified')
+            ->add('isActive')
+            ->add('eingereichteFehler')
+            ->add('studentIn')
+            ->add('tutorIn')
+        ;
     }
 }
