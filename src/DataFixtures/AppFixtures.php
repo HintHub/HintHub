@@ -68,7 +68,7 @@ class AppFixtures extends Fixture
         $data = $this -> loadTestModuleSkriptTestData ();
 
         
-        $createdUsers = $this -> flatten          ( $this -> createUser       ()); //TODO flatten
+        $createdUsers = $this -> flatten          ( $this -> createUser       ());
         $module       = $this -> createModule     ( $data );
         $skripte      = $this -> createSkripte    ( $data, $module );
         $fehler       = $this -> createFehler     ( $createdUsers, $module, $skripte );
@@ -82,6 +82,7 @@ class AppFixtures extends Fixture
 
         $this->assignTutoren();
         $this->assignStudenten();
+        $this->assignFehler();
     }
 
     private function flatten(array $array) {
@@ -89,6 +90,8 @@ class AppFixtures extends Fixture
         array_walk_recursive($array, function($a) use (&$return) { $return[] = $a; });
         return $return;
     }
+
+    //main assign methods
 
     private function assignTutoren() {
         foreach ($this->module as &$modul) {
@@ -111,6 +114,18 @@ class AppFixtures extends Fixture
         }
     }
 
+    private function assignFehler() {
+        foreach ($this->fehler as &$fehler) {
+            for($i = 0; $i < 5; $i++) {
+                $fehler->addVerwandteFehler($this->getRandomFehler());
+            }
+            
+            $this->fehlerService->save($fehler);
+        }
+    }
+
+
+    //main rand methods for student, tutor and fehler
     private function getRandomTutor(): User {
         $len = count($this->tutoren);
         $index = rand(0, $len-1);
@@ -131,6 +146,14 @@ class AppFixtures extends Fixture
         $index = rand(0, $len-1);
         return $this->studenten[$index];
     }
+
+    private function getRandomFehler(): Fehler {
+        $len = count($this->fehler);
+        $index = rand(0, $len-1);
+        return $this->fehler[$index];
+    }
+
+    //rand methods end
 
     public function createUser ()
     {
