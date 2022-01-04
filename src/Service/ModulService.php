@@ -49,7 +49,7 @@ class ModulService
     {
         $modul  =   $this -> findById ( $modul ->  getId () );
 
-        $modul  ->  setAktuellesSkript  ( $modul -> getAktuellesSkript () );
+        $modul  ->  setSkript  ( $modul -> getSkript () );
         $modul  ->  setKuerzel          ( $modul -> getKuerzel         () );
         $modul  ->  setName             ( $modul -> getName            () );
         $modul  ->  setTutor            ( $modul -> getTutor           () );

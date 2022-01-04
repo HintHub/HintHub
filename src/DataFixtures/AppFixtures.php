@@ -38,6 +38,13 @@ class AppFixtures extends Fixture
     private $skriptService;
     private $userService;
 
+    //needed for associations
+    private $tutoren;
+    private $studenten;
+    private $fehler;
+    private $module;
+    private $skripte;
+
 
     public function __construct (
         FehlerService               $fehlerService,
@@ -60,22 +67,51 @@ class AppFixtures extends Fixture
     {
         $data = $this -> loadTestModuleSkriptTestData ();
 
-        $createdUsers = $this -> createUser       ();
+        
+        $createdUsers = $this -> flatten          ( $this -> createUser       ()); //TODO flatten
         $module       = $this -> createModule     ( $data );
         $skripte      = $this -> createSkripte    ( $data, $module );
         $fehler       = $this -> createFehler     ( $createdUsers, $module, $skripte );
+
+        $this->module    =     $module;
+        $this->skripte   =    $skripte;
+        $this->fehler    = $fehler;
         //$kommentare   = $this -> createKommentare ();
+
+        //associations
+
+        $this->assignTutoren();
+    }
+
+    private function flatten(array $array) {
+        $return = array();
+        array_walk_recursive($array, function($a) use (&$return) { $return[] = $a; });
+        return $return;
+    }
+
+    private function assignTutoren() {
+        foreach ($this->module as &$modul) {
+            $modul->setTutor($this->getRandomTutor());
+            //$this->modulService->update($modul);
+            $this->modulService->save($modul);
+        }
+    }
+
+    private function getRandomTutor(): User {
+        $len = count($this->tutoren);
+        $index = rand(0, $len-1);
+        return $this->tutoren[$index];
     }
 
     public function createUser ()
     {
         // email, pw, role
-        $admin      = $this -> addUser  ( 'admin@hinthub.de',      'test',     'ROLE_ADMIN'      );
+        /*$admin      = $this -> addUser  ( 'admin@hinthub.de',      'test',     'ROLE_ADMIN'      );
         $student    = $this -> addUser  ( 'student@hinthub.de',    'test',     'ROLE_STUDENT'    );
         $tutor      = $this -> addUser  ( 'tutor@hinthub.de',      'test',     'ROLE_TUTOR'      );
         
         $extern     = $this -> addUser  ( 'extern@hinthub.de',     'test',     'ROLE_EXTERN'     );
-        $verwaltung = $this -> addUser  ( 'verwaltung@hinthub.de', 'test',     'ROLE_VERWALTUNG' );
+        $verwaltung = $this -> addUser  ( 'verwaltung@hinthub.de', 'test',     'ROLE_VERWALTUNG' );*/
 
         $tutoren        =   $this->createTutoren        ();
         $studenten      =   $this->createStudenten      ();
@@ -83,7 +119,10 @@ class AppFixtures extends Fixture
         $verwaltungen   =   $this->createVerwaltungen   ();
         $admins         =   $this->createAdmins         ();
 
-        return [ $admin, $student, $tutor, $extern, $verwaltung ];
+        $this   ->  tutoren      =   $tutoren    ;
+        $this   ->  studenten    =   $studenten  ;
+
+        return [ $admins, $studenten, $tutoren, $externe, $verwaltungen ];
     }
 
     private function createStudenten()    :   array 
@@ -127,8 +166,8 @@ class AppFixtures extends Fixture
 
     private function createVerwaltungen()    :   array 
     {
-        $verwaltung      = [];
-        $verwaltungen    = $this -> addUser  ( 'verwaltung@hinthub.de',    'test',     'ROLE_VERWALTUNG'    );
+        $verwaltungen      = [];
+        $verwaltung    = $this -> addUser  ( 'verwaltung@hinthub.de',    'test',     'ROLE_VERWALTUNG'    );
         array_push      (   $verwaltungen, $verwaltung  );
         for (   $i = 0;     $i < 10;    $i++    ) 
         {
@@ -188,6 +227,9 @@ class AppFixtures extends Fixture
             
             array_push ( $skripte, $skript );
         }
+
+        $this   ->  skripte  = $skripte;
+        $this   ->  module   = $module;
         
         return $skripte;
     }
