@@ -73,10 +73,82 @@ class AppFixtures extends Fixture
         $admin      = $this -> addUser  ( 'admin@hinthub.de',      'test',     'ROLE_ADMIN'      );
         $student    = $this -> addUser  ( 'student@hinthub.de',    'test',     'ROLE_STUDENT'    );
         $tutor      = $this -> addUser  ( 'tutor@hinthub.de',      'test',     'ROLE_TUTOR'      );
+        
         $extern     = $this -> addUser  ( 'extern@hinthub.de',     'test',     'ROLE_EXTERN'     );
         $verwaltung = $this -> addUser  ( 'verwaltung@hinthub.de', 'test',     'ROLE_VERWALTUNG' );
 
+        $tutoren        =   $this->createTutoren        ();
+        $studenten      =   $this->createStudenten      ();
+        $externe        =   $this->createExterne        ();
+        $verwaltungen   =   $this->createVerwaltungen   ();
+        $admins         =   $this->createAdmins         ();
+
         return [ $admin, $student, $tutor, $extern, $verwaltung ];
+    }
+
+    private function createStudenten()    :   array 
+    {
+        $studenten  =   [];
+        $student    =   $this -> addUser  ( 'student@hinthub.de',    'test',     'ROLE_STUDENT'    );
+        array_push      (   $studenten, $student    );
+        for (   $i = 0;     $i < 10;    $i++   ) 
+        {
+            $student = $this -> addUser  ( sprintf('student%d@hinthub.de', $i),      'test',     'ROLE_STUDENT'      );
+            array_push  (   $studenten, $student    );
+        }
+        return $studenten;
+    }
+
+    private function createTutoren()    :   array 
+    {   
+        $tutoren    =   [];
+        $tutor      =   $this -> addUser  ( 'tutor@hinthub.de',      'test',     'ROLE_TUTOR'      );
+        array_push      ( $tutoren, $tutor    );
+        for (   $i = 0;     $i < 10;    $i++    ) 
+        {
+            $tutor = $this -> addUser  ( sprintf('tutor%d@hinthub.de', $i),      'test',     'ROLE_TUTOR'      );
+            array_push  (   $tutoren, $tutor    );
+        }
+        return $tutoren;
+    }
+
+    private function createExterne()    :   array 
+    {
+        $externe   = [];
+        $extern    = $this -> addUser  ( 'extern@hinthub.de',    'test',     'ROLE_EXTERN'    );
+        array_push  (   $externe, $extern   );
+        for (   $i = 0;     $i < 10;    $i++    ) 
+        {
+            $extern = $this -> addUser  ( sprintf('extern%d@hinthub.de', $i),      'test',     'ROLE_EXTERN'      );
+            array_push  (   $externe, $extern   );
+        }
+        return $externe;
+    }
+
+    private function createVerwaltungen()    :   array 
+    {
+        $verwaltung      = [];
+        $verwaltungen    = $this -> addUser  ( 'verwaltung@hinthub.de',    'test',     'ROLE_VERWALTUNG'    );
+        array_push      (   $verwaltungen, $verwaltung  );
+        for (   $i = 0;     $i < 10;    $i++    ) 
+        {
+            $extern = $this -> addUser  ( sprintf('verwaltung%d@hinthub.de', $i),      'test',     'ROLE_VERWALTUNG'      );
+            array_push  (   $verwaltungen, $verwaltung  );
+        }
+        return $verwaltungen;
+    }
+
+    private function createAdmins()    :   array 
+    {
+        $admins  = [];
+        $admin    = $this -> addUser  ( 'admin@hinthub.de',    'test',     'ROLE_ADMIN'    );
+        array_push      ( $admins, $admin );
+        for (   $i = 0;     $i < 10;    $i++    ) 
+        {
+            $extern = $this -> addUser  ( sprintf('admin%d@hinthub.de', $i),      'test',     'ROLE_ADMIN'      );
+            array_push  ( $admins, $admin );
+        }
+        return $admins;
     }
     
     public function createModule ( $data )
