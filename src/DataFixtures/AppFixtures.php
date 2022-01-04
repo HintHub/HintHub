@@ -81,6 +81,7 @@ class AppFixtures extends Fixture
         //associations
 
         $this->assignTutoren();
+        $this->assignStudenten();
     }
 
     private function flatten(array $array) {
@@ -97,10 +98,38 @@ class AppFixtures extends Fixture
         }
     }
 
+    private function assignStudenten() {
+        foreach ($this->module as &$modul) {
+            $studentenArr = $this->getRandomStudenten();
+
+            foreach($studentenArr as &$student) {
+                $modul->addStudenten($student);
+            }
+
+            //$this->modulService->update($modul);
+            $this->modulService->save($modul);
+        }
+    }
+
     private function getRandomTutor(): User {
         $len = count($this->tutoren);
         $index = rand(0, $len-1);
         return $this->tutoren[$index];
+    }
+
+    private function getRandomStudenten(): array {
+        $studenten = [];
+        for($i = 0; $i < 5; $i++) 
+        {
+            array_push($studenten, $this->getRandomStudent());
+        }
+        return $studenten;
+    }
+
+    private function getRandomStudent(): User {
+        $len = count($this->studenten);
+        $index = rand(0, $len-1);
+        return $this->studenten[$index];
     }
 
     public function createUser ()
