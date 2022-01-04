@@ -4,14 +4,21 @@ namespace App\Controller\Admin;
 
 use App\Entity\Skript;
 use App\Service\UserService;
+use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
+use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
 /**
@@ -57,17 +64,39 @@ class SkriptCrudController extends AbstractCrudController
 
         if ( $user -> isStudent () )
         {
-            // TODO SkriptCrudController configureCrud isStudent
+            return Crud::new()
+                -> setPageTitle ( 'detail', fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> betrachten',    $skript -> __toString() ) )
+            ;
         }
 
         if ( $user -> isTutor () )
         {
-            // TODO SkriptCrudController configureCrud isTutor
+            return Crud::new()
+                -> setPageTitle ( 'index',  'Skripte'        )
+                -> setPageTitle ( 'new',    'Skript anlegen' )
+                -> setPageTitle ( 'detail', fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> betrachten',    $skript -> __toString() ) )
+                -> setPageTitle ( 'edit',   fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> bearbeiten',    $skript -> __toString() ) )
+            ;
         }
 
         if ( $user -> isExtern () )
         {
-            // TODO SkriptCrudController configureCrud isExtern
+            return Crud::new()
+                -> setPageTitle ( 'index',  'Skripte'         )
+                -> setPageTitle ( 'new',    'Skript anlegen'  )
+                -> setPageTitle ( 'detail', fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> betrachten',    $skript -> __toString() ) )
+                -> setPageTitle ( 'edit',   fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> bearbeiten',    $skript -> __toString() ) )
+            ;
+        }
+
+        if ( $user -> isVerwaltung () )
+        {
+            return Crud::new()
+                -> setPageTitle ( 'index',  'Skripte'         )
+                -> setPageTitle ( 'new',    'Skript anlegen'  )
+                -> setPageTitle ( 'detail', fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> betrachten',    $skript -> __toString() ) )
+                -> setPageTitle ( 'edit',   fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> bearbeiten',    $skript -> __toString() ) )
+            ;
         }
     }
 
@@ -97,17 +126,49 @@ class SkriptCrudController extends AbstractCrudController
 
         if ( $user -> isStudent () )
         {
-            // TODO SkriptCrudController configureFields isStudent
+            return [
+                IdField::new            ( 'id'      ) -> hideOnForm(),
+                IdField::new            ( 'id'      ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                TextField::new          ( 'name'    ),
+                NumberField::new        ( 'version' ),
+                AssociationField::new   ( 'modul'   )
+            ];
         }
 
         if ( $user -> isTutor () )
         {
-            // TODO SkriptCrudController configureFields isTutor
+            return [
+                IdField::new            ( 'id'      ) -> hideOnForm(),
+                IdField::new            ( 'id'      ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                TextField::new          ( 'name'    ),
+                NumberField::new        ( 'version' ),
+                AssociationField::new   ( 'fehler'  ),
+                AssociationField::new   ( 'modul'   )
+            ];
         }
 
         if ( $user -> isExtern () )
         {
-            // TODO SkriptCrudController configureFields isExtern
+            return [
+                IdField::new            ( 'id'      ) -> hideOnForm(),
+                IdField::new            ( 'id'      ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                TextField::new          ( 'name'    ),
+                NumberField::new        ( 'version' ),
+                AssociationField::new   ( 'fehler'  ),
+                AssociationField::new   ( 'modul'   )
+            ];
+        }
+
+        if ( $user -> isVerwaltung () )
+        {
+            return [
+                IdField::new            ( 'id'      ) -> hideOnForm(),
+                IdField::new            ( 'id'      ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                TextField::new          ( 'name'    ),
+                NumberField::new        ( 'version' ),
+                AssociationField::new   ( 'fehler'  ),
+                AssociationField::new   ( 'modul'   )
+            ];
         }
     }
 
@@ -126,19 +187,83 @@ class SkriptCrudController extends AbstractCrudController
 
         if ( $user -> isStudent () )
         {
-            //TODO SkriptCrudController configureActions isStudent
+            return $actions
+                // ...
+                -> add ( Crud::PAGE_INDEX,  Action::DETAIL )
+                //-> remove ( Crud::PAGE_DETAIL,   Action::ADD )
+                -> remove ( Crud::PAGE_DETAIL,   Action::EDIT )
+                -> remove ( Crud::PAGE_DETAIL,   Action::DELETE )
+            ;
         }
 
         if ( $user -> isTutor () )
         {
-            //TODO SkriptCrudController configureActions isTUtor
+            return $actions
+                // ...
+                -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
+                -> remove ( Crud::PAGE_INDEX,   Action::NEW )
+                -> remove ( Crud::PAGE_INDEX,   Action::EDIT )
+                -> remove ( Crud::PAGE_INDEX,   Action::DELETE )
+            ;
         }
         
         if ( $user -> isExtern () )
         {
-            //TODO SkriptCrudController configureActions isExtern
+            return $actions
+                // ...
+                -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
+                -> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
+                -> remove ( Crud::PAGE_INDEX,   Action::DELETE )
+            ;
+        }
+
+        if ( $user -> isVerwaltung () )
+        {
+            return $actions
+                // ...
+                -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
+                -> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
+                -> remove ( Crud::PAGE_INDEX,   Action::DELETE )
+            ;
         }
 
         return $actions;
+    }
+
+    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
+    {
+        parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+
+        $user = $this -> userService -> getCurrentUser ();
+        $userId = $user->getId();
+
+
+        $response = $this -> get ( EntityRepository::class ) -> createQueryBuilder ( $searchDto, $entityDto, $fields, $filters );
+
+        if ( $user -> isTutor () )
+        {
+            $userModuleIds = $user -> getOnlyIdsFromTutorIn ();
+
+            if  ( count($userModuleIds) == 0  ) 
+            {
+                //dd("tutor hat keine module");
+                throw new \Exception("Sie haben keine Module zugewiesen");
+            }
+            
+            $response
+                -> join('entity.modul', 'm')
+                -> add ( 'where', $response->expr() -> in ( 'm', $userModuleIds ) );
+        }
+
+        return $response;
+    }
+
+    public function configureFilters(Filters $filters): Filters
+    {
+        return $filters
+            -> add ( 'name'     )
+            -> add ( 'modul'    )
+            -> add ( 'version'  )
+        ;
     }
 }

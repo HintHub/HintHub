@@ -38,8 +38,20 @@ class KommentarCrudController extends AbstractCrudController
         $user = $this -> userService -> getCurrentUser ();
 
         if ( $user -> isAdmin () )
-        {
-            // TODO KommentarCrud configureCrud isAdmin
+        {         
+            return Crud::new()
+                -> setPageTitle ( 'index',  'Kommentare'        )
+                -> setPageTitle ( 'new', 'Kommentar erstellen'  )
+                -> setPageTitle ( 'detail', fn ( Kommentar $kommentar ) => sprintf ( 'Kommentar <b>%s</b> betrachten',    $kommmentar -> __toString() ) )
+                -> setPageTitle ( 'edit',   fn ( Kommentar $kommentar ) => sprintf ( 'Kommentar <b>%s</b> bearbeiten',    $kommentar  -> __toString() ) )
+
+                // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
+
+                // ->overrideTemplates([
+                //     'crud/index' => 'admin/pages/index.html.twig',
+                //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
+                // ])
+            ;
         }
 
         if ( $user -> isStudent () )
@@ -50,12 +62,12 @@ class KommentarCrudController extends AbstractCrudController
         if ( $user -> isTutor () )
         {
             return Crud::new()
-                -> setPageTitle ( 'index',  'Kommentare'                )
-                -> setPageTitle ( 'new', 'Kommentar erstellen'       )
+                -> setPageTitle ( 'index',  'Kommentare'        )
+                -> setPageTitle ( 'new', 'Kommentar erstellen'  )
                 -> setPageTitle ( 'detail', fn ( Kommentar $kommentar ) => sprintf ( 'Kommentar <b>%s</b> betrachten',    $kommmentar -> __toString() ) )
                 -> setPageTitle ( 'edit',   fn ( Kommentar $kommentar ) => sprintf ( 'Kommentar <b>%s</b> bearbeiten',    $kommentar  -> __toString() ) )
 
-                -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
+                // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
 
                 // ->overrideTemplates([
                 //     'crud/index' => 'admin/pages/index.html.twig',
@@ -145,7 +157,8 @@ class KommentarCrudController extends AbstractCrudController
         @author Karim Saad (karim.saad@iubh.de)
         @date 20.12.2021 03:05
     */
-    public function createEntity (string $entityFqcn) {
+    public function createEntity (string $entityFqcn) 
+    {
         $currentUser    = $this -> userService -> getCurrentUser ();
         $entity          = new Kommentar    ();
         $currentDateTime = new \DateTime ();

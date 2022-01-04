@@ -69,8 +69,9 @@ class Fehler
 
     public function __toString ()
     {
-        $id = $this -> getId    ();
-        return "$id";
+        $name = $this -> getName    ();
+        $id   = $this -> getId      ();
+        return "$name ($id) ";
     }
 
     public function getId (): ?int
@@ -119,6 +120,14 @@ class Fehler
         return $this -> kommentar;
     }
 
+    public function getDescriptionKommentar ()
+    {
+        if (count($this->getKommentare()) > 0)
+            return $this -> getKommentare()[0]->getText();
+        
+        return null;
+    }
+
     public function addKommentare ( Kommentar $kommentare ): self
     {
         if ( ! $this -> kommentare -> contains ( $kommentare ) ) 
@@ -154,16 +163,26 @@ class Fehler
 
     public function addVerwandteFehler ( self $verwandteFehler ): self
     {
+        if  ( $this ->  getId() == $verwandteFehler ->  getId() ) 
+        {
+            return $this;
+        }
+        
         if (! $this -> verwandteFehler -> contains ( $verwandteFehler ) )
         {
             $this -> verwandteFehler[] = $verwandteFehler;
+            $verwandteFehler -> addVerwandteFehler ($this);
         }
         return $this;
     }
 
     public function removeVerwandteFehler ( self $verwandteFehler ): self
     {
-        $this -> verwandteFehler -> removeElement ( $verwandteFehler );
+        if ( $this -> verwandteFehler -> contains ( $verwandteFehler ) )
+        {
+            $this -> verwandteFehler -> removeElement ( $verwandteFehler );
+            $verwandteFehler -> removeVerwandteFehler ($this);
+        }
         return $this;
     }
 

@@ -95,11 +95,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this -> salt                   = hash                  ( 'sha512', uniqid ( null, true ) );
         $this -> eingereichteFehler     = new ArrayCollection   ();
         $this -> eingereichteKommentare = new ArrayCollection   ();
-        $this->module = new ArrayCollection();
-        $this->moduls = new ArrayCollection();
-        $this->tutorIn = new ArrayCollection();
-        $this->studentIn = new ArrayCollection();
-    }
+        $this -> tutorIn                = new ArrayCollection   ();
+        $this -> studentIn              = new ArrayCollection   ();
+    }   
 
     public function setID ( int $i )
     {
@@ -419,6 +417,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    public function getOnlyIdsFromTutorIn () 
+    {
+        return $this -> tutorIn -> map ( 
+            function ( $obj ) 
+            {
+                return $obj -> getId ();
+            }
+        ) -> getValues();
     }
 
     /**

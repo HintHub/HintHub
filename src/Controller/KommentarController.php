@@ -20,6 +20,15 @@ class KommentarController extends AbstractController
         $parameters = json_decode ( $request -> getContent (), true );
         
         $currentUser = $userService -> getCurrentUser ();
+
+        if  (   $currentUser->isAdmin() 
+                || $currentUser->isVerwaltung() 
+                || $currentUser->isExtern() 
+            ) 
+        {
+            return new JsonResponse ( [ "status" => "failed", "message" => "no permission!" ], 500 );
+        }
+
         $token       = $parameters [ 'token'    ];
         $fehlerId    = $parameters [ 'fehlerId' ];
         $text        = $parameters [ 'text'     ];

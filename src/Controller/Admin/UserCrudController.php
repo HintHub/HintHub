@@ -21,12 +21,14 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 
 /* add */
+use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 
 // For password Hashing
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\ArrayFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
@@ -89,20 +91,35 @@ class UserCrudController extends AbstractCrudController
             ;
         }
 
-
-        if ( $user -> isStudent () )
+        if ( $user -> isTutor () ||  $user -> isStudent () ||  $user -> isExtern () )
         {
-            // TODO UserCrudController configureCrud isStudent
+            return Crud::new()
+                -> setPageTitle ( 'detail', fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> betrachten',    $user -> __toString() ) )
+
+                // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
+
+                // ->overrideTemplates([
+                //     'crud/index' => 'admin/pages/index.html.twig',
+                //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
+                // ])
+            ;
         }
 
-        if ( $user -> isTutor () )
+        if ( $user -> isVerwaltung () )
         {
-            // TODO UserCrudController configureCrud isTutor
-        }
+            return Crud::new()
+                -> setPageTitle ( 'index',  'Benutzer'         )
+                -> setPageTitle ( 'new',    'Benutzer anlegen' )
+                -> setPageTitle ( 'detail', fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> betrachten',    $user -> __toString() ) )
+                -> setPageTitle ( 'edit',   fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> bearbeiten',    $user -> __toString() ) )
 
-        if ( $user -> isExtern () )
-        {
-            // TODO UserCrudController configureCrud isExtern
+                // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
+
+                // ->overrideTemplates([
+                //     'crud/index' => 'admin/pages/index.html.twig',
+                //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
+                // ])
+            ;
         }
     }
 
@@ -131,7 +148,6 @@ class UserCrudController extends AbstractCrudController
                 IdField::new            ( 'id'            ) -> hideOnForm(),
                 IdField::new            ( 'id'            ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          ( 'email'         ),
-                TextEditorField::new    ( 'salt'          ) -> hideOnForm() -> hideOnIndex(),
                 ChoiceField::new        ( 'ROLESSTRING'   ) -> setChoices ( $this -> userService -> getRoles() ) -> setLabel("Rolle/Funktion"),
                 TextField::new          ( 'plainPassword' ) -> setFormType ( PasswordType::class ) -> onlyOnforms(),
                 AssociationField::new   ( 'tutorIn'       ) -> hideWhenCreating() -> setLabel('Tutor in') 
@@ -152,19 +168,38 @@ class UserCrudController extends AbstractCrudController
 
         }
 
-        if ( $user -> isStudent () )
+        if ( $user -> isTutor () ||  $user -> isStudent () ||  $user -> isExtern () )
         {
-            // TODO UserCrudController configureFields isStudent
+            return [
+                IdField::new            ( 'id'            ) -> hideOnForm(),
+                TextField::new          ( 'email'         ) -> setFormTypeOption ( 'disabled', 'disabled' ) ->hideOnForm(),
+            ];
         }
 
-        if ( $user -> isTutor () )
+        if ( $user -> isVerwaltung () )
         {
-            // TODO UserCrudController configureFields isTutor
-        }
+            return [
+                IdField::new            ( 'id'            ) -> hideOnForm(),
+                IdField::new            ( 'id'            ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                TextField::new          ( 'email'         ),
+                ChoiceField::new        ( 'ROLESSTRING'   ) -> setChoices ( $this -> userService -> getRoles() ) -> setLabel("Rolle/Funktion"),
+                TextField::new          ( 'plainPassword' ) -> setFormType ( PasswordType::class ) -> onlyOnforms(),
+                AssociationField::new   ( 'tutorIn'       ) -> hideWhenCreating() -> setLabel('Tutor in') 
+                    -> setFormTypeOptions 
+                    (
+                        [
+                        'by_reference' => false,
+                        ]
+                    ),
+                AssociationField::new   ( 'studentIn'     ) -> hideWhenCreating() -> setLabel('Student in')
+                    -> setFormTypeOptions 
+                    (
+                        [
+                            'by_reference' => false,
+                        ]
+                    ),
+            ];
 
-        if ( $user -> isExtern () )
-        {
-            // TODO UserCrudController configureFields isExtern
         }
     }
 
@@ -182,19 +217,21 @@ class UserCrudController extends AbstractCrudController
             ;
         }
 
-        if ( $user -> isStudent () )
+        if ( $user -> isTutor () ||  $user -> isStudent () ||  $user -> isExtern () )
         {
-            //TODO UserCrudController configureActions isStudent
+            return $actions
+                -> remove ( Crud::PAGE_DETAIL,   Action::EDIT )
+                -> remove ( Crud::PAGE_DETAIL,   Action::DELETE )
+            ;
         }
 
-        if ( $user -> isTutor () )
+        if ( $user -> isVerwaltung () )
         {
-            //TODO UserCrudController configureActions isTUtor
-        }
-        
-        if ( $user -> isExtern () )
-        {
-            //TODO UserCrudController configureActions isExtern
+            return $actions
+                // ...
+                -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
+                -> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
+            ;
         }
 
         return $actions;
@@ -263,5 +300,24 @@ class UserCrudController extends AbstractCrudController
             $qb->andWhere('entity.deleted_at IS NULL');
         }*/
         return $qb;
+    }
+
+    private function getRolesArrayFilter()
+    {
+        return ArrayFilter::new ( 'ROLES' ) -> setChoices ( $this -> userService -> getRoles () );
+    }
+
+    public function configureFilters(Filters $filters): Filters
+    {
+        $rolesArrayFilter = $this -> getRolesArrayFilter();
+        return $filters
+            -> add ( 'email'              )
+            -> add ( $rolesArrayFilter    )
+            -> add ( 'isVerified'         )
+            -> add ( 'isActive'           )
+            -> add ( 'eingereichteFehler' )
+            -> add ( 'studentIn'          )
+            -> add ( 'tutorIn'            )
+        ;
     }
 }

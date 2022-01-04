@@ -37,7 +37,7 @@ class Skript
     private $name;
 
     /**
-     * @ORM\OneToOne(targetEntity=Modul::class, mappedBy="skript", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity=Modul::class, inversedBy="skript", cascade={"persist", "remove"})
      */
     private $modul;
 
@@ -122,16 +122,6 @@ class Skript
 
     public function setModul(?Modul $modul): self
     {
-        // unset the owning side of the relation if necessary
-        if ($modul === null && $this->modul !== null) {
-            $this->modul->setSkript(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($modul !== null && $modul->getSkript() !== $this) {
-            $modul->setSkript($this);
-        }
-
         $this->modul = $modul;
 
         return $this;
