@@ -309,7 +309,7 @@ class AppFixtures extends Fixture
 
         $fehlerAr = [];
 
-        for ( $i=0; $i < 4; $i++ )
+        for ( $i=0; $i < 1000; $i++ )
         {
             $seite               = rand ( 0, 250 );
             $name                = $this -> getRandomText (40); // 40 Words
