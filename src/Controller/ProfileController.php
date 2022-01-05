@@ -14,14 +14,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 /**
  * Profil bearbeiten
  * 
- * @author Stefan Baltschun
+ * @author Stefan Baltschun (stefan.baltschun@iubh.de)
  *
  * TODO: schick machen
  */
 class ProfileController extends AbstractController
 {
     #[Route('/profile', name: 'profile')]
-    public function index(UserService $userService, Request $request): Response
+    public function index ( UserService $userService, Request $request ): Response
     {
         $user = $userService -> getCurrentUser ();
 
@@ -29,14 +29,14 @@ class ProfileController extends AbstractController
             throw new \Exception ( "Nicht eingeloggt" );
 
         $userForm = $this -> createFormBuilder ( $user )
-            -> add  ( 'email',          TextType::class     )
-            -> add  ( 'plainPassword',  PasswordType::class )
-            -> add  ( 'save',           SubmitType::class   )
+            -> add  ( 'email',          TextType     ::class )
+            -> add  ( 'plainPassword',  PasswordType ::class )
+            -> add  ( 'save',           SubmitType   ::class )
             -> getForm();
 
 
         $userForm -> handleRequest ( $request );
-        if ( $userForm -> isSubmitted() && $userForm -> isValid () ) 
+        if ( $userForm -> isSubmitted () && $userForm -> isValid () ) 
         {
                 // Get Form Data
                 $newUser = $userForm -> getData();
@@ -68,14 +68,16 @@ class ProfileController extends AbstractController
                 'userForm'        => $userForm,
                 'user'            => $user
             ];
-        } else {
+        } 
+        else
+        {
             $templateVars = [
                 'userForm'        => $userForm,
                 'user'            => $user
             ];
         } 
 
-        return $this->renderForm(
+        return $this -> renderForm (
             $templatePath, 
             $templateVars
         );
