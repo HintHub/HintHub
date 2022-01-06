@@ -159,7 +159,13 @@ class FehlerCrudController extends AbstractCrudController
         if ( $user -> isAdmin () )
         {
             return [
-                 
+                 IdField::new('id'),
+                 TextField::new('name')->formatValue(
+                    function ($value, $entity) 
+                    {
+                        return '<p class="badge badge-danger">'.$value.'</p>';
+                    }
+                 )
             ];
         }
 
