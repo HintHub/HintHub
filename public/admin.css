@@ -1,6 +1,6 @@
 .sidebar 
 {
-    background-color: #7A9ECC !important;
+    background-color: #ffffff !important;
 }
 
 .menu-item 
@@ -20,20 +20,25 @@
 {
     color: black !important;
     text-decoration: none;
-    background-color: #d5d5d540;
+    background-color: #1A4B91;
     padding: 5px;
     border-radius: 5px;
     font-size: 1.2em;
 }
 
+.action-new
+{
+background-color: #1A4B91;
+}
+
 .content-top
 {
-    background-color: #7A9ECC !important;
+    background-color: #1A4B91 !important;
 }
 
 .content-top .content-search .content-search-label input.is-blank
 {
-    background-color: #7DA0CD;
+    background-color: #1A4B91;
 }
 
 @media only screen and (max-width: 600px) {
@@ -57,5 +62,5 @@
 
 .user-menu-wrapper .user-details .user-name
 {
-    color: black;
+    color: rgb(255, 255, 255);
 }
