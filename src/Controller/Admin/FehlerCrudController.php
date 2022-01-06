@@ -159,7 +159,23 @@ class FehlerCrudController extends AbstractCrudController
         if ( $user -> isAdmin () )
         {
             return [
-                 
+                IdField::new            (   'id'               )    -> hideOnForm  (),
+                IdField::new            (   'id'               )    -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                AssociationField::new   (   'einreicher'       )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                TextField::new          (   'name'             ),
+                ChoiceField::new        (   'status'           )    -> setChoices ( $statusChoices ) -> hideOnIndex  (),
+                TextField::new          (   'status'           )    -> onlyOnIndex  (),
+                NumberField::new        (   'seite'            ),
+                AssociationField::new   (   'skript'           ),
+                TextEditorField::new    (   'kommentar'        )    -> onlyWhenCreating  (),
+                AssociationField::new   (   'verwandteFehler'  )
+                -> setFormTypeOptions 
+                (
+                    [
+                    'by_reference' => false,
+                    ]
+                ),
+                DateField::new          (   'datum_erstellt'   )    -> hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
             ];
         }
 
@@ -238,7 +254,9 @@ class FehlerCrudController extends AbstractCrudController
         // Einreicher Trait
         $entity -> setEinreicher             ( $currentUser     );
 
-        return $entity;
+        // return $this->redirect($this->request->headers->get('referer'));
+        //return $entity;
+        //return $this->redirect($this->request->headers->get('referer'));
     }
 
     /*
@@ -286,9 +304,17 @@ class FehlerCrudController extends AbstractCrudController
 
             $response
                 -> join('entity.skript', 's')
-                -> add ( 'where', $response->expr() -> in ( 's.modul', $userModuleIds ) );
+                -> add ( 'where', $response->expr() -> in ( 's.modul', $userModuleIds ) )
+                -> andWhere ('entity.status <> \'CLOSED\'')
+                -> addOrderBy('CASE entity.status 
+                when \'OPEN\' THEN 4 
+                when \'WAITING\' THEN 3 
+                when \'ESCALATED\' THEN 2 
+                when \'REJECTED\' THEN 1 
+                ELSE 0 END', 'DESC');
         }
 
+        //-> addOrderBy('entity.status', 'ASC');
         return $response;
     }
 
@@ -308,4 +334,5 @@ class FehlerCrudController extends AbstractCrudController
             -> add ( $statusChoices )
         ;
     }
+
 }

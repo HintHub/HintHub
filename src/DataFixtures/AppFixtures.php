@@ -314,7 +314,7 @@ class AppFixtures extends Fixture
             $seite               = rand ( 0, 250 );
             $name                = $this -> getRandomText (40); // 40 Words
             $statusChoicesValues = array_values ( $this -> fehlerService -> getStatusChoices () ); 
-            $status              = rand ( 0, count ( $statusChoicesValues )-1 );
+            $status              = $statusChoicesValues[rand ( 0, count ( $statusChoicesValues )-1 )];
             
             $randomModul         = $module  [ rand ( 0, count ( $module  )-1 ) ];
             $randomSkript        = $skripte [ rand ( 0, count ( $skripte )-1 ) ];

@@ -48,20 +48,20 @@ class FehlerService
             $kommentar  = new Kommentar ( );
             $kommentar
             -> setFehler                ( $entity      )
-            -> setText                  ( $text        )
+            -> setText                  ( $text."\n\n".$entity -> getKommentar ()       )
             -> setDatumLetzteAenderung  ( $dt          )
             -> setDatumErstellt         ( $dt          )
             -> setEinreicher            ( $currentUser );
             
-            $kommentar1 = new Kommentar ( );
+            /*$kommentar1 = new Kommentar ( );
             $kommentar1 
             -> setFehler                    ( $entity                    )
-            -> setText                      ( $entity -> getKommentar () )
+            -> setText                      (  )
             -> setDatumLetzteAenderung      ( $dt                        )
             -> setDatumErstellt             ( $dt                        )
             -> setEinreicher                ( $currentUser               );
 
-            $entity -> addKommentare ( $kommentar1 );
+            $entity -> addKommentare ( $kommentar1 );*/
             $entity -> addKommentare ( $kommentar  );
 
             // set status opened
