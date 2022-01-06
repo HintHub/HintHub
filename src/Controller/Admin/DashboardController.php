@@ -83,7 +83,7 @@ class DashboardController extends AbstractDashboardController
             -> add  ( 'email',          TextType     ::class, [ 'label' => 'E-Mail', 
                                                                 "disabled"  => true ] )
             -> add  ( 'plainPassword',  PasswordType ::class, [ 'label'     => "Neues Passwort"  ] )
-            -> add  ( 'pfplink',        TextType     ::class, [ 'label'     => "Profilbild link" ] )
+            -> 1add  ( 'pfplink',       TextType     ::class, [ 'label'     => "Profilbild link" ] )
             -> add  ( 'save',           SubmitType   ::class)
             -> getForm();
 
