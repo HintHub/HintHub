@@ -1,17 +1,19 @@
-{% extends 'base.html.twig' %}
+{% extends '@EasyAdmin/page/content.html.twig' %}
 
-{% block title %} Profil bearbeiten {% endblock %}
+{% block page_title %}
+    Profil bearbeiten
+{% endblock %}
 
-{% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+{% block content_title %}
+    Profil bearbeiten
+{% endblock %}
 
-<div class="example-wrapper">
-    //TODO schick machen (View ProfilController)
+{% block page_actions %}
+    {# <a class="btn btn-primary" href="...">Some Action</a> #}
+{% endblock %}
 
-    <h1>Profil bearbeiten</h1>
+{% block main %}
+    {# //TODO schick machen (View ProfilController) #}
     {% if success is defined %}
         {% if success %}
         <div class="alert alert-success">
@@ -24,6 +26,5 @@
         {% endif %}
     {% endif %}
 
-    {{ form(userForm) }}
-</div>
+    {{ form (userForm) }}
 {% endblock %}

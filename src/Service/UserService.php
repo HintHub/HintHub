@@ -64,9 +64,12 @@ class UserService
         $toUpdate = $this -> findById ( $user -> getId ( ) );
 
         $toUpdate   ->  setROLES        ($user  ->  getROLES        () );
-        $toUpdate   ->  setEmail        (); 
+        $toUpdate   ->  setEmail        ($user  ->  getEmail        () ); 
+        $toUpdate   ->  setPassword     ($user  ->  getPassword     () ); 
         $toUpdate   ->  setIsActive     ($user  ->  getIsActive     () );
         $toUpdate   ->  setIsVerified   ($user  ->  getIsVerified   () );
+
+        $this -> entityManager -> flush ();
 
         return $toUpdate;
     }
@@ -112,12 +115,12 @@ class UserService
     /**
      * Gets the Hashed PW
      */
-    public function getHashedPW ($user, $pw)
+    public function getHashedPW ( $user, $pw )
     {
         return $this -> pwHasher -> hashPassword
         (
             $user,
-            "test"
+            $pw
         );
     }
 }
