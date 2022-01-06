@@ -63,11 +63,12 @@ class UserService
     {
         $toUpdate = $this -> findById ( $user -> getId ( ) );
 
-        $toUpdate   ->  setROLES        ($user  ->  getROLES        () );
-        $toUpdate   ->  setEmail        ($user  ->  getEmail        () ); 
-        $toUpdate   ->  setPassword     ($user  ->  getPassword     () ); 
-        $toUpdate   ->  setIsActive     ($user  ->  getIsActive     () );
-        $toUpdate   ->  setIsVerified   ($user  ->  getIsVerified   () );
+        $toUpdate   ->  setROLES        ( $user  ->  getROLES        () );
+        $toUpdate   ->  setEmail        ( $user  ->  getEmail        () ); 
+        $toUpdate   ->  setPassword     ( $user  ->  getPassword     () ); 
+        $toUpdate   ->  setIsActive     ( $user  ->  getIsActive     () );
+        $toUpdate   ->  setIsVerified   ( $user  ->  getIsVerified   () );
+        $toUpdate   ->  setPfplink      ( $user  ->  getPfplink      () );
 
         $this -> entityManager -> flush ();
 

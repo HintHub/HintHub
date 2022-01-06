@@ -90,6 +90,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $studentIn;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $pfplink;
+
     public function __construct ()  
     {
         $this -> isActive               = true;
@@ -455,6 +460,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeStudentIn(Modul $studentIn): self
     {
         $this->studentIn->removeElement($studentIn);
+
+        return $this;
+    }
+
+    public function getPfplink(): ?string
+    {
+        return $this->pfplink;
+    }
+
+    public function setPfplink(?string $pfplink): self
+    {
+        $this->pfplink = $pfplink;
 
         return $this;
     }

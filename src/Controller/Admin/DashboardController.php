@@ -80,9 +80,11 @@ class DashboardController extends AbstractDashboardController
             throw new \Exception ( "Nicht eingeloggt" );
 
         $userForm = $this -> createFormBuilder ( $user )
-            -> add  ( 'email',          TextType     ::class )
-            -> add  ( 'plainPassword',  PasswordType ::class )
-            -> add  ( 'save',           SubmitType   ::class )
+            -> add  ( 'email',          TextType     ::class, [ 'label' => 'E-Mail', 
+                                                                "disabled"  => true ] )
+            -> add  ( 'plainPassword',  PasswordType ::class, [ 'label'     => "Neues Passwort"  ] )
+            -> add  ( 'pfplink',        TextType     ::class, [ 'label'     => "Profilbild link" ] )
+            -> add  ( 'save',           SubmitType   ::class)
             -> getForm();
 
 
@@ -261,26 +263,33 @@ class DashboardController extends AbstractDashboardController
         // Usually it's better to call the parent method because that gives you a
         // user menu with some menu items already created ("sign out", "exit impersonation", etc.)
         // if you prefer to create the user menu from scratch, use: return UserMenu::new()->...
-        return parent::configureUserMenu($user)
-            // use the given $user object to get the user name
-            // ->setName($user->getEmail())
-            // // use this method if you don't want to display the name of the user
-            // ->displayUserName(false)
+        $userMenu = parent::configureUserMenu($user);
+        // use the given $user object to get the user name
+        // ->setName($user->getEmail())
+        // // use this method if you don't want to display the name of the user
+        // ->displayUserName(false)
 
-            // // you can return an URL with the avatar image
-            // ->setAvatarUrl('https://...')
-            // ->setAvatarUrl($user->getProfileImageUrl())
-            // // use this method if you don't want to display the user image
-            // ->displayUserAvatar(false)
-            // // you can also pass an email address to use gravatar's service
-            // ->setGravatarEmail($user->getMainEmailAddress())
+        // // you can return an URL with the avatar image
+        // ->setAvatarUrl('https://...')
+        // // use this method if you don't want to display the user image
+        // ->displayUserAvatar(false)
+        // // you can also pass an email address to use gravatar's service
+        // ->setGravatarEmail($user->getMainEmailAddress())
 
-            // you can use any type of menu item, except submenus
-            -> addMenuItems([
+        // you can use any type of menu item, except submenus
+
+        $userMenu -> addMenuItems([
                 MenuItem::linkToRoute('Profil bearbeiten', 'fa fa-id-card', 'profile', []),
                 // MenuItem::section(),
                 // MenuItem::linkToLogout('Logout', 'fa fa-sign-out'),
-            ]);
+        ]);
+
+        if ( $user->getPfplink() !== null )
+        {
+            $userMenu -> setAvatarUrl($user -> getPfplink ());
+        }
+
+        return $userMenu;
     }
 
 
