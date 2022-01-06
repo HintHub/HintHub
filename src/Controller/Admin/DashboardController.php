@@ -80,10 +80,12 @@ class DashboardController extends AbstractDashboardController
             throw new \Exception ( "Nicht eingeloggt" );
 
         $userForm = $this -> createFormBuilder ( $user )
-            -> add  ( 'email',          TextType     ::class, [ 'label' => 'E-Mail', 
-                                                                "disabled"  => true ] )
-            -> add  ( 'plainPassword',  PasswordType ::class, [ 'label'     => "Neues Passwort"  ] )
-            -> add  ( 'pfplink',       TextType      ::class, [ 'label'     => "Profilbild link" ] )
+            -> add  ( 'email',          TextType     ::class,  [ 
+                                                                'label'     => 'E-Mail', 
+                                                                "disabled"  => true 
+                                                               ])
+            -> add  ( 'plainPassword',  PasswordType ::class,  [ 'label'     => "Neues Passwort"  ] )
+            -> add  ( 'pfplink',        TextType     ::class,  [ 'label'     => "Profilbild link" ] )
             -> add  ( 'save',           SubmitType   ::class)
             -> getForm();
 
