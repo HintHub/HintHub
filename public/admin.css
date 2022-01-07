@@ -26,6 +26,12 @@
     font-size: 1.2em;
 }
 
+.fas.fa-search.content-search-icon
+{
+    color: white;
+}
+
+
 .action-new
 {
 background-color: #1A4B91;
@@ -38,7 +44,7 @@ background-color: #1A4B91;
 
 .content-top .content-search .content-search-label input.is-blank
 {
-    background-color: #1A4B91;
+    background-color: #ffffff;
 }
 
 @media only screen and (max-width: 600px) {
