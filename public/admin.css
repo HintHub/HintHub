@@ -70,3 +70,22 @@ background-color: #1A4B91;
 {
     color: rgb(255, 255, 255);
 }
+
+.description
+{
+    background-color: #1A4B91 !important;
+}
+.kommentar
+{
+    background-color: #1A4B91 !important;
+}
+.kommentar_new_box
+{
+    background-color: #1A4B91 !important;
+    color: #ffffff !important;
+}
+.text_kommenar
+{
+    background-color: #1A4B91 !important;
+    color: #ffffff !important;
+}
