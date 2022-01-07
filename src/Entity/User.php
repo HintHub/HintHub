@@ -69,12 +69,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $plainPassword = "";
 
     /**
-     * @ORM\OneToMany(targetEntity=Fehler::class, mappedBy="einreicher", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=Fehler::class, mappedBy="einreicher", cascade={"persist", "remove"})
      */
     private $eingereichteFehler;
 
     /**
-     * @ORM\OneToMany(targetEntity=Kommentar::class, mappedBy="einreicher", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=Kommentar::class, mappedBy="einreicher", cascade={"persist", "remove"})
      */
     private $eingereichteKommentare;
 

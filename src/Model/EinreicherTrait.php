@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 trait EinreicherTrait
 {
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="eingereichteFehler")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="eingereichteFehler", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      */
     private $einreicher;
