@@ -4,12 +4,14 @@
 {% block title %}Log in!{% endblock %}
 
 
+
 {% block body %}
+<link rel="stylesheet" href="login.css">
 <div class="content">
 <div class="row">
 <div class="col-lg-3"></div>
 <div class="col-lg-4">
-<h1>{{"login" | trans ( {}, 'login') }}</h1>
+
 <br/>
 <form method="post">
     {% if error %}
@@ -23,6 +25,12 @@
     {% endif %}
 
     <div class="mb-3">
+    <span class="logo-custom">
+        <img class="logo" src="hinthub_logo.png" alt="HintHub">
+    </span>
+
+    
+  
     <label for="inputEmail">{{ "email" | trans ( {}, 'login')}}</label>
     <input type="email" value="{{ last_username }}" name="email" id="inputEmail" maxlength="255" class="form-control" autocomplete="email" required autofocus>
     </div>
