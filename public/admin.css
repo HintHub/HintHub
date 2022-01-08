@@ -37,6 +37,16 @@
 background-color: #1A4B91;
 }
 
+.btn-success
+{
+background-color: #1A4B91 !important;
+}
+
+.action-edit
+{
+background-color: #1A4B91 !important;
+}
+
 .content-top
 {
     background-color: #1A4B91 !important;
@@ -74,18 +84,33 @@ background-color: #1A4B91;
 .description
 {
     background-color: #1A4B91 !important;
+    color: #ffffff !important;
+    font-size: 1.2em !important;
 }
 .kommentar
 {
     background-color: #1A4B91 !important;
+    color: #ffffff !important;
+    font-size: 1.2em !important;
 }
 .kommentar_new_box
 {
     background-color: #1A4B91 !important;
     color: #ffffff !important;
+    font-size: 1.2em !important;
+    
 }
 .text_kommenar
 {
     background-color: #1A4B91 !important;
     color: #ffffff !important;
+    
+}
+
+.text_kommentar_new_text
+{
+    background-color: #1A4B91 !important;
+    color: #ffffff !important;
+    size: 20em;
+    
 }
