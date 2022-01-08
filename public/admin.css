@@ -18,7 +18,7 @@
 
 #main-menu .menu .menu-item.active a span
 {
-    color: black !important;
+    color: white !important;
     text-decoration: none;
     background-color: #1A4B91;
     padding: 5px;
@@ -50,6 +50,7 @@ background-color: #1A4B91 !important;
 .action-edit
 {
 background-color: #1A4B91 !important;
+color: #ffffff !important;
 }
 
 .content-top
