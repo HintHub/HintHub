@@ -37,6 +37,23 @@ color:black !important;
 background-color: #1A4B91;
 }
 
+.action-new:hover
+{
+background-color: #1A4B91 !important;
+}
+
+.action-new:visited
+{
+background-color: #1A4B91 !important;
+}
+.action-new:link
+{
+background-color: #1A4B91 !important;
+}
+.action-new:active
+{
+background-color: #1A4B91 !important;
+}
 .action-saveAndReturn
 {
 background-color: #1A4B91 !important;
@@ -50,6 +67,12 @@ background-color: #1A4B91 !important;
 .action-edit
 {
 background-color: #1A4B91 !important;
+color: #ffffff !important;
+}
+
+.action-delete
+{
+background-color: red !important;
 color: #ffffff !important;
 }
 
@@ -89,21 +112,23 @@ color: #ffffff !important;
 
 .description
 {
-    background-color: #1A4B91 !important;
-    color: #ffffff !important;
+    background-color: hsl(0, 0%, 100%) !important;
+    color: #000 !important;
     font-size: 1.2em !important;
 }
 .kommentar
 {
-    background-color: #1A4B91 !important;
-    color: #ffffff !important;
+    background-color: hsl(0, 0%, 100%) !important;
+    color: #000 !important;
     font-size: 1.2em !important;
 }
 .kommentar_new_box
 {
-    background-color: #1A4B91 !important;
-    color: #ffffff !important;
+    background-color: hsl(0, 0%, 100%) !important;
+    color: #000 !important;
     font-size: 1.2em !important;
+    border: 1px soild;
+    border-color: #1A4B91;
     
 }
 .text_kommenar
