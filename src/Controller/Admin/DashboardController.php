@@ -29,6 +29,11 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Menu\CrudMenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
+use Symfony\UX\Chartjs\Model\Chart;
+
+
 /**
  * DashboardController for AdminDashboard generated via php bin/console make:admin:dashboard
  * compare https://symfony.com/doc/current/EasyAdminBundle/dashboards.html
@@ -65,6 +70,30 @@ class DashboardController extends AbstractDashboardController
         return $this -> render ( $this -> controllerTwigLocation );
         // return parent::index();
     }
+
+    public function dashboard(ChartBuilderInterface $chartBuilder)
+    {
+        $chart = $chartBuilder->createChart(Chart::TYPE_LINE);
+        $chart->setData([
+            'labels' => ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            'datasets' => [
+                [
+                    'label' => 'Sales!',
+                    'backgroundColor' => 'rgb(255, 99, 132)',
+                    'borderColor' => 'rgb(255, 99, 132)',
+                    'data' => [522, 1500, 2250, 2197, 2345, 3122, 3099],
+                ],
+            ],
+        ]);
+        return $this->render('crud/DashboardController.html.twig', [
+            'chart' => $chart
+        ]);
+    }
+
+
+
+
+
     
     /**
      * @Route("/profile", name="profile")
@@ -321,5 +350,30 @@ class DashboardController extends AbstractDashboardController
             $this -> profileTwigLocation, 
             $templateVars
         );
+    }
+}
+
+class AdminController extends AbstractController
+{
+    /**
+     * @Route("/admin", name="admin_dashboard")
+     */
+    public function dashboard(ChartBuilderInterface $chartBuilder)
+    {
+        $chart = $chartBuilder->createChart(Chart::TYPE_LINE);
+        $chart->setData([
+            'labels' => ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            'datasets' => [
+                [
+                    'label' => 'Sales!',
+                    'backgroundColor' => 'rgb(255, 99, 132)',
+                    'borderColor' => 'rgb(255, 99, 132)',
+                    'data' => [522, 1500, 2250, 2197, 2345, 3122, 3099],
+                ],
+            ],
+        ]);
+        return $this->render('crud/DashboardController.html.twig', [
+            'chart' => $chart
+        ]);
     }
 }

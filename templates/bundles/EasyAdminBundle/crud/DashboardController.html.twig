@@ -15,8 +15,99 @@
 {% endblock %}
 
 {% block main %}
+
     <hr/>
-    <h2>Willkommen auf Ihrem Dashboard für HintHub!</h2>
+   <h1>Willkommen auf Ihrem Dashboard für HintHub!</h1>
+    <h2>Meine Fehlermeldungen</h2>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <div><h3>Offene Fehlermeldungen</h3></div>
+                <div><h3>Wartende Fehlermeldungen</h3></div>
+                <div><h3>Geschlossene Fehlermeldungen</h3></div>
+                <div><h3>Eskalierte Fehlermeldungen</h3></div>       
+            </div>
+            <div class="col-sm-4">
+                <div><h3>"Anzahl"</h3></div>
+                <div><h3>"Anzahl"</h3></div>
+                <div><h3>"Anzahl"</h3></div>
+                <div><h3>"Anzahl"</h3></div>
+            </div>
+            <div class="col-sm-4">
+            <div class="container">
+                <script src="https://d3js.org/d3.v4.min.js"></script>
+                <script src=
+                "https://cdn.jsdelivr.net/npm/billboard.js/dist/billboard.min.js"></script>
+                <link
+	                rel="stylesheet"
+	                href="https://cdn.jsdelivr.net/npm/billboard.js/dist/billboard.min.css"/>
+                <link
+	                rel="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
+	                type="text/css"/>
+
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js">
+                </script>
+
+                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js">
+                </script>
+
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.1/Chart.min.js">
+                </script>
+
+            <style>
+	            body {
+	                text-align: left;
+	                color: green;
+	                }
+	
+	            
+            </style>
+            <body>
+	            <div id="donut-chart"></div>
+
+	            <script>
+	                var chart = bb.generate({
+		                data: {
+		                columns: [
+			                ["Offen", 2],
+			                ["Wartend", 4],
+			                ["Geschlossen", 3],
+                            ["Eskaliert", 4]
+		                ],
+		                type: "donut",
+		
+		                },
+		                donut: {
+		                title: "Anzahl gesamt",
+		                },
+		                bindto: "#donut-chart",
+	                });
+	            </script>
+            </body>
+        </div>
+    </div>
+        
+
+
+     
+        
+
+
+   
+
+    
+
+   
+
+ 
+
+
+
+
+
+       
+
     {# <table class="datagrid">
         <thead>
             <tr>
