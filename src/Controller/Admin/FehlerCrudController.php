@@ -170,7 +170,7 @@ class FehlerCrudController extends AbstractCrudController
                 NumberField::new        (   'seite'            ),
                 AssociationField::new   (   'skript'           ),
                 TextEditorField::new    (   'kommentar'        )    -> onlyWhenCreating  (),
-                AssociationField::new   (   'verwandteFehler'  )
+                AssociationField::new   (   'verwandteFehler'  )    -> hideOnIndex()
                 -> setFormTypeOptions 
                 (
                     [
@@ -178,6 +178,14 @@ class FehlerCrudController extends AbstractCrudController
                     ]
                 ),
                 DateField::new          (   'datum_erstellt'   )    -> hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+
+                TextEditorField::new('verwandteFehler')
+                // callables also receives the entire entity instance as the second argument
+                ->formatValue(function ($value, $entity) {
+                    return join("\n", $value->getValues());
+                }) 
+
+                -> hideOnForm(),
             ];
         }
 
@@ -218,8 +226,15 @@ class FehlerCrudController extends AbstractCrudController
                     [
                     'by_reference' => false,
                     ]
-                ),
+                ) 
+                -> hideOnIndex(),
                 DateField::new          (   'datum_erstellt'   )    -> hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+
+                TextEditorField::new('verwandteFehler')
+                // callables also receives the entire entity instance as the second argument
+                ->formatValue(function ($value, $entity) {
+                    return join("\n", $value->getValues());
+                }) -> hideOnForm(),
             ];
         }
 
@@ -245,6 +260,7 @@ class FehlerCrudController extends AbstractCrudController
     */
     public function createEntity ( string $entityFqcn ) 
     {
+        
         $currentUser     = $this -> userService -> getCurrentUser ();
         $entity          = new Fehler    ();
         $currentDateTime = new \DateTime ();
@@ -252,12 +268,12 @@ class FehlerCrudController extends AbstractCrudController
         // Datum Trait
         $entity -> setDatumLetzteAenderung   ( $currentDateTime );
         $entity -> setDatumErstellt          ( $currentDateTime );
-
+        //dd($entity->getDatumErstellt());
         // Einreicher Trait
         $entity -> setEinreicher             ( $currentUser     );
 
         // return $this->redirect($this->request->headers->get('referer'));
-        //return $entity;
+        return $entity;
         //return $this->redirect($this->request->headers->get('referer'));
     }
 
@@ -267,14 +283,23 @@ class FehlerCrudController extends AbstractCrudController
         @author karim.saad ( karim.saad@iubh.de )
         @date 22.12.2021 13:45
     */
-    public function persistEntity ( EntityManagerInterface $em, $entity) : void
+
+    /*public function persistEntity ( EntityManagerInterface $em, $entity) : void
     {
         $currentUser         = $this -> userService -> getCurrentUser ();
 
         $entity = $this -> fehlerService -> openWithKommentar ( $entity, $currentUser );
 
-        // $this -> updateSlug     ( $entity );
+        //$this -> updateSlug     ( $entity );
         parent::persistEntity   ( $em, $entity );
+    }*/
+
+    public function persistEntity ( EntityManagerInterface $em, $entity) : void     
+    {         
+        $currentUser         = $this -> userService -> getCurrentUser ();          
+        $entity = $this -> fehlerService -> openWithKommentar ( $entity, $currentUser );          
+        // $this -> updateSlug     ( $entity );         
+        parent::persistEntity   ( $em, $entity );     
     }
     
 
@@ -288,15 +313,39 @@ class FehlerCrudController extends AbstractCrudController
 
         $response = $this -> get ( EntityRepository::class ) -> createQueryBuilder ( $searchDto, $entityDto, $fields, $filters );
 
+        if ( $user -> isAdmin () )
+        {
+            $response
+                -> addOrderBy (
+                    'CASE entity.status 
+                    when \'OPEN\' THEN 4 
+                    when \'WAITING\' THEN 3 
+                    when \'ESCALATED\' THEN 2 
+                    when \'REJECTED\' THEN 1 
+                    ELSE 0 END', 'DESC')
+            ;
+        }
+
+
         if ( $user -> isStudent () )
         {
-            $response   -> where        ( 'entity.einreicher = :userId' )
-                        -> setParameter ( 'userId', $userId             );
+            $response   -> andWhere     ( 'entity.einreicher = :userId' )
+                        -> setParameter ( 'userId', $userId             )
+                        -> addOrderBy (
+                            'CASE entity.status 
+                            when \'OPEN\' THEN 4 
+                            when \'WAITING\' THEN 3 
+                            when \'ESCALATED\' THEN 2 
+                            when \'REJECTED\' THEN 1 
+                            ELSE 0 END', 'DESC')
+            ;
         }
 
         if ( $user -> isTutor () )
         {
             $userModuleIds = $user -> getOnlyIdsFromTutorIn ();
+
+            //$userModuleIdsString = implode(",", $userModuleIds);
             
             if  ( count($userModuleIds) == 0  ) 
             {
@@ -306,14 +355,18 @@ class FehlerCrudController extends AbstractCrudController
 
             $response
                 -> join('entity.skript', 's')
-                -> add ( 'where', $response->expr() -> in ( 's.modul', $userModuleIds ) )
-                -> andWhere ('entity.status <> \'CLOSED\'')
+                //-> add ( 'andWhere', $response->expr() -> in ( 's.modul', $userModuleIds ) ) //bug here
+                -> andWhere('s.modul IN (:module) AND entity.status <> \'CLOSED\'')
+                
                 -> addOrderBy('CASE entity.status 
                 when \'OPEN\' THEN 4 
                 when \'WAITING\' THEN 3 
                 when \'ESCALATED\' THEN 2 
                 when \'REJECTED\' THEN 1 
-                ELSE 0 END', 'DESC');
+                ELSE 0 END', 'DESC')
+                
+                -> setParameter(':module', $userModuleIds, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY)
+                ;
         }
 
         //-> addOrderBy('entity.status', 'ASC');

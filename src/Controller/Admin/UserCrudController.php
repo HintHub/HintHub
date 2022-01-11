@@ -150,20 +150,30 @@ class UserCrudController extends AbstractCrudController
                 TextField::new          ( 'email'         ),
                 ChoiceField::new        ( 'ROLESSTRING'   ) -> setChoices ( $this -> userService -> getRoles() ) -> setLabel("Rolle/Funktion"),
                 TextField::new          ( 'plainPassword' ) -> setFormType ( PasswordType::class ) -> onlyOnforms(),
-                AssociationField::new   ( 'tutorIn'       ) -> hideWhenCreating() -> setLabel('Tutor in') 
+                AssociationField::new   ( 'tutorIn'       ) -> hideWhenCreating() -> setLabel('Tutor in') -> hideOnIndex()
                     -> setFormTypeOptions 
                     (
                         [
                         'by_reference' => false,
                         ]
                     ),
-                AssociationField::new   ( 'studentIn'     ) -> hideWhenCreating() -> setLabel('Student in')
+                AssociationField::new   ( 'studentIn'     ) -> hideWhenCreating() -> setLabel('Student in') -> hideOnIndex()
                     -> setFormTypeOptions 
                     (
                         [
                             'by_reference' => false,
                         ]
                     ),
+                TextEditorField::new('tutorIn')
+                    // callables also receives the entire entity instance as the second argument
+                    ->formatValue(function ($value, $entity) {
+                        return join("\n", $value->getValues());
+                    }),
+                TextEditorField::new('studentIn')
+                    // callables also receives the entire entity instance as the second argument
+                    ->formatValue(function ($value, $entity) {
+                        return join("\n", $value->getValues());
+                    }),
             ];
 
         }
@@ -184,20 +194,30 @@ class UserCrudController extends AbstractCrudController
                 TextField::new          ( 'email'         ),
                 ChoiceField::new        ( 'ROLESSTRING'   ) -> setChoices ( $this -> userService -> getRoles() ) -> setLabel("Rolle/Funktion"),
                 TextField::new          ( 'plainPassword' ) -> setFormType ( PasswordType::class ) -> onlyOnforms(),
-                AssociationField::new   ( 'tutorIn'       ) -> hideWhenCreating() -> setLabel('Tutor in') 
+                AssociationField::new   ( 'tutorIn'       ) -> hideWhenCreating() -> setLabel('Tutor in') -> hideOnIndex()
                     -> setFormTypeOptions 
                     (
                         [
                         'by_reference' => false,
                         ]
                     ),
-                AssociationField::new   ( 'studentIn'     ) -> hideWhenCreating() -> setLabel('Student in')
+                AssociationField::new   ( 'studentIn'     ) -> hideWhenCreating() -> setLabel('Student in') -> hideOnIndex()
                     -> setFormTypeOptions 
                     (
                         [
                             'by_reference' => false,
                         ]
                     ),
+                TextEditorField::new('tutorIn')
+                    // callables also receives the entire entity instance as the second argument
+                    ->formatValue(function ($value, $entity) {
+                        return join("\n", $value->getValues());
+                    }),
+                TextEditorField::new('studentIn')
+                    // callables also receives the entire entity instance as the second argument
+                    ->formatValue(function ($value, $entity) {
+                        return join("\n", $value->getValues());
+                    }),
             ];
 
         }

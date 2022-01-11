@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Modul;
 use App\Service\UserService;
 use Doctrine\ORM\QueryBuilder;
+use App\Repository\UserRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -35,12 +36,15 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
  */
 class ModulCrudController extends AbstractCrudController
 {
-    private UserService $userService;
-    private             $choices = [];
+    private                 $choices = [];
+    
+    private UserService     $userService;
+    private UserRepository  $userRepository;
 
-    public function __construct ( UserService $userService )
+    public function __construct ( UserService $userService, UserRepository $userRepository )
     {
-        $this -> userService = $userService;
+        $this -> userService    = $userService;
+        $this -> userRepository = $userRepository;
     }
     
     public static function getEntityFqcn(): string
@@ -163,14 +167,45 @@ class ModulCrudController extends AbstractCrudController
                 TextField::new          ( 'name'            ),
                 TextField::new          ( 'kuerzel'         ),
                 AssociationField::new   ( 'skript'          ),
-                AssociationField::new   ( 'tutor'           ),
-                AssociationField::new   ( 'studenten'       )
+                AssociationField::new   ( 'tutor'           ) 
+                    -> setQueryBuilder ( function ( $queryBuilder ) 
+                        {
+                            $queryBuilder
+                            -> andWhere      ( 'entity.ROLES LIKE :role'    )
+                            -> setParameter  ( 'role', '%ROLE_TUTOR%'       )
+                            ;
+                        }) 
+                    -> onlyOnForms(),
+                AssociationField::new   ( 'studenten'       )  
+                    -> setQueryBuilder ( function ( $queryBuilder )               
+                        {
+                            $queryBuilder
+                            -> andWhere      ( 'entity.ROLES LIKE :role'    )
+                            -> setParameter  ( 'role', '%ROLE_STUDENT%'     )
+                            ;
+                        })
                     -> setFormTypeOptions 
                         (
                             [
                             'by_reference' => false,
                             ]
-                        ),
+                        ) 
+                    -> onlyOnForms(),
+
+
+                    TextEditorField::new('tutor')
+                    // callables also receives the entire entity instance as the second argument
+                    ->formatValue(function ($value, $entity) {
+                        return $value;
+                    }) -> hideOnForm(),
+
+                    TextEditorField::new('studenten')
+                    // callables also receives the entire entity instance as the second argument
+                    ->formatValue(function ($value, $entity) {
+                        return join("\n", $value->getValues());
+                    }) -> hideOnForm(),
+
+
             ];
         }
 
@@ -182,7 +217,44 @@ class ModulCrudController extends AbstractCrudController
                 TextField::new          ( 'name'            ),
                 TextField::new          ( 'kuerzel'         ),
                 AssociationField::new   ( 'skript'          ),
-                AssociationField::new   ( 'tutor'           ),
+                AssociationField::new   ( 'tutor'           ) 
+                -> setQueryBuilder ( function ( $queryBuilder ) 
+                    {
+                        $queryBuilder
+                        -> andWhere      ( 'entity.ROLES LIKE :role'    )
+                        -> setParameter  ( 'role', '%ROLE_TUTOR%'       )
+                        ;
+                    }) 
+                -> onlyOnForms(),
+            AssociationField::new   ( 'studenten'       )  
+                -> setQueryBuilder ( function ( $queryBuilder )               
+                    {
+                        $queryBuilder
+                        -> andWhere      ( 'entity.ROLES LIKE :role'    )
+                        -> setParameter  ( 'role', '%ROLE_STUDENT%'     )
+                        ;
+                    })
+                -> setFormTypeOptions 
+                    (
+                        [
+                        'by_reference' => false,
+                        ]
+                    ) 
+                -> onlyOnForms(),
+
+
+                TextEditorField::new('tutor')
+                // callables also receives the entire entity instance as the second argument
+                ->formatValue(function ($value, $entity) {
+                    return $value;
+                }) -> hideOnForm(),
+
+                TextEditorField::new('studenten')
+                // callables also receives the entire entity instance as the second argument
+                ->formatValue(function ($value, $entity) {
+                    return join("\n", $value->getValues());
+                }) -> hideOnForm(),
+
             ];
         }
 
@@ -194,14 +266,44 @@ class ModulCrudController extends AbstractCrudController
                 TextField::new          ( 'name'            ),
                 TextField::new          ( 'kuerzel'         ),
                 AssociationField::new   ( 'skript'          ),
-                AssociationField::new   ( 'tutor'           ),
-                AssociationField::new   ( 'studenten'       )
-                    -> setFormTypeOptions 
-                        (
-                            [
-                            'by_reference' => false,
-                            ]
-                        ),
+                AssociationField::new   ( 'tutor'           ) 
+                -> setQueryBuilder ( function ( $queryBuilder ) 
+                    {
+                        $queryBuilder
+                        -> andWhere      ( 'entity.ROLES LIKE :role'    )
+                        -> setParameter  ( 'role', '%ROLE_TUTOR%'       )
+                        ;
+                    }) 
+                -> onlyOnForms(),
+            AssociationField::new   ( 'studenten'       )  
+                -> setQueryBuilder ( function ( $queryBuilder )               
+                    {
+                        $queryBuilder
+                        -> andWhere      ( 'entity.ROLES LIKE :role'    )
+                        -> setParameter  ( 'role', '%ROLE_STUDENT%'     )
+                        ;
+                    })
+                -> setFormTypeOptions 
+                    (
+                        [
+                        'by_reference' => false,
+                        ]
+                    ) 
+                -> onlyOnForms(),
+
+
+                TextEditorField::new('tutor')
+                // callables also receives the entire entity instance as the second argument
+                ->formatValue(function ($value, $entity) {
+                    return $value;
+                }) -> hideOnForm(),
+
+                TextEditorField::new('studenten')
+                // callables also receives the entire entity instance as the second argument
+                ->formatValue(function ($value, $entity) {
+                    return join("\n", $value->getValues());
+                }) -> hideOnForm(),
+
             ];
         }
 
@@ -213,14 +315,44 @@ class ModulCrudController extends AbstractCrudController
                 TextField::new          ( 'name'            ),
                 TextField::new          ( 'kuerzel'         ),
                 AssociationField::new   ( 'skript'          ),
-                AssociationField::new   ( 'tutor'           ),
-                AssociationField::new   ( 'studenten'       )
-                    -> setFormTypeOptions 
-                        (
-                            [
-                            'by_reference' => false,
-                            ]
-                        ),
+                AssociationField::new   ( 'tutor'           ) 
+                -> setQueryBuilder ( function ( $queryBuilder ) 
+                    {
+                        $queryBuilder
+                        -> andWhere      ( 'entity.ROLES LIKE :role'    )
+                        -> setParameter  ( 'role', '%ROLE_TUTOR%'       )
+                        ;
+                    }) 
+                -> onlyOnForms(),
+            AssociationField::new   ( 'studenten'       )  
+                -> setQueryBuilder ( function ( $queryBuilder )               
+                    {
+                        $queryBuilder
+                        -> andWhere      ( 'entity.ROLES LIKE :role'    )
+                        -> setParameter  ( 'role', '%ROLE_STUDENT%'     )
+                        ;
+                    })
+                -> setFormTypeOptions 
+                    (
+                        [
+                        'by_reference' => false,
+                        ]
+                    ) 
+                -> onlyOnForms(),
+
+
+                TextEditorField::new('tutor')
+                // callables also receives the entire entity instance as the second argument
+                ->formatValue(function ($value, $entity) {
+                    return $value;
+                }) -> hideOnForm(),
+
+                TextEditorField::new('studenten')
+                // callables also receives the entire entity instance as the second argument
+                ->formatValue(function ($value, $entity) {
+                    return join("\n", $value->getValues());
+                }) -> hideOnForm(),
+
             ];
         }
 
@@ -232,14 +364,44 @@ class ModulCrudController extends AbstractCrudController
                 TextField::new          ( 'name'            ),
                 TextField::new          ( 'kuerzel'         ),
                 AssociationField::new   ( 'skript'          ),
-                AssociationField::new   ( 'tutor'           ),
-                AssociationField::new   ( 'studenten'       )
-                    -> setFormTypeOptions 
-                        (
-                            [
-                            'by_reference' => false,
-                            ]
-                        ),
+                AssociationField::new   ( 'tutor'           ) 
+                -> setQueryBuilder ( function ( $queryBuilder ) 
+                    {
+                        $queryBuilder
+                        -> andWhere      ( 'entity.ROLES LIKE :role'    )
+                        -> setParameter  ( 'role', '%ROLE_TUTOR%'       )
+                        ;
+                    }) 
+                -> onlyOnForms(),
+            AssociationField::new   ( 'studenten'       )  
+                -> setQueryBuilder ( function ( $queryBuilder )               
+                    {
+                        $queryBuilder
+                        -> andWhere      ( 'entity.ROLES LIKE :role'    )
+                        -> setParameter  ( 'role', '%ROLE_STUDENT%'     )
+                        ;
+                    })
+                -> setFormTypeOptions 
+                    (
+                        [
+                        'by_reference' => false,
+                        ]
+                    ) 
+                -> onlyOnForms(),
+
+
+                TextEditorField::new('tutor')
+                // callables also receives the entire entity instance as the second argument
+                ->formatValue(function ($value, $entity) {
+                    return $value;
+                }) -> hideOnForm(),
+
+                TextEditorField::new('studenten')
+                // callables also receives the entire entity instance as the second argument
+                ->formatValue(function ($value, $entity) {
+                    return join("\n", $value->getValues());
+                }) -> hideOnForm(),
+
             ];
         }
     }
@@ -276,6 +438,8 @@ class ModulCrudController extends AbstractCrudController
                 -> remove ( Crud::PAGE_INDEX,   Action::NEW )
                 -> remove ( Crud::PAGE_INDEX,   Action::EDIT )
                 -> remove ( Crud::PAGE_INDEX,   Action::DELETE )
+                -> remove ( Crud::PAGE_DETAIL,   Action::EDIT )
+                -> remove ( Crud::PAGE_DETAIL,   Action::DELETE )
             ;
         }
         
@@ -295,7 +459,6 @@ class ModulCrudController extends AbstractCrudController
                 // ...
                 -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
                 -> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
-                -> remove ( Crud::PAGE_INDEX,   Action::DELETE )
             ;
         }
 

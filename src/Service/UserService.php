@@ -120,4 +120,20 @@ class UserService
             "test"
         );
     }
+
+    //ich probier mal was
+
+    public function getStudenten() 
+    {
+        return $this 
+            -> userRepository 
+            -> getAllByRole ( 'ROLE_STUDENT' );
+    }
+
+    public function getTutoren() 
+    {
+        return $this 
+            -> userRepository 
+            -> getAllByRole ( 'ROLE_TUTOR' );
+    }
 }

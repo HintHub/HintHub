@@ -46,3 +46,8 @@ services:
             - { name: doctrine.event_subscriber, connection: default }
         calls:
             - [ setAnnotationReader, [ '@annotation_reader' ] ]
+
+    app.easy_admin.eventsubscriber:
+        class: App\EventSubscriber\EasyAdminSubscriber
+        tags:
+            - { name: kernel.event_subscriber }
