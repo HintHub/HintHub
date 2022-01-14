@@ -73,18 +73,17 @@ class AppFixtures extends Fixture
         $skripte      = $this -> createSkripte    ( $data, $module );
         $fehler       = $this -> createFehler     ( $createdUsers, $module, $skripte );
 
-        $this->module    =     $module;
-        $this->skripte   =    $skripte;
-        $this->fehler    = $fehler;
+        $this -> module    =      $module;
+        $this -> skripte   =      $skripte;
+        $this -> fehler    =      $fehler;
         //$kommentare   = $this -> createKommentare ();
 
         //associations
 
-        $this->assignTutoren();
-        $this->assignStudenten();
-        $this->assignFehler();
+        $this -> assignTutoren    ();
+        $this -> assignStudenten  ();
+        $this -> assignFehler     ();
 
-        $this->initManualFehlerData();
     }
 
     private function flatten(array $array) {
@@ -103,34 +102,39 @@ class AppFixtures extends Fixture
         }
     }
 
-    private function assignStudenten() {
-        foreach ($this->module as &$modul) {
+    private function assignStudenten() 
+    {
+        foreach ( $this -> module as $modul ) 
+        {
             $studentenArr = $this->getRandomStudenten();
 
-            foreach($studentenArr as &$student) {
-                $modul->addStudenten($student);
+            foreach( $studentenArr as $student ) 
+            {
+                $modul -> addStudenten ( $student) ;
             }
-
-            //$this->modulService->update($modul);
-            $this->modulService->save($modul);
+            $this -> modulService -> save ( $modul );
         }
     }
 
-    private function assignFehler() {
-        foreach ($this->fehler as &$fehler) {
-            for($i = 0; $i < 5; $i++) {
-                $fehler->addVerwandteFehler($this->getRandomFehler());
+    private function assignFehler() 
+    {
+        foreach ( $this->fehler as $fehler ) 
+        {
+            for( $i = 0; $i < 5; $i++ ) 
+            {
+                $fehler -> addVerwandteFehler( $this->getRandomFehler() );
             }
             
-            $this->fehlerService->save($fehler);
+            $this -> fehlerService -> save( $fehler );
         }
     }
 
 
     //main rand methods for student, tutor and fehler
-    private function getRandomTutor(): User {
-        $len = count($this->tutoren);
-        $index = rand(0, $len-1);
+    private function getRandomTutor(): User 
+    {
+        $len    = count ( $this->tutoren );
+        $index  = rand( 0, $len-1 );
         return $this->tutoren[$index];
     }
 
@@ -138,20 +142,20 @@ class AppFixtures extends Fixture
         $studenten = [];
         for($i = 0; $i < 5; $i++) 
         {
-            array_push($studenten, $this->getRandomStudent());
+            array_push ( $studenten, $this->getRandomStudent() );
         }
         return $studenten;
     }
 
     private function getRandomStudent(): User {
-        $len = count($this->studenten);
-        $index = rand(0, $len-1);
+        $len    = count ( $this->studenten  );
+        $index  = rand  ( 0, $len-1         );
         return $this->studenten[$index];
     }
 
     private function getRandomFehler(): Fehler {
-        $len = count($this->fehler);
-        $index = rand(0, $len-1);
+        $len    = count ( $this->fehler );
+        $index  = rand  ( 0, $len-1     );
         return $this->fehler[$index];
     }
 
@@ -503,88 +507,5 @@ class AppFixtures extends Fixture
         $newData = [];
         $data = explode(PHP_EOL,$csv);
         return $data;
-    }
-
-    private function initManualFehlerData() {
-        $skript = $this->skripte[2];
-        $einreicher = $this->studenten[0];
-
-        $statusChoicesValues = array_values ( $this -> fehlerService -> getStatusChoices () ); 
-        $status              = $statusChoicesValues[rand ( 0, count ( $statusChoicesValues )-1 )];
-
-        $offen = $statusChoicesValues[0];
-        $geschlossen = $statusChoicesValues[1];
-        $abgelehnt = $statusChoicesValues[2];
-        $eskaliert = $statusChoicesValues[3];
-        $wartend = $statusChoicesValues[4];
-
-        $fehler0 = new Fehler();
-        $fehler0->setName("Fehler0");
-        $fehler0->setSeite(10);
-        $fehler0->setSkript($skript);
-        $fehler0->setStatus($offen);
-        $fehler0->setDatumErstellt(new \DateTime());
-        $fehler0->setDatumLetzteAenderung(new \DateTime());
-        $fehler0->setEinreicher($einreicher);
-        
-        $fehler1 = new Fehler();
-        $fehler1->setName("Fehler1");
-        $fehler1->setSeite(10);
-        $fehler1->setSkript($skript);
-        $fehler1->setStatus($geschlossen);
-        $fehler1->setDatumErstellt(new \DateTime());
-        $fehler1->setDatumLetzteAenderung(new \DateTime());
-        $fehler1->setEinreicher($einreicher);
-
-        $fehler2 = new Fehler();
-        $fehler2->setName("Fehler2");
-        $fehler2->setSeite(10);
-        $fehler2->setSkript($skript);
-        $fehler2->setStatus($abgelehnt);
-        $fehler2->setDatumErstellt(new \DateTime());
-        $fehler2->setDatumLetzteAenderung(new \DateTime());
-        $fehler2->setEinreicher($einreicher);
-        
-        $fehler3 = new Fehler();
-        $fehler3->setName("Fehler3");
-        $fehler3->setSeite(10);
-        $fehler3->setSkript($skript);
-        $fehler3->setStatus($wartend);
-        $fehler3->setDatumErstellt(new \DateTime());
-        $fehler3->setDatumLetzteAenderung(new \DateTime());
-        $fehler3->setEinreicher($einreicher);
-
-        $fehler4 = new Fehler();
-        $fehler4->setName("Fehler4");
-        $fehler4->setSeite(10);
-        $fehler4->setSkript($skript);
-        $fehler4->setStatus($eskaliert);
-        $fehler4->setDatumErstellt(new \DateTime());
-        $fehler4->setDatumLetzteAenderung(new \DateTime());
-        $fehler4->setEinreicher($einreicher);
-
-        $fehler5 = new Fehler();
-        $fehler5->setName("Fehler5");
-        $fehler5->setSeite(10);
-        $fehler5->setSkript($skript);
-        $fehler5->setStatus($geschlossen);
-        $fehler5->setDatumErstellt(new \DateTime());
-        $fehler5->setDatumLetzteAenderung(new \DateTime());
-        $fehler5->setEinreicher($einreicher);
-
-
-
-        $this->fehlerService->save($fehler0);
-        $this->fehlerService->save($fehler1);
-        $this->fehlerService->save($fehler2);
-        $this->fehlerService->save($fehler3);
-        $this->fehlerService->save($fehler4);
-        $this->fehlerService->save($fehler5);
-        
-        $fehler0->addVerwandteFehler($fehler1);
-        $fehler0->addVerwandteFehler($fehler2);
-        $fehler0->addVerwandteFehler($fehler3);
-        $fehler0->addVerwandteFehler($fehler4);
-        $fehler0->addVerwandteFehler($fehler5);
     }
 }

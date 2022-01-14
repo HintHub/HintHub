@@ -186,9 +186,7 @@ class Fehler
             if($verwandteFehler -> getVerwandteFehler() -> contains($this)) 
             {
                 $verwandteFehler -> removeVerwandteFehler ($this);
-            }
-            //$verwandteFehler -> getVerwandteFehler() -> removeElement ($this);
-            
+            }            
         }
         return $this;
     }
@@ -237,32 +235,8 @@ class Fehler
 
     public function isClosed() 
     {
-        return $this->getStatus() == "CLOSED";
+        return $this -> getStatus() == "CLOSED";
     }
-
-    /*public function getIdsOfGeschlosseneChildren() 
-    {
-        $idsOfGeschlosseneVerwandteFehler = [];
-
-        $arr = $this -> getVerwandteFehler() -> getValues();
-        $len = count( $arr );
-
-        for( $i = 0; $i < $len; $i++ ) 
-        {
-            $fehler = $arr[$i];
-
-            $id = $fehler->getId();
-            $tempStatus = $fehler -> getStatus();
-
-            if( $tempStatus == "CLOSED" && !in_array($id, $idsOfGeschlosseneVerwandteFehler)) 
-            {
-                array_push($idsOfGeschlosseneVerwandteFehler, $id);
-            }
-
-        }
-
-        return $idsOfGeschlosseneVerwandteFehler;
-    }*/
 
     public function detachNotClosedChildren()
     {
@@ -270,27 +244,15 @@ class Fehler
         $arr = $this -> getVerwandteFehler() -> getValues();
         $len = count ($arr);
 
-        for($i = 0; $i < $len; $i++) {
-
-            $fehler = $arr[$i];
+        for ($i = 0; $i < $len; $i++) 
+        {
+            $fehler     = $arr[$i];
             $tempStatus = $fehler -> getStatus();
 
-            if (!$fehler->isClosed()) {
-                $this->removeVerwandteFehler($fehler);
+            if ( !$fehler -> isClosed() ) 
+            {
+                $this -> removeVerwandteFehler ( $fehler );
             }
         }
     }
-
-    /*private function removeVerwandteFehlerCycleSafe(self $verwandteFehler, $manipulateOtherSide, $level) {
-
-        if ( $this -> verwandteFehler -> contains ( $verwandteFehler ) )
-        {
-            $this->getVerwandteFehler()->removeElement($verwandteFehler);
-            if($manipulateOtherSide) {
-                $verwandteFehler->removeVerwandteFehlerCycleSafe($this, $manipulateOtherSide);
-            }
-        }
-
-        return $this;
-    }*/
 }
