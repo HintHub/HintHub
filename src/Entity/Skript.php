@@ -37,7 +37,8 @@ class Skript
     private $name;
 
     /**
-     * @ORM\OneToOne(targetEntity=Modul::class, inversedBy="skript", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=Modul::class, inversedBy="skript", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $modul;
 

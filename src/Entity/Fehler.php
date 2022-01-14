@@ -38,7 +38,7 @@ class Fehler
     private $kommentare;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Fehler::class)
+     * @ORM\ManyToMany(targetEntity=Fehler::class, cascade={"remove"})
      */
     private $verwandteFehler;
 
@@ -176,12 +176,19 @@ class Fehler
         return $this;
     }
 
-    public function removeVerwandteFehler ( self $verwandteFehler ): self
+    public function removeVerwandteFehler ( self $verwandteFehler): self
     {
+        
         if ( $this -> verwandteFehler -> contains ( $verwandteFehler ) )
         {
             $this -> verwandteFehler -> removeElement ( $verwandteFehler );
-            $verwandteFehler -> removeVerwandteFehler ($this);
+
+            if($verwandteFehler -> getVerwandteFehler() -> contains($this)) 
+            {
+                $verwandteFehler -> removeVerwandteFehler ($this);
+            }
+            //$verwandteFehler -> getVerwandteFehler() -> removeElement ($this);
+            
         }
         return $this;
     }
@@ -227,4 +234,63 @@ class Fehler
         $this -> name = $name;
         return $this;
     }
+
+    public function isClosed() 
+    {
+        return $this->getStatus() == "CLOSED";
+    }
+
+    /*public function getIdsOfGeschlosseneChildren() 
+    {
+        $idsOfGeschlosseneVerwandteFehler = [];
+
+        $arr = $this -> getVerwandteFehler() -> getValues();
+        $len = count( $arr );
+
+        for( $i = 0; $i < $len; $i++ ) 
+        {
+            $fehler = $arr[$i];
+
+            $id = $fehler->getId();
+            $tempStatus = $fehler -> getStatus();
+
+            if( $tempStatus == "CLOSED" && !in_array($id, $idsOfGeschlosseneVerwandteFehler)) 
+            {
+                array_push($idsOfGeschlosseneVerwandteFehler, $id);
+            }
+
+        }
+
+        return $idsOfGeschlosseneVerwandteFehler;
+    }*/
+
+    public function detachNotClosedChildren()
+    {
+        
+        $arr = $this -> getVerwandteFehler() -> getValues();
+        $len = count ($arr);
+
+        for($i = 0; $i < $len; $i++) {
+
+            $fehler = $arr[$i];
+            $tempStatus = $fehler -> getStatus();
+
+            if (!$fehler->isClosed()) {
+                $this->removeVerwandteFehler($fehler);
+            }
+        }
+    }
+
+    /*private function removeVerwandteFehlerCycleSafe(self $verwandteFehler, $manipulateOtherSide, $level) {
+
+        if ( $this -> verwandteFehler -> contains ( $verwandteFehler ) )
+        {
+            $this->getVerwandteFehler()->removeElement($verwandteFehler);
+            if($manipulateOtherSide) {
+                $verwandteFehler->removeVerwandteFehlerCycleSafe($this, $manipulateOtherSide);
+            }
+        }
+
+        return $this;
+    }*/
 }

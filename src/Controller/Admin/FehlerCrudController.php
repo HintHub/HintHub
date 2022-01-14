@@ -134,7 +134,10 @@ class FehlerCrudController extends AbstractCrudController
         
         if ( $user -> isExtern () )
         {
-            //TODO FehlerCrudController configureActions isExtern
+            return $actions
+                -> remove ( Crud::PAGE_DETAIL,   Action::DELETE )
+                -> remove ( Crud::PAGE_EDIT,     Action::DELETE )    
+            ;
         }
 
         return $actions;

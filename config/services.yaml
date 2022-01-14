@@ -51,3 +51,10 @@ services:
         class: App\EventSubscriber\EasyAdminSubscriber
         tags:
             - { name: kernel.event_subscriber }
+    
+    app.events.fehlereventlistener:
+        class: App\Events\FehlerEventListener
+        arguments: ['@logger']
+        tags:
+                - { name: 'doctrine.event_listener', event: 'onFlush' }
+                - { name: 'doctrine.event_listener', event: 'preRemove' }

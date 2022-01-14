@@ -93,6 +93,10 @@ class FehlerService
             return
             [
                 'offen'         =>  'OPEN',
+                'geschlossen'   =>  'CLOSED',
+                'abgelehnt'     =>  'REJECTED',
+                'eskaliert'     =>  'ESCALATED',
+                'wartend'       =>  'WAITING'
             ];
         }
 
