@@ -95,6 +95,7 @@ class Skript
     {
         if ( $this -> fehler -> removeElement ( $fehler ) )
         {
+            //TODO platzhalter
             // set the owning side to null (unless already changed)
             if ( $fehler -> getSkript () === $this ) 
             {

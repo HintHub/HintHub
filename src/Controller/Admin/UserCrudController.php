@@ -150,14 +150,14 @@ class UserCrudController extends AbstractCrudController
                 TextField::new          ( 'email'         ),
                 ChoiceField::new        ( 'ROLESSTRING'   ) -> setChoices ( $this -> userService -> getRoles() ) -> setLabel("Rolle/Funktion"),
                 TextField::new          ( 'plainPassword' ) -> setFormType ( PasswordType::class ) -> onlyOnforms(),
-                AssociationField::new   ( 'tutorIn'       ) -> hideWhenCreating() -> setLabel('Tutor in') -> hideOnIndex()
+                AssociationField::new   ( 'tutorIn'       ) -> setLabel('Tutor in') -> hideOnIndex()
                     -> setFormTypeOptions 
                     (
                         [
                         'by_reference' => false,
                         ]
                     ),
-                AssociationField::new   ( 'studentIn'     ) -> hideWhenCreating() -> setLabel('Student in') -> hideOnIndex()
+                AssociationField::new   ( 'studentIn'     ) -> setLabel('Student in') -> hideOnIndex()
                     -> setFormTypeOptions 
                     (
                         [
@@ -165,13 +165,15 @@ class UserCrudController extends AbstractCrudController
                         ]
                     ),
                 TextEditorField::new('tutorIn')
-                    // callables also receives the entire entity instance as the second argument
+                    -> hideWhenUpdating()
+                    -> hideWhenCreating()
                     ->formatValue(function ($value, $entity) {
                         return join("\n", $value->getValues());
                     }),
-                TextEditorField::new('studentIn')
-                    // callables also receives the entire entity instance as the second argument
-                    ->formatValue(function ($value, $entity) {
+                TextEditorField::new('studentIn') 
+                    -> hideWhenUpdating()
+                    -> hideWhenCreating()
+                    -> formatValue(function ($value, $entity) {
                         return join("\n", $value->getValues());
                     }),
             ];
@@ -209,13 +211,15 @@ class UserCrudController extends AbstractCrudController
                         ]
                     ),
                 TextEditorField::new('tutorIn')
-                    // callables also receives the entire entity instance as the second argument
+                    -> hideWhenUpdating()
+                    -> hideWhenCreating()
                     ->formatValue(function ($value, $entity) {
                         return join("\n", $value->getValues());
                     }),
-                TextEditorField::new('studentIn')
-                    // callables also receives the entire entity instance as the second argument
-                    ->formatValue(function ($value, $entity) {
+                TextEditorField::new('studentIn') 
+                    -> hideWhenUpdating()
+                    -> hideWhenCreating()
+                    -> formatValue(function ($value, $entity) {
                         return join("\n", $value->getValues());
                     }),
             ];
