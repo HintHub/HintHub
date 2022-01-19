@@ -1,6 +1,6 @@
 <?php
 
-namespace App\EventSubscriber;
+namespace App\Events;
 
 use Monolog\Logger;
 use App\Entity\Fehler;

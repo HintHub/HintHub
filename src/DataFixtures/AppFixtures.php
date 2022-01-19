@@ -26,6 +26,8 @@ use App\Service\KommentarService;
  * 
  * @author ali-kemal.yalama ( ali-kemal.yalama@iubh.de  )
  * @author karim.saad       ( karim.saad@iubh.de        )
+ * 
+ * Last Edit: 19.01.22 (KS)
  */
 class AppFixtures extends Fixture
 {
@@ -68,9 +70,12 @@ class AppFixtures extends Fixture
         $data = $this -> loadTestModuleSkriptTestData ();
 
         
-        $createdUsers = $this -> flatten          ( $this -> createUser       ());
-        $module       = $this -> createModule     ( $data );
-        $skripte      = $this -> createSkripte    ( $data, $module );
+        $modul   = $this -> addModul  ( "Platzhalter", "pp", $tutor=null,  $studenten=null, $skript=null );
+        $skript  = $this -> addSkript ( "Platzhalter", "0",  $fehler=null, $modul=$modul );
+
+        $createdUsers = $this -> flatten          ( $this -> createUser()            );
+        $module       = $this -> createModule     ( $data                            );
+        $skripte      = $this -> createSkripte    ( $data, $module                   );
         $fehler       = $this -> createFehler     ( $createdUsers, $module, $skripte );
 
         $this -> module    =      $module;
@@ -86,19 +91,27 @@ class AppFixtures extends Fixture
 
     }
 
-    private function flatten(array $array) {
+    private function flatten ( $array ) 
+    {
         $return = array();
-        array_walk_recursive($array, function($a) use (&$return) { $return[] = $a; });
+        array_walk_recursive(
+            $array, 
+            function($a) use (&$return) 
+            { 
+                $return[] = $a; 
+            }
+        );
         return $return;
     }
 
     //main assign methods
 
-    private function assignTutoren() {
-        foreach ($this->module as &$modul) {
-            $modul->setTutor($this->getRandomTutor());
-            //$this->modulService->update($modul);
-            $this->modulService->save($modul);
+    private function assignTutoren () 
+    {
+        foreach ( $this->module as &$modul )
+        {
+            $modul -> setTutor( $this -> getRandomTutor () );
+            $this  -> modulService -> save ( $modul );
         }
     }
 
@@ -106,57 +119,76 @@ class AppFixtures extends Fixture
     {
         foreach ( $this -> module as $modul ) 
         {
-            $studentenArr = $this->getRandomStudenten();
+            $studentenArr = $this->getRandomStudenten ();
 
             foreach( $studentenArr as $student ) 
             {
-                $modul -> addStudenten ( $student) ;
+                $modul -> addStudenten ( $student ) ;
             }
             $this -> modulService -> save ( $modul );
         }
     }
 
-    private function assignFehler() 
+    private function assignFehler () 
     {
-        foreach ( $this->fehler as $fehler ) 
+        $fehler = null;
+        $len = round ( count ( $this -> fehler ) / 2 );
+        $arNewFehler = [];
+
+        for( $i = 0; $i < $len; $i++ ) 
         {
-            for( $i = 0; $i < 5; $i++ ) 
+            print_r($i);
+            // [-2; +2]
+            $k = ($i*2);
+            if ($k > 1)
             {
-                $fehler -> addVerwandteFehler( $this->getRandomFehler() );
+                if ( count ( $this -> fehler [$k] -> getVerwandteFehler () ) < 5)
+                {
+                    $fehler1 = $this -> fehler [$k] -> addVerwandteFehler(  $this -> fehler [ ( $k - 1 ) ] );
+                    array_push($arNewFehler, $fehler1);
+                    
+                    foreach ( $arNewFehler as $r )
+                    {
+                        $this -> fehlerService -> save( $r );
+                    }
+
+                    $arNewFehler = [];
+                }
             }
-            
-            $this -> fehlerService -> save( $fehler );
         }
     }
 
 
     //main rand methods for student, tutor and fehler
-    private function getRandomTutor(): User 
+    private function getRandomTutor ()
     {
-        $len    = count ( $this->tutoren );
+        $len    = count ( $this -> tutoren );
         $index  = rand( 0, $len-1 );
-        return $this->tutoren[$index];
+        return $this -> tutoren [$index];
     }
 
-    private function getRandomStudenten(): array {
+    private function getRandomStudenten () 
+    {
         $studenten = [];
         for($i = 0; $i < 5; $i++) 
         {
-            array_push ( $studenten, $this->getRandomStudent() );
+            array_push ( $studenten, $this -> getRandomStudent() );
         }
         return $studenten;
     }
 
-    private function getRandomStudent(): User {
+    private function getRandomStudent () 
+    {
         $len    = count ( $this->studenten  );
         $index  = rand  ( 0, $len-1         );
         return $this->studenten[$index];
     }
 
-    private function getRandomFehler(): Fehler {
+    private function getRandomFehler () 
+    {
         $len    = count ( $this->fehler );
         $index  = rand  ( 0, $len-1     );
-        return $this->fehler[$index];
+        return $this -> fehler [ $index ];
     }
 
     //rand methods end
@@ -170,81 +202,97 @@ class AppFixtures extends Fixture
         
         $extern     = $this -> addUser  ( 'extern@hinthub.de',     'test',     'ROLE_EXTERN'     );
         $verwaltung = $this -> addUser  ( 'verwaltung@hinthub.de', 'test',     'ROLE_VERWALTUNG' );*/
+        
 
-        $tutoren        =   $this->createTutoren        ();
-        $studenten      =   $this->createStudenten      ();
-        $externe        =   $this->createExterne        ();
-        $verwaltungen   =   $this->createVerwaltungen   ();
-        $admins         =   $this->createAdmins         ();
+        $tutoren        =   $this -> createTutoren        ();
+        $studenten      =   $this -> createStudenten      ();
+        $externe        =   $this -> createExterne        ();
+        $verwaltungen   =   $this -> createVerwaltungen   ();
+        $admins         =   $this -> createAdmins         ();
 
-        $this   ->  tutoren      =   $tutoren    ;
-        $this   ->  studenten    =   $studenten  ;
+        $this -> tutoren    =   $tutoren    ;
+        $this -> studenten  =   $studenten  ;
 
         return [ $admins, $studenten, $tutoren, $externe, $verwaltungen ];
     }
 
-    private function createStudenten()    :   array 
+    private function createStudenten ()
     {
         $studenten  =   [];
-        $student    =   $this -> addUser  ( 'student@hinthub.de',    'test',     'ROLE_STUDENT'    );
+        $student    =   $this -> addUser  ( 'student@hinthub.de',   'test', 'ROLE_STUDENT' );
+        
         array_push      (   $studenten, $student    );
+
         for (   $i = 0;     $i < 10;    $i++   ) 
         {
-            $student = $this -> addUser  ( sprintf('student%d@hinthub.de', $i),      'test',     'ROLE_STUDENT'      );
+            $student =  $this -> addUser  ( "student$i@hinthub.de", 'test', 'ROLE_STUDENT' );
             array_push  (   $studenten, $student    );
         }
+        
         return $studenten;
     }
 
-    private function createTutoren()    :   array 
+    private function createTutoren () 
     {   
         $tutoren    =   [];
-        $tutor      =   $this -> addUser  ( 'tutor@hinthub.de',      'test',     'ROLE_TUTOR'      );
+        $tutor      =   $this -> addUser  ( 'tutor@hinthub.de', 'test', 'ROLE_TUTOR' );
+        
         array_push      ( $tutoren, $tutor    );
-        for (   $i = 0;     $i < 10;    $i++    ) 
+
+        for ( $i = 0; $i < 10; $i++) 
         {
-            $tutor = $this -> addUser  ( sprintf('tutor%d@hinthub.de', $i),      'test',     'ROLE_TUTOR'      );
-            array_push  (   $tutoren, $tutor    );
+            $tutor = $this -> addUser  ( "tutor$i@hinthub.de",  'test', 'ROLE_TUTOR'  );
+            array_push  ( $tutoren, $tutor );
         }
+        
         return $tutoren;
     }
 
-    private function createExterne()    :   array 
+    private function createExterne () 
     {
         $externe   = [];
-        $extern    = $this -> addUser  ( 'extern@hinthub.de',    'test',     'ROLE_EXTERN'    );
-        array_push  (   $externe, $extern   );
-        for (   $i = 0;     $i < 10;    $i++    ) 
+        $extern    = $this -> addUser  ( 'extern@hinthub.de',     'test',  'ROLE_EXTERN' );
+        
+        array_push  ( $externe, $extern );
+
+        for ( $i = 0; $i < 10; $i++ ) 
         {
-            $extern = $this -> addUser  ( sprintf('extern%d@hinthub.de', $i),      'test',     'ROLE_EXTERN'      );
-            array_push  (   $externe, $extern   );
+            $extern = $this -> addUser  ( "extern$i@hinthub.de",  'test',  'ROLE_EXTERN' );
+            array_push  ( $externe, $extern );
         }
+
         return $externe;
     }
 
-    private function createVerwaltungen()    :   array 
+    private function createVerwaltungen()
     {
         $verwaltungen      = [];
-        $verwaltung    = $this -> addUser  ( 'verwaltung@hinthub.de',    'test',     'ROLE_VERWALTUNG'    );
-        array_push      (   $verwaltungen, $verwaltung  );
-        for (   $i = 0;     $i < 10;    $i++    ) 
+        $verwaltung        = $this -> addUser  ( 'verwaltung@hinthub.de', 'test', 'ROLE_VERWALTUNG'    );
+        
+        array_push      ( $verwaltungen, $verwaltung );
+        
+        for ( $i = 0; $i < 10; $i++ ) 
         {
-            $extern = $this -> addUser  ( sprintf('verwaltung%d@hinthub.de', $i),      'test',     'ROLE_VERWALTUNG'      );
-            array_push  (   $verwaltungen, $verwaltung  );
+            $extern = $this -> addUser  ( "verwaltung$i@hinthub.de", 'test', 'ROLE_VERWALTUNG' );
+            array_push  ( $verwaltungen, $verwaltung );
         }
+        
         return $verwaltungen;
     }
 
-    private function createAdmins()    :   array 
+    private function createAdmins() 
     {
         $admins  = [];
-        $admin    = $this -> addUser  ( 'admin@hinthub.de',    'test',     'ROLE_ADMIN'    );
+        $admin    = $this -> addUser  ( 'admin@hinthub.de', 'test', 'ROLE_ADMIN');
+        
         array_push      ( $admins, $admin );
-        for (   $i = 0;     $i < 10;    $i++    ) 
+
+        for ( $i = 0; $i < 10; $i++ ) 
         {
-            $extern = $this -> addUser  ( sprintf('admin%d@hinthub.de', $i),      'test',     'ROLE_ADMIN'      );
+            $extern = $this -> addUser ( "admin$i@hinthub.de", 'test', 'ROLE_ADMIN' );
             array_push  ( $admins, $admin );
         }
+        
         return $admins;
     }
     
@@ -262,7 +310,7 @@ class AppFixtures extends Fixture
 
             $version = \rand ( 0, 10 );
 
-            $modul = $this -> addModul ( "$name", $kuerzel, $tutor=null, $studenten=null, $skript=null );
+            $modul = $this -> addModul ( $name, $kuerzel, $tutor=null, $studenten=null, $skript=null );
 
             array_push( $module, $modul );
         }
@@ -301,7 +349,7 @@ class AppFixtures extends Fixture
         }
     }
 
-    public function createFehler ( $user, $module, $skripte )
+    public function createFehler ( $user, $module, $skripte, $amount=5000)
     {
         if ( count($user) == 0 )
             throw new \Exception ( "No User given" );
@@ -315,10 +363,10 @@ class AppFixtures extends Fixture
 
         $fehlerAr = [];
 
-        for ( $i=0; $i < 1000; $i++ )
+        for ( $i=0; $i < $amount; $i++ )
         {
             $seite               = rand ( 0, 250 );
-            $name                = $this -> getRandomText (40); // 40 Words
+            $name                = $this -> getRandomText ( 40 ); // 40 Words
             $statusChoicesValues = array_values ( $this -> fehlerService -> getStatusChoices () ); 
             $status              = $statusChoicesValues[rand ( 0, count ( $statusChoicesValues )-1 )];
             
@@ -326,9 +374,10 @@ class AppFixtures extends Fixture
             $randomSkript        = $skripte [ rand ( 0, count ( $skripte )-1 ) ];
             $randomUser          = $user    [ rand ( 0, count ( $user    )-1 ) ];
 
-            $initKommentar = $this->getRandomText ( 150 );
+            $initKommentar       = $this -> getRandomText ( 150 );
             
-            $fehler = $this -> addFehler ( $name, $status, $seite, $initKommentar, $kommentare=null, $verwandteFehler=null, $skript=$randomSkript, $einreicher=$randomUser, $datum=new \DateTime() );
+            $fehler              = $this -> addFehler ( $name, $status, $seite, $initKommentar, $kommentare=null, $verwandteFehler=null, $skript=$randomSkript, $einreicher=$randomUser, $datum=new \DateTime() );
+            
             array_push($fehlerAr, $fehler);
         }
 
@@ -378,7 +427,7 @@ class AppFixtures extends Fixture
         if ( $datum === null )
             $datum = new \DateTime();
 
-        $kommentar -> setText           ( $text       );
+        $kommentar -> setText               ( $text       );
 
         if ( $fehler !== null )
             $kommentar -> setFehler         ( $fehler     );
@@ -390,6 +439,7 @@ class AppFixtures extends Fixture
         $kommentar -> setDatumLetzteAenderung ( $datum );
         
         $this -> kommentarService -> save ($kommentar);
+
         return $kommentar;
     }
 

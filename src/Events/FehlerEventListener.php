@@ -7,12 +7,31 @@ use App\Entity\Fehler;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
+use Symfony\Component\HttpFoundation\Session\Session;
 
+/**
+ * Listens to Doctrine Events
+ * 
+ * @author ali-kemal.yalama ( ali-kemal.yalama@iubh.de  )
+ * @author karim.saad       ( karim.saad@iubh.de        )
+ * 
+ * Laste Edit 19.01.22
+ */
 class FehlerEventListener 
 {
-    public function preRemove(LifecycleEventArgs $args): void
+    private     $session;
+
+    private     $maximumDeleteOperations = 100;
+    private     $notClosedOrRejectedIds  = [];
+
+    public function __construct ( Session $session )
     {
-        
+        $this -> session = $session;
+    }
+
+    public function preRemove   ( LifecycleEventArgs $args ): void
+    {
+        $entityManager = $args->getObjectManager();
         $entity = $args -> getObject();
 
         if ( !$entity instanceof Fehler ) 
@@ -20,42 +39,93 @@ class FehlerEventListener
             return;
         }
 
-        $entityManager = $args->getObjectManager();
+        $fehlerId = $entity -> getId();
 
-        if ( !$entity -> isClosed() ) 
+        if ( !$entity -> isClosed() || ! $entity -> isRejected() ) 
         {
+            $id = $entity -> getId ();
+            
+            array_push($this -> notClosedOrRejectedIds, $id);
+
             return;
         }
 
-        /* Idee: Loeschen tut er ohnehin. 
-         * Du willst ja jetzt nurnoch sorgen dass die nicht geschlossenen nicht mehr betroffen sind!
-         */
+        // Detachen der offenen Fehler -> Löschen der closed/rejected
         $entity         ->  detachNotClosedChildren();
 
+        // Flush Entity Manager
         $entityManager  ->  flush();
     }
 
-    public function onFlush(OnFlushEventArgs $onFlushEventArgs): void
+    public function onFlush ( OnFlushEventArgs $onFlushEventArgs ): void
     {
-        $entityManager  = $onFlushEventArgs ->  getEntityManager();
-        $unitOfWork     = $entityManager    ->     getUnitOfWork();
+        $rePersistedIds = [];
 
+        $entityManager  = $onFlushEventArgs ->  getEntityManager            ();
+        $unitOfWork     = $entityManager    ->  getUnitOfWork               ();
+        $toDelete       = $unitOfWork       ->  getScheduledEntityDeletions (); 
 
-        $toDelete = $unitOfWork->getScheduledEntityDeletions(); //TOO FAT - not enough memory for 128MB - need 4GB
-
-        if( count ( $toDelete ) > 10 ) 
+        // ISSUE: RAM Limit needs to be > 128 MB and operations time needs to be increased. (otherwise crash, therefore the check)
+        if( count ( $toDelete ) > $this -> maximumDeleteOperations ) 
         {
-            throw new Exception(    "Too many operations"   );
+
+            $this -> session -> getFlashBag() -> add (
+                'danger',
+                "Zu viele Operationen! (Abbruch)"
+            );
+
+            return;
         }
 
         foreach ( $toDelete as $entity ) 
         {
-
-            if ($entity instanceof Fehler && !$entity->isClosed()) 
+            // Check if Fehler is Fehler and if anything else than closed or rejected => DELETE REJECTED, CLOSED
+            if ($entity instanceof Fehler && !( $entity -> isClosed () || $entity -> isRejected () ) )
             {
-                $entityManager -> persist( $entity );
-            }
+                // Persist the not closed errors again, so they don't get wiped (very DIRTY)
+                $e = $entityManager -> persist ( $entity );
+                
+                if ($e === null)
+                    continue;
 
+                array_push ( $rePersistedIds, $e -> getId () );
+            }
+        }
+
+
+        $amount = count ( $rePersistedIds );
+
+        if ( $amount > 0 )
+        {
+            $str = "Es wurden $i Fehler wiederhergestellt, da diese nicht geschlossen/abgelehnt waren.";
+
+            $this -> session -> getFlashBag() -> add (
+                'warning',
+                $str
+            );
+        } 
+        else
+        {
+            if ( count ( $toDelete ) > 0 )
+            {
+                $str = "Der Fehler wurde gelöscht.";
+
+                $this -> session -> getFlashBag() -> add (
+                    'success',
+                    $str
+                );
+            }
+        }
+
+
+        $idsStr = implode(',', $this -> notClosedOrRejectedIds);
+
+        if ( strlen ( $idsStr ) > 0 )
+        {
+            $this -> session -> getFlashBag() -> add (
+                'danger',
+                "Fehler (IDs: $idsStr) wurden entkoppelt (NICHT abgelehnt oder geschlossen)"
+            );
         }
     }
 }
