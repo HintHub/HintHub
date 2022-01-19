@@ -69,12 +69,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $plainPassword = "";
 
     /**
-     * @ORM\OneToMany(targetEntity=Fehler::class, mappedBy="einreicher", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=Fehler::class, mappedBy="einreicher", cascade={"persist", "remove"})
      */
     private $eingereichteFehler;
 
     /**
-     * @ORM\OneToMany(targetEntity=Kommentar::class, mappedBy="einreicher", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=Kommentar::class, mappedBy="einreicher", cascade={"persist", "remove"})
      */
     private $eingereichteKommentare;
 
@@ -456,5 +456,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->studentIn->removeElement($studentIn);
 
         return $this;
+    }
+
+    public function getTutorAndStudentIn()
+    {
+        $tutorIn   = $this -> tutorIn   -> getValues ();
+        $studentIn = $this -> studentIn -> getValues ();
+
+        if ( count ( $tutorIn ) == 0 && count ( $studentIn ) == 0 )
+            return null;
+
+        $str1 = implode ( '<br/>', $tutorIn   );
+        $str2 = implode ( '<br/>', $studentIn );
+
+        $str4 = "<b>StudentIn:</b><br/>".$str2."<br/><br/><b>TutorIn:</b><br/>".$str2;
+        return $str4;
+
+    
     }
 }

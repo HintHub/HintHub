@@ -145,25 +145,33 @@ class UserCrudController extends AbstractCrudController
         if ( $user -> isAdmin () )
         {
             return [
-                IdField::new            ( 'id'            ) -> hideOnForm(),
-                IdField::new            ( 'id'            ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                IdField::new            ( 'id'            ) -> hideOnForm  (),
+                IdField::new            ( 'id'            ) -> onlyOnForms () ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          ( 'email'         ),
-                ChoiceField::new        ( 'ROLESSTRING'   ) -> setChoices ( $this -> userService -> getRoles() ) -> setLabel("Rolle/Funktion"),
-                TextField::new          ( 'plainPassword' ) -> setFormType ( PasswordType::class ) -> onlyOnforms(),
-                AssociationField::new   ( 'tutorIn'       ) -> hideWhenCreating() -> setLabel('Tutor in') 
+                ChoiceField::new        ( 'ROLESSTRING'   ) -> setChoices   ( $this -> userService -> getRoles() ) -> setLabel ( "Rolle/Funktion" ),
+                TextField::new          ( 'plainPassword' ) -> setFormType  ( PasswordType::class                ) -> onlyOnforms (),
+                AssociationField::new   ( 'tutorIn'       )
+                    -> hideOnIndex () 
+                    -> setLabel    ( 'Tutor in' )
                     -> setFormTypeOptions 
                     (
                         [
                         'by_reference' => false,
                         ]
                     ),
-                AssociationField::new   ( 'studentIn'     ) -> hideWhenCreating() -> setLabel('Student in')
+                AssociationField::new   ( 'studentIn' )
+                    -> hideOnIndex () 
+                    -> setLabel ( 'Student in' )
                     -> setFormTypeOptions 
                     (
                         [
                             'by_reference' => false,
                         ]
                     ),
+                TextEditorField::new ( 'tutorAndStudentIn' )
+                    -> setTemplatePath('bundles/EasyAdminBundle/crud/TextEditorField.html.twig')
+                    -> hideWhenUpdating ()
+                    -> hideWhenCreating ()
             ];
 
         }
@@ -172,32 +180,39 @@ class UserCrudController extends AbstractCrudController
         {
             return [
                 IdField::new            ( 'id'            ) -> hideOnForm(),
-                TextField::new          ( 'email'         ) -> setFormTypeOption ( 'disabled', 'disabled' ) ->hideOnForm(),
+                TextField::new          ( 'email'         ) -> setFormTypeOption ( 'disabled', 'disabled' ) ->hideOnForm (),
             ];
         }
 
         if ( $user -> isVerwaltung () )
         {
             return [
-                IdField::new            ( 'id'            ) -> hideOnForm(),
-                IdField::new            ( 'id'            ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                IdField::new            ( 'id'            ) -> hideOnForm  (),
+                IdField::new            ( 'id'            ) -> onlyOnForms () ->  hideWhenCreating()    -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          ( 'email'         ),
-                ChoiceField::new        ( 'ROLESSTRING'   ) -> setChoices ( $this -> userService -> getRoles() ) -> setLabel("Rolle/Funktion"),
-                TextField::new          ( 'plainPassword' ) -> setFormType ( PasswordType::class ) -> onlyOnforms(),
-                AssociationField::new   ( 'tutorIn'       ) -> hideWhenCreating() -> setLabel('Tutor in') 
+                ChoiceField::new        ( 'ROLESSTRING'   ) -> setChoices  ( $this -> userService  -> getRoles() ) -> setLabel ( "Rolle/Funktion" ),
+                TextField::new          ( 'plainPassword' ) -> setFormType ( PasswordType::class                 ) -> onlyOnforms (),
+                AssociationField::new   ( 'tutorIn'       )
+                    -> hideWhenCreating ()
+                    -> hideOnIndex      ()
+                    -> setLabel         ( 'Tutor in' )
                     -> setFormTypeOptions 
                     (
                         [
                         'by_reference' => false,
                         ]
                     ),
-                AssociationField::new   ( 'studentIn'     ) -> hideWhenCreating() -> setLabel('Student in')
+                AssociationField::new   ( 'studentIn'     ) -> hideWhenCreating() -> setLabel('Student in') -> hideOnIndex()
                     -> setFormTypeOptions 
                     (
                         [
                             'by_reference' => false,
                         ]
                     ),
+                TextEditorField::new ( 'tutorAndStudentIn' )
+                    -> setTemplatePath('bundles/EasyAdminBundle/crud/TextEditorField.html.twig')
+                    -> hideWhenUpdating ()
+                    -> hideWhenCreating ()
             ];
 
         }
@@ -267,14 +282,15 @@ class UserCrudController extends AbstractCrudController
             function (FormEvent $event) 
             {
                 /** @var User $user */
-                $obj = $event -> getData();
+                $obj = $event -> getData ();
                 if ($obj instanceof User) 
                 {
-                    $user = $obj;
-                    $plainPW = $user -> getPlainPassword();
+                    $user     = $obj;
+                    $plainPW  = $user -> getPlainPassword ();
                     if ( $plainPW ) 
                     {
-                        $user -> setPassword ( $this -> passwordHasher -> getPasswordHasher ( 'user' ) -> hash ( $plainPW ) );
+                        $hash = $this -> passwordHasher -> getPasswordHasher ( 'user' ) -> hash ( $plainPW );
+                        $user -> setPassword ( $hash );
                     }
                 }
         
@@ -288,7 +304,7 @@ class UserCrudController extends AbstractCrudController
 
         $request     = $searchDto -> getRequest();
 
-        $qb = $this -> get ( EntityRepository::class ) -> createQueryBuilder ($searchDto, $entityDto, $fields, $filters);
+        $qb = $this -> get ( EntityRepository::class ) -> createQueryBuilder ( $searchDto, $entityDto, $fields, $filters );
 
         /*$deletedOnly = $request->query->get('deletedOnly') == 1;
         if ($deletedOnly)

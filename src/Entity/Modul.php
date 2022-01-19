@@ -47,12 +47,20 @@ class Modul
      */
     private $skript;
 
+    private $platzhalter = false;
+
     public function __construct ()
     {
-        $this -> skripte    = new ArrayCollection ();
-        $this -> fehler     = new ArrayCollection ();
-        $this -> studenten  = new ArrayCollection();
-        // $this -> setAktuellesSkript($this->getLastIndexedSkript());
+        $this -> skripte     = new ArrayCollection ();
+        $this -> fehler      = new ArrayCollection ();
+        $this -> studenten   = new ArrayCollection ();
+        $this -> platzhalter = ( $this -> name == 'Platzhalter' ); 
+    }
+
+    public function isPlatzhalter()
+    {
+        $this -> platzhalter = ( $this -> name == 'Platzhalter' ); 
+        return $this -> platzhalter;
     }
 
     public function __toString ()
@@ -109,6 +117,7 @@ class Modul
 
     public function removeFehler ( Fehler $fehler ): self
     {
+        
         if ( $this -> fehler -> removeElement ( $fehler ) )
         {
             // set the owning side to null (unless already changed)

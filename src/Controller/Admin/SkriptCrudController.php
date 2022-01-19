@@ -118,7 +118,13 @@ class SkriptCrudController extends AbstractCrudController
                 IdField::new            ( 'id'      ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          ( 'name'    ),
                 NumberField::new        ( 'version' ),
-                AssociationField::new   ( 'fehler'  ),
+                AssociationField::new   ( 'fehler'  ) -> hideOnIndex(),
+                TextEditorField::new    ( 'fehler'  )
+                    // callables also receives the entire entity instance as the second argument
+                    ->formatValue( function ( $value, $entity ) {
+                        return join( "\n", $value->getValues() );
+                    }) 
+                    -> hideOnForm(),
                 AssociationField::new   ( 'modul'   )
             ];
         }
@@ -142,7 +148,13 @@ class SkriptCrudController extends AbstractCrudController
                 IdField::new            ( 'id'      ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          ( 'name'    ),
                 NumberField::new        ( 'version' ),
-                AssociationField::new   ( 'fehler'  ),
+                AssociationField::new   ( 'fehler'  ) -> hideOnIndex(),
+                TextEditorField::new    ( 'fehler'  )
+                    // callables also receives the entire entity instance as the second argument
+                    ->formatValue( function ( $value, $entity ) {
+                        return join( "\n", $value->getValues() );
+                    }) 
+                    -> hideOnForm(),
                 AssociationField::new   ( 'modul'   )
             ];
         }
@@ -154,7 +166,13 @@ class SkriptCrudController extends AbstractCrudController
                 IdField::new            ( 'id'      ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          ( 'name'    ),
                 NumberField::new        ( 'version' ),
-                AssociationField::new   ( 'fehler'  ),
+                AssociationField::new   ( 'fehler'  ) -> hideOnIndex(),
+                TextEditorField::new    ( 'fehler'  )
+                    // callables also receives the entire entity instance as the second argument
+                    ->formatValue( function ( $value, $entity ) {
+                        return join( "\n", $value->getValues() );
+                    }) 
+                    -> hideOnForm(),
                 AssociationField::new   ( 'modul'   )
             ];
         }
@@ -166,7 +184,13 @@ class SkriptCrudController extends AbstractCrudController
                 IdField::new            ( 'id'      ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          ( 'name'    ),
                 NumberField::new        ( 'version' ),
-                AssociationField::new   ( 'fehler'  ),
+                AssociationField::new   ( 'fehler'  ) -> hideOnIndex(),
+                TextEditorField::new    ( 'fehler'  )
+                    // callables also receives the entire entity instance as the second argument
+                    ->formatValue( function ( $value, $entity ) {
+                        return join( "\n", $value->getValues() );
+                    }) 
+                    -> hideOnForm(),
                 AssociationField::new   ( 'modul'   )
             ];
         }
@@ -204,6 +228,7 @@ class SkriptCrudController extends AbstractCrudController
                 -> remove ( Crud::PAGE_INDEX,   Action::NEW )
                 -> remove ( Crud::PAGE_INDEX,   Action::EDIT )
                 -> remove ( Crud::PAGE_INDEX,   Action::DELETE )
+                -> remove ( Crud::PAGE_DETAIL,   Action::DELETE )
             ;
         }
         
@@ -223,7 +248,6 @@ class SkriptCrudController extends AbstractCrudController
                 // ...
                 -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
                 -> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
-                -> remove ( Crud::PAGE_INDEX,   Action::DELETE )
             ;
         }
 

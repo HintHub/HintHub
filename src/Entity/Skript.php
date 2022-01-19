@@ -37,15 +37,24 @@ class Skript
     private $name;
 
     /**
-     * @ORM\OneToOne(targetEntity=Modul::class, inversedBy="skript", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=Modul::class, inversedBy="skript", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $modul;
 
+    private $platzhalter = false;
+
     public function __construct ()
     {
-        $this -> fehler = new ArrayCollection();
+        $this -> fehler      = new ArrayCollection ();
+        $this -> platzhalter = ( $this -> name == 'Platzhalter' ); 
     }
 
+    public function isPlatzhalter()
+    {
+        $this -> platzhalter = ( $this -> name == 'Platzhalter' ); 
+        return $this -> platzhalter;
+    }
 
     public function __toString() 
     {
@@ -94,10 +103,12 @@ class Skript
     {
         if ( $this -> fehler -> removeElement ( $fehler ) )
         {
-            // set the owning side to null (unless already changed)
+            // Edit by KS 19.01.22 (Test Fixing II); add a blank script if removed 
             if ( $fehler -> getSkript () === $this ) 
             {
-                $fehler -> setSkript    ( null );
+                $skript = new Skript();
+                $skript -> setName ("Platzhalter");
+                $fehler -> setSkript    ( $skript );
             }
         }
 

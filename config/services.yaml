@@ -46,3 +46,15 @@ services:
             - { name: doctrine.event_subscriber, connection: default }
         calls:
             - [ setAnnotationReader, [ '@annotation_reader' ] ]
+
+    app.easy_admin.events:
+        class: App\Events\EasyAdminSubscriber
+        tags:
+            - { name: kernel.event_subscriber }
+    
+    app.events.fehlereventlistener:
+        class: App\Events\FehlerEventListener
+        arguments: ['@session']
+        tags:
+                - { name: 'doctrine.event_listener', event: 'onFlush' }
+                - { name: 'doctrine.event_listener', event: 'preRemove' }
