@@ -2,25 +2,30 @@
 {
     background-color: white !important;
 }
+
 .col-lg-4
 {
     background-color: white !important;
 }
+
 .row
 {
     background-color: white !important;
 }
+
 .bg-dark
 {
     background-color: #1A4B91 !important;
 }
+
 .btn-outline-success
 {
-color: #FFFFFF !important;
+    color: #FFFFFF !important;
 }
+
 .btn-success
 {
-background-color: #1A4B91 !important;
+    background-color: #1A4B91 !important;
 }
 
 @media only screen and (max-width: 600px) {
