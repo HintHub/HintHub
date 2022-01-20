@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <section>
+        <div class="container" style="padding-bottom: 50px; padding-top: 50px;">
+            <div class="intro">
+                <h2 class="text-center">Ein Fehler ist aufgetreten</h2>
+                <h4 class="text-center" style="color: var(--bs-red);">{{ exception.message }}</h4>
+                <p class="text-center text-secondary" style="color: var(--bs-red);">Bei Unklarheiten kontaktieren Sie bitte den Netzwerkadministrator</p>
+            </div>
+            <div class="buttons" style="text-align: center;">
+            <a class="btn btn-primary" role="button" onclick="history.back()"> Zurück</a>
+            <a class="btn btn-light" role="button" style="margin: 6px;" href="/admin"> Zur Homepage</a>
+            </div>
+        </div>
+    </section>
+{% endblock %}

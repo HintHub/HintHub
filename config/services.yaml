@@ -58,3 +58,8 @@ services:
         tags:
                 - { name: 'doctrine.event_listener', event: 'onFlush' }
                 - { name: 'doctrine.event_listener', event: 'preRemove' }
+
+    app.events.exceptionlistener:
+        class: App\Events\ExceptionListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
