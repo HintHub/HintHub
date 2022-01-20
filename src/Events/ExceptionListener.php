@@ -6,34 +6,23 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
+use Twig\Environment;
+
 class ExceptionListener
 {
 
-    
+    private $twig;
+
+    public function __construct(Environment $twig) 
+    {
+        $this->twig = $twig;
+    }
     
     public function onKernelException(ExceptionEvent $event)
     {
-        // You get the exception object from the received event
-        $exception = $event->getThrowable();
-        $message = sprintf(
-            '%s',
-            $exception->getMessage()
-        );
-
-        // Customize your response object to display the exception details
-        $response = new Response();
-        $response->setContent($message);
-
-        // HttpExceptionInterface is a special type of exception that
-        // holds status code and header details
-        if ($exception instanceof HttpExceptionInterface) {
-            $response->setStatusCode($exception->getStatusCode());
-            $response->headers->replace($exception->getHeaders());
-        } else {
-            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-
-        // sends the modified response object to the event
-        //$event->setResponse($response);
+        /*TODO - Wir sollten im ExceptionListener quasi nicht error.html.twig rendern - nicht direkt zumindest
+                sondern eine dedizierte html haben welches im Easyadminbundle ist
+                dann sollten wir die navbar darstellen können*/
+        //$twig->render();
     }
 }
