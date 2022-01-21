@@ -29,7 +29,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 class DashboardController extends AbstractDashboardController
 {
     // css
-    private $cssFile     = 'admin.css';
+    private $cssFile     = 'css/admin.css';
     private $logoPath    = 'hinthub_logo.png';
 
     private $controllerTwigLocation = 'bundles/EasyAdminBundle/crud/DashboardController.html.twig';
