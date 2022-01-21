@@ -63,7 +63,7 @@ class FehlerRepository extends ServiceEntityRepository
     }
 
     public function countAllByUserAndStatus(User $user, $status) {
-        $result = $this    ->  findAllByUserAndStatus($user, $status)
+        $result = $this ->  findAllByUserAndStatus($user, $status)
                         ->  getQuery()
                         ->  getResult();
         

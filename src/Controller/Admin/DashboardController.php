@@ -63,7 +63,8 @@ class DashboardController extends AbstractDashboardController
         //dd($variables);
 
         // test t
-        return $this -> render ( $this -> controllerTwigLocation, $variables);
+        return $this -> 
+            render ( $this -> controllerTwigLocation, $variables);
         // return parent::index();
     }
 
@@ -111,7 +112,8 @@ class DashboardController extends AbstractDashboardController
             'isTutor'       => $isTutor,
             'isStudent'     => $isStudent,
             'isVerwaltung'  => $isVerwaltung,
-            'isExtern'      => $isExtern
+            'isExtern'      => $isExtern,
+            'isDisplayChart'=> !$isExtern
         ];
 
         return $roles;
