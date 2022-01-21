@@ -3,9 +3,10 @@
 // @author ali-kemal.yalama ( ali-kemal.yalama@iubh.de ) 
 namespace App\Repository;
 
+use App\Entity\User;
 use App\Entity\Fehler;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @method Fehler|null find($id, $lockMode = null, $lockVersion = null)
@@ -18,6 +19,55 @@ class FehlerRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Fehler::class);
+    }
+
+    //Wir nutzen die Repositories, da ja dinge wie der QueryBuilder geerbt werden
+
+    /**
+     * Admin und Verwaltung sollen zugriff auf alle Fehler haben
+     * Um Fehler aller Zustaende abzugreifen, nimm einfach "all" fuer status
+     * 
+     * status ist ein string
+     */
+    public function findAllByUserAndStatus(User $user, $status) 
+    {
+        $response = $this -> createQueryBuilder ('f');
+
+        if ( $user -> isAdmin () || $user -> isVerwaltung () )
+        {
+            $response
+                -> andWhere     ( 'f.status IN (:status)' );
+        }
+
+        if ( $user -> isStudent () )
+        {
+            $response
+                -> andWhere     ( 'f.status IN (:status) AND f.einreicher IN (:studentId)' )
+                -> setParameter ( 'studentId', $user -> getId()     );
+        }
+
+        if ( $user -> isTutor () )
+        {
+            $tutorModule = $userModuleIds = $user -> getOnlyIdsFromTutorIn ();
+            
+            
+            $response
+                -> andWhere     ( 'f.status IN (:status) AND f.einreicher IN (:module)' )
+                -> setParameter('module', $tutorModule, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
+        }
+
+
+        $response -> setParameter ( 'status', $status     );
+
+        return $response;
+    }
+
+    public function countAllByUserAndStatus(User $user, $status) {
+        $result = $this    ->  findAllByUserAndStatus($user, $status)
+                        ->  getQuery()
+                        ->  getResult();
+        
+        return count($result);
     }
 
     // /**

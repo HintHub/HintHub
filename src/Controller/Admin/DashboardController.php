@@ -10,14 +10,15 @@ use App\Entity\Kommentar;
 
 use App\Service\UserService;
 
+use App\Repository\FehlerRepository;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 
+use Symfony\Component\Routing\Annotation\Route;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Menu\CrudMenuItem;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Menu\CrudMenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 
 /**
@@ -34,13 +35,17 @@ class DashboardController extends AbstractDashboardController
 
     private $controllerTwigLocation = 'bundles/EasyAdminBundle/crud/DashboardController.html.twig';
 
+    //repositories
+    private FehlerRepository $fehlerRepository;
+
     // services
     private UserService $userService;
 
     // constructor
-    public function __construct ( UserService $userService ) 
+    public function __construct ( UserService $userService, FehlerRepository $fehlerRepository ) 
     {
-        $this -> userService = $userService;
+        $this -> userService        = $userService;
+        $this -> fehlerRepository   = $fehlerRepository;
     }
     
     /**
@@ -48,9 +53,68 @@ class DashboardController extends AbstractDashboardController
      */
     public function index(): Response
     {
+        $currentUser = $this->userService->getCurrentUser();
+        
+        $counts    = $this -> getCountArray ($currentUser);
+        $roles     = $this -> getRoleArray  ($currentUser);
+
+        $variables = array_merge($counts, $roles);
+
+        //dd($variables);
+
         // test t
-        return $this -> render ( $this -> controllerTwigLocation );
+        return $this -> render ( $this -> controllerTwigLocation, $variables);
         // return parent::index();
+    }
+
+    private function getCountArray(User $user) 
+    {
+   
+        $offeneFehlerCount          = 
+            $this->fehlerRepository->countAllByUserAndStatus($user, 'OPEN');
+        
+        $geschlosseneFehlerCount    = 
+            $this->fehlerRepository->countAllByUserAndStatus($user, 'CLOSED');
+        
+        $eskaliertFehlerCount       = 
+            $this->fehlerRepository->countAllByUserAndStatus($user, 'ESCALATED');
+        
+        $wartendFehlerCount         = 
+            $this->fehlerRepository->countAllByUserAndStatus($user, 'WAITING');
+        
+        $abgelehntFehlerCount       = 
+            $this->fehlerRepository->countAllByUserAndStatus($user, 'REJECTED');
+
+        $counts = 
+        [
+            'offeneFehlerCount'         => $offeneFehlerCount,
+            'geschlosseneFehlerCount'   => $geschlosseneFehlerCount,
+            'eskaliertFehlerCount'      => $eskaliertFehlerCount,
+            'wartendFehlerCount'        => $wartendFehlerCount,
+            'abgelehntFehlerCount'      => $abgelehntFehlerCount
+        ];
+
+        return $counts;
+    }
+
+    private function getRoleArray(User $user) 
+    {
+        $isAdmin        = $user -> isAdmin       ();
+        $isTutor        = $user -> isTutor       ();
+        $isStudent      = $user -> isStudent     ();
+        $isVerwaltung   = $user -> isVerwaltung  ();
+        $isExtern       = $user -> isExtern      ();
+
+        $roles = 
+        [
+            'isAdmin'       => $isAdmin,
+            'isTutor'       => $isTutor,
+            'isStudent'     => $isStudent,
+            'isVerwaltung'  => $isVerwaltung,
+            'isExtern'      => $isExtern
+        ];
+
+        return $roles;
     }
 
     public function configureDashboard(): Dashboard
