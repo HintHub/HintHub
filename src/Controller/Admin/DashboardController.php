@@ -48,6 +48,7 @@ class DashboardController extends AbstractDashboardController
      */
     public function index(): Response
     {
+        // test
         return $this -> render ( $this -> controllerTwigLocation );
         // return parent::index();
     }
