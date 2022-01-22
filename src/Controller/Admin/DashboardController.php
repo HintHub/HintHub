@@ -57,6 +57,11 @@ class DashboardController extends AbstractDashboardController
         
         $counts    = $this -> getCountArray ($currentUser);
         $roles     = $this -> getRoleArray  ($currentUser);
+        $opens     = $this -> getCountOpen  ($currentUser);
+        $closed    = $this -> getCountClosed ($currentUser);
+        $waiting   = $this -> getCountWaiting ($currentUser);
+        $escalated = $this -> getCountEscalated ($currentUser);
+        $isAdmin = $this->userService->getCurrentUser()->isAdmin();
 
         $variables = array_merge($counts, $roles);
 
@@ -64,9 +69,47 @@ class DashboardController extends AbstractDashboardController
 
         // test t
         return $this -> 
-            render ( $this -> controllerTwigLocation, $variables);
+            render ( $this -> controllerTwigLocation,["opens" => $opens, "closed" => $closed, "waiting" => $waiting, "escalated" => $escalated, "isAdmin" => $isAdmin] );
         // return parent::index();
     }
+
+    // Aufruf aus dem FehlerRepository für jeden Status
+    // Offene
+    private function getCountOpen(User $user)
+    {
+        $openByUser                =
+            $this->fehlerRepository->countAllByUserAndOpen($user);
+        return $openByUser;
+    }
+    // Aufruf aus dem FehlerRepository für jeden Status
+    // Geschlossen
+    private function getCountClosed(User $user)
+    {
+        $closedByUser                =
+            $this->fehlerRepository->countAllByUserAndClosed($user);
+        return $closedByUser;
+    }
+    // Aufruf aus dem FehlerRepository für jeden Status
+    // Wartende
+    private function getCountWaiting(User $user)
+    {
+        $waitingByUser                =
+            $this->fehlerRepository->countAllByUserAndWaiting($user);
+        return $waitingByUser;
+    }
+    // Aufruf aus dem FehlerRepository für jeden Status
+    // Eskaliert
+    private function getCountEscalated(User $user)
+    {
+        $escalatedByUser                =
+            $this->fehlerRepository->countAllByUserAndEscalated($user);
+        return $escalatedByUser;
+    }
+
+
+
+
+
 
     private function getCountArray(User $user) 
     {

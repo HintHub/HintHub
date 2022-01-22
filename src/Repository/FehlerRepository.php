@@ -70,6 +70,56 @@ class FehlerRepository extends ServiceEntityRepository
         return count($result);
     }
 
+    // Fehler by User und jeweils nach Status
+    // Offene Fehler
+
+    public function countAllByUserAndOpen(User $user) {
+        $status = "OPEN";
+
+        $result = $this ->  findAllByUserAndStatus($user, $status)
+                        ->  getQuery()
+                        ->  getResult();
+        
+        return count($result);
+    }
+
+    // Fehler by User und jeweils nach Status
+    // Geschlossene Fehler
+
+    public function countAllByUserAndClosed(User $user) {
+        $status = "CLOSED";
+
+        $result = $this ->  findAllByUserAndStatus($user, $status)
+                        ->  getQuery()
+                        ->  getResult();
+        
+        return count($result);
+    }
+    // Fehler by User und jeweils nach Status
+    // Wartend Fehler
+
+    public function countAllByUserAndWaiting(User $user) {
+        $status = "WAITING";
+
+        $result = $this ->  findAllByUserAndStatus($user, $status)
+                        ->  getQuery()
+                        ->  getResult();
+        
+        return count($result);
+    }
+    // Fehler by User und jeweils nach Status
+    // Eskalierte Fehler
+
+    public function countAllByUserAndESCALATED(User $user) {
+        $status = "ESCALATED";
+
+        $result = $this ->  findAllByUserAndStatus($user, $status)
+                        ->  getQuery()
+                        ->  getResult();
+        
+        return count($result);
+    }
+
     // /**
     //  * @return Fehler[] Returns an array of Fehler objects
     //  */
