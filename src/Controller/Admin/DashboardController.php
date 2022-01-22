@@ -90,7 +90,8 @@ class DashboardController extends AbstractDashboardController
         }
     }
     
-    
+    //VARIABLES BY CURRENTUSER 
+
     private function getAdminVariables(User $user) {
 
         $moduls    = $this -> getCountModules();
@@ -99,15 +100,20 @@ class DashboardController extends AbstractDashboardController
 
         $countFehlerNachStatus  = $this->getFehlerStatusCountArray($user);
 
-        $moduls = [$moduls];
+        $moduls = ["moduls" => $moduls];
 
         $userFrequencies        = $this->getUserFrequencies($user);
         
         $variables = array_merge($roles, $countFehlerNachStatus, $moduls, $userFrequencies);
 
-        //dd($variables);
+        dd($variables);
 
         return $variables;
+    }
+
+    private function getVerwaltungVariables(User $user) 
+    {
+        return $this->getAdminVariables($user);
     }
 
     //TODO das da oben fuer alle rollen des currentUser usw. 
