@@ -136,4 +136,25 @@ class UserService
             -> userRepository 
             -> getAllByRole ( 'ROLE_TUTOR' );
     }
+
+    public function getRoleArray(User $user) 
+    {
+        $isAdmin        = $user -> isAdmin       ();
+        $isTutor        = $user -> isTutor       ();
+        $isStudent      = $user -> isStudent     ();
+        $isVerwaltung   = $user -> isVerwaltung  ();
+        $isExtern       = $user -> isExtern      ();
+
+        $roles = 
+        [
+            'isAdmin'       => $isAdmin,
+            'isTutor'       => $isTutor,
+            'isStudent'     => $isStudent,
+            'isVerwaltung'  => $isVerwaltung,
+            'isExtern'      => $isExtern,
+            'isDisplayChart'=> !$isExtern
+        ];
+
+        return $roles;
+    }
 }

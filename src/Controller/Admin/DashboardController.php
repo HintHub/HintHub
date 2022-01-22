@@ -61,61 +61,79 @@ class DashboardController extends AbstractDashboardController
     {
         $currentUser = $this->userService->getCurrentUser();
         
-        /*$counts    = $this -> getCountArray ($currentUser);
-        $roles     = $this -> getRoleArray  ($currentUser);
-        $opens     = $this -> getCountOpen  ($currentUser);
-        $closed    = $this -> getCountClosed ($currentUser);
-        $waiting   = $this -> getCountWaiting ($currentUser);
-        $escalated = $this -> getCountEscalated ($currentUser);
-        $isAdmin = $this->userService->getCurrentUser()->isAdmin();
-
-        $moduls    = $this -> getCountModules();
-
-        //users
-        $students  = $this -> getAllStudents();
-        $tutors    = $this -> getAllTutors();
-        $extern    = $this -> getAllExtern();
-        $verwaltung = $this -> getAllVerwaltung();*/
-
-        //$variables = array_merge($counts, $roles);
 
         $variables = $this->getVariables($currentUser);
 
-        //dd($variables);
-
         // test t
         return $this -> 
-            render ( $this -> controllerTwigLocation,["opens" => $opens, "closed" => $closed, "waiting" => $waiting, "escalated" => $escalated, "isAdmin" => $isAdmin,
-                                                    "moduls" => $moduls, "students" => $students, "tutors" => $tutors, "verwaltung" => $verwaltung, "extern" => $extern] );
+            render ( $this -> controllerTwigLocation, $variables);
         // return parent::index();
     }
 
+    //TODO vom userservice das array nehmen (getRoleArray()) statt String abgleich
     private function getVariables(User $user) {
 
         switch($user->getRolesString ()) {
             case "ROLE_ADMIN":
-                return $this->getAdminVariables();
-            //TODO 
+                return $this->getAdminVariables($user);
+            //TODO below this line
             case "ROLE_VERWALTUNG":
-                return [];
+                return []; //TODO
             case "ROLE_EXTERN":
-                return [];
+                return []; //TODO
             case "ROLE_TUTOR":
-                return [];
+                return []; //TODO
             case "ROLE_STUDENT":
-                return [];
+                return []; //TODO
             default:
                 return [];
         }
     }
     
     
-    private function getAdminVariables() {
+    private function getAdminVariables(User $user) {
 
+        $moduls    = $this -> getCountModules();
 
+        $roles                  = $this->userService->getRoleArray($user);
 
+        $countFehlerNachStatus  = $this->getFehlerStatusCountArray($user);
+
+        $moduls = [$moduls];
+
+        $userFrequencies        = $this->getUserFrequencies($user);
+        
+        $variables = array_merge($roles, $countFehlerNachStatus, $moduls, $userFrequencies);
+
+        //dd($variables);
+
+        return $variables;
     }
 
+    //TODO das da oben fuer alle rollen des currentUser usw. 
+
+    //COUNT STATUS
+
+    private function getFehlerStatusCountArray(User $user) 
+    {
+   
+        $offeneFehlerCount          = $this -> getCountOpen($user);
+        $geschlosseneFehlerCount    = $this -> getCountClosed($user);
+        $eskaliertFehlerCount       = $this -> getCountEscalated($user);      
+        $wartendFehlerCount         = $this -> getCountWaiting($user);         
+        $abgelehntFehlerCount       = $this -> fehlerRepository->countAllByUserAndStatus($user, 'REJECTED');
+
+        $counts = 
+        [
+            'opens'         => $offeneFehlerCount,
+            'closed'        => $geschlosseneFehlerCount,
+            'escalated'     => $eskaliertFehlerCount,
+            'waiting'       => $wartendFehlerCount,
+            'rejected'      => $abgelehntFehlerCount
+        ];
+
+        return $counts;
+    }
 
     // Aufruf aus dem FehlerRepository für jeden Status
     // Offene
@@ -149,6 +167,10 @@ class DashboardController extends AbstractDashboardController
             $this->fehlerRepository->countAllByUserAndEscalated($user);
         return $escalatedByUser;
     }
+
+    //COUNT STATUS END
+
+
     // Aufruf alle Module aus dem ModulRepository
     // Alle Module
     private function getCountModules()
@@ -157,6 +179,23 @@ class DashboardController extends AbstractDashboardController
             $this->modulRepository->getAllModules();
         return $allModuls;
     }
+
+    //COUNT FREQUENCIES ROLES
+
+    private function getUserFrequencies(User $user) {
+        $students  = $this -> getAllStudents();
+        $tutors    = $this -> getAllTutors();
+        $extern    = $this -> getAllExtern();
+        $verwaltung = $this -> getAllVerwaltung();
+
+        return [
+            "students"      => $students, 
+            "tutors"        => $tutors, 
+            "verwaltung"    => $verwaltung, 
+            "extern"        => $extern
+        ];
+    }
+
     // Aufruf alle Studenten aus dem UserRepository
     // Alle Studenten
 
@@ -194,61 +233,9 @@ class DashboardController extends AbstractDashboardController
         return $allVerwaltung;
     }
 
+    //COUNT FREQUENCIES ROLES
 
-
-
-
-
-    private function getCountArray(User $user) 
-    {
-   
-        $offeneFehlerCount          = 
-            $this->fehlerRepository->countAllByUserAndStatus($user, 'OPEN');
-        
-        $geschlosseneFehlerCount    = 
-            $this->fehlerRepository->countAllByUserAndStatus($user, 'CLOSED');
-        
-        $eskaliertFehlerCount       = 
-            $this->fehlerRepository->countAllByUserAndStatus($user, 'ESCALATED');
-        
-        $wartendFehlerCount         = 
-            $this->fehlerRepository->countAllByUserAndStatus($user, 'WAITING');
-        
-        $abgelehntFehlerCount       = 
-            $this->fehlerRepository->countAllByUserAndStatus($user, 'REJECTED');
-
-        $counts = 
-        [
-            'offeneFehlerCount'         => $offeneFehlerCount,
-            'geschlosseneFehlerCount'   => $geschlosseneFehlerCount,
-            'eskaliertFehlerCount'      => $eskaliertFehlerCount,
-            'wartendFehlerCount'        => $wartendFehlerCount,
-            'abgelehntFehlerCount'      => $abgelehntFehlerCount
-        ];
-
-        return $counts;
-    }
-
-    private function getRoleArray(User $user) 
-    {
-        $isAdmin        = $user -> isAdmin       ();
-        $isTutor        = $user -> isTutor       ();
-        $isStudent      = $user -> isStudent     ();
-        $isVerwaltung   = $user -> isVerwaltung  ();
-        $isExtern       = $user -> isExtern      ();
-
-        $roles = 
-        [
-            'isAdmin'       => $isAdmin,
-            'isTutor'       => $isTutor,
-            'isStudent'     => $isStudent,
-            'isVerwaltung'  => $isVerwaltung,
-            'isExtern'      => $isExtern,
-            'isDisplayChart'=> !$isExtern
-        ];
-
-        return $roles;
-    }
+    // INDEX METHODS END
 
     public function configureDashboard(): Dashboard
     {

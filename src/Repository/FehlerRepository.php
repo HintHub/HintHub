@@ -76,13 +76,14 @@ class FehlerRepository extends ServiceEntityRepository
     // Offene Fehler
 
     public function countAllByUserAndOpen(User $user) {
-        $status = "OPEN";
+        /*$status = "OPEN";
 
         $result = $this ->  findAllByUserAndStatus($user, $status)
                         ->  getQuery()
                         ->  getResult();
         
-        return count($result);
+        return count($result);*/
+        return $this->countAllByUserAndStatus($user, "OPEN");
     }
 
     // Fehler by User und jeweils nach Status
