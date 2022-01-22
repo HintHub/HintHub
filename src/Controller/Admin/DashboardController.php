@@ -78,9 +78,9 @@ class DashboardController extends AbstractDashboardController
                 return $this->getAdminVariables($user);
             //TODO below this line
             case "ROLE_VERWALTUNG":
-                return []; //TODO
+                return $this->getVerwaltungVariables($user);
             case "ROLE_EXTERN":
-                return []; //TODO
+                return $this->getExternVariables($user);
             case "ROLE_TUTOR":
                 return []; //TODO
             case "ROLE_STUDENT":
@@ -106,7 +106,7 @@ class DashboardController extends AbstractDashboardController
         
         $variables = array_merge($roles, $countFehlerNachStatus, $moduls, $userFrequencies);
 
-        dd($variables);
+        //dd($variables);
 
         return $variables;
     }
@@ -116,7 +116,22 @@ class DashboardController extends AbstractDashboardController
         return $this->getAdminVariables($user);
     }
 
-    //TODO das da oben fuer alle rollen des currentUser usw. 
+    private function getExternVariables(User $user) 
+    {
+        $moduls = ["moduls" => $moduls];
+
+        $userFrequencies        = $this->getUserFrequencies($user);
+
+        $variables = array_merge($moduls, $userFrequencies);
+
+        return $variables;
+    }
+
+    //TODO das von da oben noch fuer tutor und student
+
+    //VARIABLES BY CURRENTUSER END
+
+     
 
     //COUNT STATUS
 
