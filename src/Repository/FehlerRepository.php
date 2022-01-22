@@ -70,6 +70,8 @@ class FehlerRepository extends ServiceEntityRepository
         return count($result);
     }
 
+    //TODO: Absprechen mit Stefan: Hat die obere Methode gebuggt?
+
     // Fehler by User und jeweils nach Status
     // Offene Fehler
 

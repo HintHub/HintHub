@@ -61,20 +61,25 @@ class DashboardController extends AbstractDashboardController
     {
         $currentUser = $this->userService->getCurrentUser();
         
-        $counts    = $this -> getCountArray ($currentUser);
+        /*$counts    = $this -> getCountArray ($currentUser);
         $roles     = $this -> getRoleArray  ($currentUser);
         $opens     = $this -> getCountOpen  ($currentUser);
         $closed    = $this -> getCountClosed ($currentUser);
         $waiting   = $this -> getCountWaiting ($currentUser);
         $escalated = $this -> getCountEscalated ($currentUser);
         $isAdmin = $this->userService->getCurrentUser()->isAdmin();
+
         $moduls    = $this -> getCountModules();
+
+        //users
         $students  = $this -> getAllStudents();
         $tutors    = $this -> getAllTutors();
         $extern    = $this -> getAllExtern();
-        $verwaltung = $this -> getAllVerwaltung();
+        $verwaltung = $this -> getAllVerwaltung();*/
 
-        $variables = array_merge($counts, $roles);
+        //$variables = array_merge($counts, $roles);
+
+        $variables = $this->getVariables($currentUser);
 
         //dd($variables);
 
@@ -84,6 +89,33 @@ class DashboardController extends AbstractDashboardController
                                                     "moduls" => $moduls, "students" => $students, "tutors" => $tutors, "verwaltung" => $verwaltung, "extern" => $extern] );
         // return parent::index();
     }
+
+    private function getVariables(User $user) {
+
+        switch($user->getRolesString ()) {
+            case "ROLE_ADMIN":
+                return $this->getAdminVariables();
+            //TODO 
+            case "ROLE_VERWALTUNG":
+                return [];
+            case "ROLE_EXTERN":
+                return [];
+            case "ROLE_TUTOR":
+                return [];
+            case "ROLE_STUDENT":
+                return [];
+            default:
+                return [];
+        }
+    }
+    
+    
+    private function getAdminVariables() {
+
+
+
+    }
+
 
     // Aufruf aus dem FehlerRepository für jeden Status
     // Offene
