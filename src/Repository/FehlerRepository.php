@@ -120,6 +120,7 @@ class FehlerRepository extends ServiceEntityRepository
         return count($result);
     }
 
+
     // /**
     //  * @return Fehler[] Returns an array of Fehler objects
     //  */

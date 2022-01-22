@@ -21,6 +21,14 @@ class ModulRepository extends ServiceEntityRepository
         parent::__construct($registry, Modul::class);
     }
 
+    public function getAllModules() 
+    {
+        $result = $this ->  findAll();
+       
+
+        return count($result);
+    }
+
     // /**
     //  * @return Modul[] Returns an array of Modul objects
     //  */

@@ -35,6 +35,62 @@ class UserRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    // Alle Studenten ausgeben
+    public function getAllStudents()
+    {
+        $role = "ROLE_STUDENT";
+
+        $result = $this->createQueryBuilder('u')
+        ->andWhere('u.ROLES LIKE :role')
+        ->setParameter('role', '%'.$role.'%')
+        ->getQuery()
+        ->getResult();
+        
+        return count($result);
+    }
+
+    // Alle Tutoren ausgeben
+    public function getAllTutors()
+    {
+        $role = "tutor";
+
+        $result = $this->createQueryBuilder('u')
+        ->andWhere('u.ROLES LIKE :role')
+        ->setParameter('role', '%'.$role.'%')
+        ->getQuery()
+        ->getResult();
+        
+        return count($result);
+    }
+
+     // Alle Externen ausgeben
+     public function getAllExtern()
+     {
+         $role = "extern";
+ 
+         $result = $this->createQueryBuilder('u')
+         ->andWhere('u.ROLES LIKE :role')
+         ->setParameter('role', '%'.$role.'%')
+         ->getQuery()
+         ->getResult();
+         
+         return count($result);
+     }
+
+     // Alle Verwaltung ausgeben
+     public function getAllVerwaltung()
+     {
+         $role = "verwaltung";
+ 
+         $result = $this->createQueryBuilder('u')
+         ->andWhere('u.ROLES LIKE :role')
+         ->setParameter('role', '%'.$role.'%')
+         ->getQuery()
+         ->getResult();
+         
+         return count($result);
+     }
+
     // /**
     //  * @return User[] Returns an array of User objects
     //  */

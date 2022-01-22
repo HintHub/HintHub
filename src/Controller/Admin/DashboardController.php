@@ -11,6 +11,8 @@ use App\Entity\Kommentar;
 use App\Service\UserService;
 
 use App\Repository\FehlerRepository;
+use App\Repository\ModulRepository;
+use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Response;
 
 use Symfony\Component\Routing\Annotation\Route;
@@ -37,15 +39,19 @@ class DashboardController extends AbstractDashboardController
 
     //repositories
     private FehlerRepository $fehlerRepository;
+    private ModulRepository $modulRepository;
+    private UserRepository $userRepository;
 
     // services
     private UserService $userService;
 
     // constructor
-    public function __construct ( UserService $userService, FehlerRepository $fehlerRepository ) 
+    public function __construct ( UserService $userService, FehlerRepository $fehlerRepository, ModulRepository $modulRepository, UserRepository $userRepository) 
     {
         $this -> userService        = $userService;
         $this -> fehlerRepository   = $fehlerRepository;
+        $this -> modulRepository    = $modulRepository;
+        $this -> userRepository     = $userRepository;
     }
     
     /**
@@ -62,6 +68,11 @@ class DashboardController extends AbstractDashboardController
         $waiting   = $this -> getCountWaiting ($currentUser);
         $escalated = $this -> getCountEscalated ($currentUser);
         $isAdmin = $this->userService->getCurrentUser()->isAdmin();
+        $moduls    = $this -> getCountModules();
+        $students  = $this -> getAllStudents();
+        $tutors    = $this -> getAllTutors();
+        $extern    = $this -> getAllExtern();
+        $verwaltung = $this -> getAllVerwaltung();
 
         $variables = array_merge($counts, $roles);
 
@@ -69,7 +80,8 @@ class DashboardController extends AbstractDashboardController
 
         // test t
         return $this -> 
-            render ( $this -> controllerTwigLocation,["opens" => $opens, "closed" => $closed, "waiting" => $waiting, "escalated" => $escalated, "isAdmin" => $isAdmin] );
+            render ( $this -> controllerTwigLocation,["opens" => $opens, "closed" => $closed, "waiting" => $waiting, "escalated" => $escalated, "isAdmin" => $isAdmin,
+                                                    "moduls" => $moduls, "students" => $students, "tutors" => $tutors, "verwaltung" => $verwaltung, "extern" => $extern] );
         // return parent::index();
     }
 
@@ -104,6 +116,50 @@ class DashboardController extends AbstractDashboardController
         $escalatedByUser                =
             $this->fehlerRepository->countAllByUserAndEscalated($user);
         return $escalatedByUser;
+    }
+    // Aufruf alle Module aus dem ModulRepository
+    // Alle Module
+    private function getCountModules()
+    {
+        $allModuls                      =
+            $this->modulRepository->getAllModules();
+        return $allModuls;
+    }
+    // Aufruf alle Studenten aus dem UserRepository
+    // Alle Studenten
+
+    private function getAllStudents()
+    {
+        $allStudents                    =
+            $this->userRepository->getAllStudents();
+        return $allStudents;
+    }
+    // Aufruf alle Tutoren aus dem UserRepository
+    // Alle Tutoren
+
+    private function getAllTutors()
+    {
+        $allTutors                    =
+            $this->userRepository->getAllTutors();
+        return $allTutors;
+    }
+    // Aufruf alle Externen aus dem UserRepository
+    // Alle Externen
+
+    private function getAllExtern()
+    {
+        $allExtern                   =
+            $this->userRepository->getAllExtern();
+        return $allExtern;
+    }
+    // Aufruf alle Verwaltung aus dem UserRepository
+    // Alle Verwaltung
+
+    private function getAllVerwaltung()
+    {
+        $allVerwaltung               =
+            $this->userRepository->getAllVerwaltung();
+        return $allVerwaltung;
     }
 
 
