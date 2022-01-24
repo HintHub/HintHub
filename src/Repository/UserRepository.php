@@ -52,7 +52,7 @@ class UserRepository extends ServiceEntityRepository
     // Alle Tutoren ausgeben
     public function getAllTutors()
     {
-        $role = "tutor";
+        $role = "ROLE_TUTOR";
 
         $result = $this->createQueryBuilder('u')
         ->andWhere('u.ROLES LIKE :role')
@@ -88,6 +88,14 @@ class UserRepository extends ServiceEntityRepository
          ->getQuery()
          ->getResult();
          
+         return count($result);
+     }
+
+     public function getAllUsers() 
+     {
+         $result = $this ->  findAll();
+        
+ 
          return count($result);
      }
 

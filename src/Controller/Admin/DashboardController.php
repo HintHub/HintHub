@@ -82,9 +82,9 @@ class DashboardController extends AbstractDashboardController
             case "ROLE_EXTERN":
                 return $this->getExternVariables($user);
             case "ROLE_TUTOR":
-                return []; //TODO
+                return $this->getTutorVariables($user);
             case "ROLE_STUDENT":
-                return []; //TODO
+                return $this->getStudentVariables($user);
             default:
                 return [];
         }
@@ -118,16 +118,62 @@ class DashboardController extends AbstractDashboardController
 
     private function getExternVariables(User $user) 
     {
+        $moduls    = $this -> getCountModules();
+
+        $roles     = $this->userService->getRoleArray($user);
+
+        $users     = $this->userRepository->getAllUsers();
+
         $moduls = ["moduls" => $moduls];
 
         $userFrequencies        = $this->getUserFrequencies($user);
+        
+        $variables = array_merge( $moduls, $userFrequencies, $roles, ["users" => $users]);
 
-        $variables = array_merge($moduls, $userFrequencies);
+        //dd($variables);
 
         return $variables;
     }
 
-    //TODO das von da oben noch fuer tutor und student
+    private function getStudentVariables(User $user) {
+
+        $moduls    = $this -> getCountModules();
+
+        $roles                  = $this->userService->getRoleArray($user);
+
+        $countFehlerNachStatus  = $this->getFehlerStatusCountArray($user);
+
+        $moduls = ["moduls" => $moduls];
+
+        $userFrequencies        = $this->getUserFrequencies($user);
+        
+        $variables = array_merge($roles, $countFehlerNachStatus, $moduls, $userFrequencies);
+
+        //dd($variables);
+
+        return $variables;
+    }
+
+    private function getTutorVariables(User $user) {
+
+        $moduls    = $this -> getCountModules();
+
+        $roles                  = $this->userService->getRoleArray($user);
+
+        $countFehlerNachStatus  = $this->getFehlerStatusCountArray($user);
+
+        $moduls = ["moduls" => $moduls];
+
+        $userFrequencies        = $this->getUserFrequencies($user);
+        
+        $variables = array_merge($roles, $countFehlerNachStatus, $moduls, $userFrequencies);
+
+        //dd($variables);
+
+        return $variables;
+    }
+
+    
 
     //VARIABLES BY CURRENTUSER END
 
