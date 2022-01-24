@@ -32,42 +32,45 @@ class FehlerRepository extends ServiceEntityRepository
     public function findAllByUserAndStatus(User $user, $status) 
     {
         $response = $this -> createQueryBuilder ('f');
+        $response = $this -> addWheres ( $response, $user );
+        $response -> setParameter ( 'status',  $status  );
+        $repsonse -> getQuery() -> useQueryCache(true) -> useResultCache(true);  // and here
+        return $response;
+    }
 
+
+    /**
+     * Counts all Fehler by Status
+     */
+    public function countAllByUserAndStatus ( $user, $status ) 
+    {
+        $response = $this -> createQueryBuilder ('f');
+        $response -> select ( "count (f.id) " );
+        $response = $this -> addWheres ( $response, $user );
+        $response -> setParameter ( 'status', $status     );
+        $response -> getQuery()  -> useQueryCache(true)   -> useResultCache(true);
+        return $response -> getQuery() -> useQueryCache(true)   -> useResultCache(true) -> getSingleScalarResult();  
+    }
+
+    private function addWheres  ($response, $user )
+    {
         if ( $user -> isAdmin () || $user -> isVerwaltung () )
-        {
-            $response
-                -> andWhere     ( 'f.status IN (:status)' );
-        }
+            $response -> andWhere     ( 'f.status IN (:status)' );
 
         if ( $user -> isStudent () )
-        {
             $response
                 -> andWhere     ( 'f.status IN (:status) AND f.einreicher IN (:studentId)' )
-                -> setParameter ( 'studentId', $user -> getId()     );
-        }
+                -> setParameter ( 'studentId', $user -> getId ()     );
 
         if ( $user -> isTutor () )
         {
-            $tutorModule = $userModuleIds = $user -> getOnlyIdsFromTutorIn ();
-            
-            
+            $tutorModule = $user -> getOnlyIdsFromTutorIn ();
             $response
                 -> andWhere     ( 'f.status IN (:status) AND f.einreicher IN (:module)' )
                 -> setParameter('module', $tutorModule, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
         }
 
-
-        $response -> setParameter ( 'status', $status     );
-
         return $response;
-    }
-
-    public function countAllByUserAndStatus(User $user, $status) {
-        $result = $this ->  findAllByUserAndStatus($user, $status)
-                        ->  getQuery()
-                        ->  getResult();
-        
-        return count($result);
     }
 
     //TODO: Absprechen mit Stefan: Hat die obere Methode gebuggt?
@@ -75,52 +78,31 @@ class FehlerRepository extends ServiceEntityRepository
     // Fehler by User und jeweils nach Status
     // Offene Fehler
 
-    public function countAllByUserAndOpen(User $user) {
-        /*$status = "OPEN";
-
-        $result = $this ->  findAllByUserAndStatus($user, $status)
-                        ->  getQuery()
-                        ->  getResult();
-        
-        return count($result);*/
-        return $this->countAllByUserAndStatus($user, "OPEN");
+    public function countAllByUserAndOpen       ( User $user ) 
+    {
+        return $this -> countAllByUserAndStatus ($user, "OPEN"       );
     }
 
     // Fehler by User und jeweils nach Status
     // Geschlossene Fehler
 
-    public function countAllByUserAndClosed(User $user) {
-        $status = "CLOSED";
-
-        $result = $this ->  findAllByUserAndStatus($user, $status)
-                        ->  getQuery()
-                        ->  getResult();
-        
-        return count($result);
+    public function countAllByUserAndClosed     ( User $user )
+    {
+        return $this -> countAllByUserAndStatus ($user, "CLOSED"     );
     }
     // Fehler by User und jeweils nach Status
     // Wartend Fehler
 
-    public function countAllByUserAndWaiting(User $user) {
-        $status = "WAITING";
-
-        $result = $this ->  findAllByUserAndStatus($user, $status)
-                        ->  getQuery()
-                        ->  getResult();
-        
-        return count($result);
+    public function countAllByUserAndWaiting    ( User $user ) 
+    {
+        return $this -> countAllByUserAndStatus ($user, "WAITING"    );
     }
     // Fehler by User und jeweils nach Status
     // Eskalierte Fehler
 
-    public function countAllByUserAndESCALATED(User $user) {
-        $status = "ESCALATED";
-
-        $result = $this ->  findAllByUserAndStatus($user, $status)
-                        ->  getQuery()
-                        ->  getResult();
-        
-        return count($result);
+    public function countAllByUserAndESCALATED  ( User $user ) 
+    {
+        return $this -> countAllByUserAndStatus ($user, "ESCALATED"  );
     }
 
 

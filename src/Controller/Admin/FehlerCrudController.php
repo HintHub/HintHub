@@ -57,7 +57,6 @@ class FehlerCrudController extends AbstractCrudController
 
     public function configureCrud ( $crud ): Crud
     {
-        throw new \Exception("test");
         $user = $this -> userService -> getCurrentUser ();
 
         if ( $user -> isAdmin () )
