@@ -10,14 +10,17 @@ use App\Entity\Kommentar;
 
 use App\Service\UserService;
 
+use App\Repository\FehlerRepository;
+use App\Repository\ModulRepository;
+use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 
+use Symfony\Component\Routing\Annotation\Route;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Menu\CrudMenuItem;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Menu\CrudMenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 
 /**
@@ -34,13 +37,21 @@ class DashboardController extends AbstractDashboardController
 
     private $controllerTwigLocation = 'bundles/EasyAdminBundle/crud/DashboardController.html.twig';
 
+    //repositories
+    private FehlerRepository $fehlerRepository;
+    private ModulRepository $modulRepository;
+    private UserRepository $userRepository;
+
     // services
     private UserService $userService;
 
     // constructor
-    public function __construct ( UserService $userService ) 
+    public function __construct ( UserService $userService, FehlerRepository $fehlerRepository, ModulRepository $modulRepository, UserRepository $userRepository) 
     {
-        $this -> userService = $userService;
+        $this -> userService        = $userService;
+        $this -> fehlerRepository   = $fehlerRepository;
+        $this -> modulRepository    = $modulRepository;
+        $this -> userRepository     = $userRepository;
     }
     
     /**
@@ -48,9 +59,250 @@ class DashboardController extends AbstractDashboardController
      */
     public function index(): Response
     {
-        return $this -> render ( $this -> controllerTwigLocation );
+        $currentUser = $this->userService->getCurrentUser();
+        
+
+        $variables = $this->getVariables($currentUser);
+
+        // test t
+        return $this -> 
+            render ( $this -> controllerTwigLocation, $variables);
         // return parent::index();
     }
+
+    //TODO vom userservice das array nehmen (getRoleArray()) statt String abgleich
+    private function getVariables(User $user) {
+
+        switch($user->getRolesString ()) {
+            case "ROLE_ADMIN":
+                return $this->getAdminVariables($user);
+            //TODO below this line
+            case "ROLE_VERWALTUNG":
+                return $this->getVerwaltungVariables($user);
+            case "ROLE_EXTERN":
+                return $this->getExternVariables($user);
+            case "ROLE_TUTOR":
+                return $this->getTutorVariables($user);
+            case "ROLE_STUDENT":
+                return $this->getStudentVariables($user);
+            default:
+                return [];
+        }
+    }
+    
+    //VARIABLES BY CURRENTUSER 
+
+    private function getAdminVariables(User $user) {
+
+        $moduls    = $this -> getCountModules();
+
+        $roles                  = $this->userService->getRoleArray($user);
+
+        $countFehlerNachStatus  = $this->getFehlerStatusCountArray($user);
+
+        $moduls = ["moduls" => $moduls];
+
+        $userFrequencies        = $this->getUserFrequencies($user);
+        
+        $variables = array_merge($roles, $countFehlerNachStatus, $moduls, $userFrequencies);
+
+        //dd($variables);
+
+        return $variables;
+    }
+
+    private function getVerwaltungVariables(User $user) 
+    {
+        return $this->getAdminVariables($user);
+    }
+
+    private function getExternVariables(User $user) 
+    {
+        $moduls    = $this -> getCountModules();
+
+        $roles     = $this->userService->getRoleArray($user);
+
+        $users     = $this->userRepository->getAllUsers();
+
+        $moduls = ["moduls" => $moduls];
+
+        $userFrequencies        = $this->getUserFrequencies($user);
+        
+        $variables = array_merge( $moduls, $userFrequencies, $roles, ["users" => $users]);
+
+        //dd($variables);
+
+        return $variables;
+    }
+
+    private function getStudentVariables(User $user) {
+
+        $moduls    = $this -> getCountModules();
+
+        $roles                  = $this->userService->getRoleArray($user);
+
+        $countFehlerNachStatus  = $this->getFehlerStatusCountArray($user);
+
+        $moduls = ["moduls" => $moduls];
+
+        $userFrequencies        = $this->getUserFrequencies($user);
+        
+        $variables = array_merge($roles, $countFehlerNachStatus, $moduls, $userFrequencies);
+
+        //dd($variables);
+
+        return $variables;
+    }
+
+    private function getTutorVariables(User $user) {
+
+        $moduls    = $this -> getCountModules();
+
+        $roles                  = $this->userService->getRoleArray($user);
+
+        $countFehlerNachStatus  = $this->getFehlerStatusCountArray($user);
+
+        $moduls = ["moduls" => $moduls];
+
+        $userFrequencies        = $this->getUserFrequencies($user);
+        
+        $variables = array_merge($roles, $countFehlerNachStatus, $moduls, $userFrequencies);
+
+        //dd($variables);
+
+        return $variables;
+    }
+
+    
+
+    //VARIABLES BY CURRENTUSER END
+
+     
+
+    //COUNT STATUS
+
+    private function getFehlerStatusCountArray(User $user) 
+    {
+   
+        $offeneFehlerCount          = $this -> getCountOpen($user);
+        $geschlosseneFehlerCount    = $this -> getCountClosed($user);
+        $eskaliertFehlerCount       = $this -> getCountEscalated($user);      
+        $wartendFehlerCount         = $this -> getCountWaiting($user);         
+        $abgelehntFehlerCount       = $this -> fehlerRepository->countAllByUserAndStatus($user, 'REJECTED');
+
+        $counts = 
+        [
+            'opens'         => $offeneFehlerCount,
+            'closed'        => $geschlosseneFehlerCount,
+            'escalated'     => $eskaliertFehlerCount,
+            'waiting'       => $wartendFehlerCount,
+            'rejected'      => $abgelehntFehlerCount
+        ];
+
+        return $counts;
+    }
+
+    // Aufruf aus dem FehlerRepository für jeden Status
+    // Offene
+    private function getCountOpen(User $user)
+    {
+        $openByUser                =
+            $this->fehlerRepository->countAllByUserAndOpen($user);
+        return $openByUser;
+    }
+    // Aufruf aus dem FehlerRepository für jeden Status
+    // Geschlossen
+    private function getCountClosed(User $user)
+    {
+        $closedByUser                =
+            $this->fehlerRepository->countAllByUserAndClosed($user);
+        return $closedByUser;
+    }
+    // Aufruf aus dem FehlerRepository für jeden Status
+    // Wartende
+    private function getCountWaiting(User $user)
+    {
+        $waitingByUser                =
+            $this->fehlerRepository->countAllByUserAndWaiting($user);
+        return $waitingByUser;
+    }
+    // Aufruf aus dem FehlerRepository für jeden Status
+    // Eskaliert
+    private function getCountEscalated(User $user)
+    {
+        $escalatedByUser                =
+            $this->fehlerRepository->countAllByUserAndEscalated($user);
+        return $escalatedByUser;
+    }
+
+    //COUNT STATUS END
+
+
+    // Aufruf alle Module aus dem ModulRepository
+    // Alle Module
+    private function getCountModules()
+    {
+        $allModuls                      =
+            $this->modulRepository->getAllModules();
+        return $allModuls;
+    }
+
+    //COUNT FREQUENCIES ROLES
+
+    private function getUserFrequencies(User $user) {
+        $students  = $this -> getAllStudents();
+        $tutors    = $this -> getAllTutors();
+        $extern    = $this -> getAllExtern();
+        $verwaltung = $this -> getAllVerwaltung();
+
+        return [
+            "students"      => $students, 
+            "tutors"        => $tutors, 
+            "verwaltung"    => $verwaltung, 
+            "extern"        => $extern
+        ];
+    }
+
+    // Aufruf alle Studenten aus dem UserRepository
+    // Alle Studenten
+
+    private function getAllStudents()
+    {
+        $allStudents                    =
+            $this->userRepository->getAllStudents();
+        return $allStudents;
+    }
+    // Aufruf alle Tutoren aus dem UserRepository
+    // Alle Tutoren
+
+    private function getAllTutors()
+    {
+        $allTutors                    =
+            $this->userRepository->getAllTutors();
+        return $allTutors;
+    }
+    // Aufruf alle Externen aus dem UserRepository
+    // Alle Externen
+
+    private function getAllExtern()
+    {
+        $allExtern                   =
+            $this->userRepository->getAllExtern();
+        return $allExtern;
+    }
+    // Aufruf alle Verwaltung aus dem UserRepository
+    // Alle Verwaltung
+
+    private function getAllVerwaltung()
+    {
+        $allVerwaltung               =
+            $this->userRepository->getAllVerwaltung();
+        return $allVerwaltung;
+    }
+
+    //COUNT FREQUENCIES ROLES
+
+    // INDEX METHODS END
 
     public function configureDashboard(): Dashboard
     {

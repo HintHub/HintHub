@@ -21,19 +21,82 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    public function getAllByRole($role) 
+    public function getAllByRole ( $role ) 
     {
-        if ( strlen ( $role ) < 1 ) 
-        {
-            throw new Exception("Rolle angeben!");
-        }
+        if ( empty($role) ) 
+            throw new Exception ( "Rolle angeben!" );
         
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.ROLES LIKE :role')
-            ->setParameter('role', '%'.$role.'%')
-            ->getQuery()
-            ->getResult();
+        return $this -> createQueryBuilder ( 'u' )
+            -> andWhere        ( 'u.ROLES LIKE :role'  )
+            -> setParameter    ( 'role', '%'.$role.'%' )
+            -> getQuery        ( )
+            -> useQueryCache   ( true )   
+            -> useResultCache  ( true )
+            -> getResult       ( );
     }
+
+    // Alle Studenten ausgeben
+    public function getAllStudents      ()
+    {
+        return $this -> countUsersByRole ( "ROLE_STUDENT" ); 
+    }
+
+    // Alle Tutoren ausgeben
+    public function getAllTutors        ()
+    {
+        return $this -> countUsersByRole ( "ROLE_TUTOR" ); 
+    }
+
+     // Alle Externen ausgeben
+     public function getAllExtern       ()
+     {
+        return $this -> countUsersByRole ( "ROLE_EXTERN" ); 
+     }
+
+     // Alle Verwaltung ausgeben
+     public function getAllVerwaltung   ()
+     {
+        return $this -> countUsersByRole ( "ROLE_VERWALTUNG" ); 
+     }
+
+     // count all Users
+     public function getAllUsers        () 
+     {
+        return $this -> createQueryBuilder ( 'u' )
+        -> select                   ( 'count (u.id)' )
+        -> getQuery                 ( )
+        -> useQueryCache            ( true )
+        -> useResultCache           ( true )
+        -> getSingleScalarResult    ( );
+
+        //  $result = $this ->  findAll();
+        //  return count($result);
+     }
+
+
+     public function countUsersByRole ( $role )
+     {
+        return $this -> createQueryBuilder  ( 'u' )
+        -> select                           ( 'count(u.id)'         )
+        -> andWhere                         ( 'u.ROLES LIKE :role'  )
+        -> setParameter                     ( 'role', '%'.$role.'%' )
+        -> getQuery                         ( )
+        -> useQueryCache    ( true )  
+        -> useResultCache   ( true ) 
+        -> getSingleScalarResult           ( );
+
+        /*
+         $role = "verwaltung";
+ 
+         $result = $this->createQueryBuilder('u')
+         ->andWhere('u.ROLES LIKE :role')
+         ->setParameter('role', '%'.$role.'%')
+         ->getQuery()
+         ->getResult();
+         
+         return count($result);
+        */
+     }
 
     // /**
     //  * @return User[] Returns an array of User objects
