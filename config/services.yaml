@@ -23,6 +23,9 @@ services:
             - '../src/Kernel.php'
             - '../src/Tests/'
 
+    App\Service\EmailService:
+        lazy: true
+    
     App\Service\UserService:
         lazy: true
 
