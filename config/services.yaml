@@ -6,6 +6,7 @@
 parameters:
     app.cert_storage_dir: '%kernel.project_dir%/public/%env(CERT_STORAGE_DIR)%'
     app.public_cert_path: '%env(CERT_STORAGE_DIR)%/'
+    app.app_env: '%env(APP_ENV)%'
 
 services:
     # default configuration for services in *this* file
@@ -23,6 +24,9 @@ services:
             - '../src/Kernel.php'
             - '../src/Tests/'
 
+    App\Service\EmailService:
+        lazy: true
+    
     App\Service\UserService:
         lazy: true
 

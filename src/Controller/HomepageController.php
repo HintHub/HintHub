@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Service\EmailService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -15,19 +17,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class HomepageController extends AbstractController
 {
     #[Route('/', name: 'homepage')]
-    public function index(): Response
+    public function index () : Response
     {
-        /*
-            @$appName = $_ENV['APP_NAME'];
-            return $this -> render(
-                'homepage/index.html.twig', 
-                [
-                    'controller_name'   => 'HomepageController',
-                    'APP_NAME'          => $appName,
-                ]
-            );
-        */
-        
         return new RedirectResponse('/admin');
     }
 }
