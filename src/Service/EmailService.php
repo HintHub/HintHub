@@ -2,6 +2,10 @@
 
 namespace App\Service;
 
+use Symfony\Component\Mime\Address;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mailer\MailerInterface;
+
 /**
  * Provides the System with Sending E-Mail possibilities
  *
@@ -12,14 +16,19 @@ namespace App\Service;
  */
 class EmailService
 {
-    public function __construct ()
+    private $mailer = null;
+    
+    public function __construct (MailerInterface $mailer)
     {
-        
+        $this -> mailer = $mailer;
     }
 
 
     public function sendMail ( $to, $from, $title, $data=[], $template="email/default.html.twig" )
     {
+        if ( $this -> mailer === null )
+            throw new \Exception ("Mailer is null");
+        
         $email = ( new TemplatedEmail () )
             -> from         ( $from                 )
             -> to           ( new Address ( $to )   )
@@ -27,5 +36,22 @@ class EmailService
             -> htmlTemplate ( $template )
             -> context      ( $data     )
         ;
+
+        try 
+        {
+            $this -> mailer -> send ( $email );
+            return [
+                "send" => true, 
+                "data" => $email
+            ];
+        }
+        catch ( TransportExceptionInterface $e )
+        {
+            return [
+                "send"  => false, 
+                "error" => $e,
+                "data"  => $email,
+            ];
+        }
     }
 }
