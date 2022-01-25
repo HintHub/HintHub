@@ -16,4 +16,16 @@ class EmailService
     {
         
     }
+
+
+    public function sendMail ( $to, $from, $title, $data=[], $template="email/default.html.twig" )
+    {
+        $email = ( new TemplatedEmail () )
+            -> from         ( $from                 )
+            -> to           ( new Address ( $to )   )
+            -> subject      ( $title                )
+            -> htmlTemplate ( $template )
+            -> context      ( $data     )
+        ;
+    }
 }
