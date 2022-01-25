@@ -4,7 +4,12 @@ namespace App\Events;
 
 use Exception;
 use App\Entity\Fehler;
+use App\Entity\Kommentar;
+use App\Service\UserService;
 use Psr\Log\LoggerInterface;
+use App\Service\FehlerService;
+use App\Service\KommentarService;
+use App\Repository\FehlerRepository;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -24,9 +29,21 @@ class FehlerEventListener
     private     $maximumDeleteOperations = 100;
     private     $notClosedOrRejectedIds  = [];
 
-    public function __construct ( Session $session )
+    private     $fehlerService;
+    private     $fehlerRepository;
+
+    private $userService;
+
+    private $kommentarService;
+
+    public function __construct ( Session $session, FehlerService $fehlerService, FehlerRepository $fehlerRepository, 
+                                UserService $userService, KommentarService $kommentarService)
     {
         $this -> session = $session;
+        $this -> fehlerService = $fehlerService;
+        $this -> fehlerRepository = $fehlerRepository;
+        $this -> userService = $userService;
+        $this -> kommentarService = $kommentarService;
     }
 
     public function preRemove   ( LifecycleEventArgs $args ): void
@@ -54,11 +71,89 @@ class FehlerEventListener
         $entity         ->  detachNotClosedChildren();
 
         // Flush Entity Manager
-        $entityManager  ->  flush();
+        $entityManager  ->  flush ();
+    }
+
+    public function fehlerChangeEvent( OnFlushEventArgs $args ) 
+    {
+
+        //fuer onflush
+
+        $entityManager  = $args          -> getEntityManager();
+        $unitOfWork     = $entityManager -> getUnitOfWork   ();
+
+        $entities       = $unitOfWork    -> getScheduledEntityUpdates();
+
+        $foo = [];
+
+
+        foreach ( $entities as $entity ) 
+        {
+            
+            //continue only if the object to be updated is a Fehler
+            if ( $entity instanceof Fehler ) 
+            {
+                
+                //get all the changed properties of the Fehler object
+                $changes_set    = $unitOfWork -> getEntityChangeSet ( $entity );
+                $changes        = array_keys ( $changes_set );
+
+                $message        = $this -> generateStatusMessage ( $changes_set );
+
+                $currentUser    = $this ->  userService -> getCurrentUser ();
+
+                $message        = "$currentUser hat die Fehlermeldung geändert:\n$message";
+
+                $kommentarInstance = $this -> createKommentar ( $message, $entity, $currentUser );
+
+                array_push( $foo, $kommentarInstance );
+            }
+        }
+        $entityManager  ->  persist( $foo[0] );
+        $kommentarClass = get_class( $foo[0] );
+        $classMetadata  = $entityManager -> getClassMetadata ( $kommentarClass );
+        $unitOfWork     -> computeChangeSet( $classMetadata, $foo[0] );
+    }
+
+    private function generateStatusMessage ( $changeSet )  
+    {
+        $message = "";
+
+        try 
+        {
+            foreach ( $changeSet as $key => $value ) 
+            {
+                $subMessage = "'$key' wurde von '$value[0]' auf '$value[1]' gesetzt\n";
+                $message .= $subMessage;
+            }
+
+        } 
+        catch ( Exception $e ) 
+        {
+            dd( $changeSet );
+        }
+
+        return $message;
+    }
+
+    private function createKommentar( $text, $fehler, $currentUser ) 
+    {
+        $dt = new \DateTime();
+        $kommentar = new Kommentar ();
+        $kommentar -> setFehler               ( $fehler      );
+        $kommentar -> setText                 ( $text        );
+        $kommentar -> setEinreicher           ( $currentUser );
+        $kommentar -> setDatumErstellt        ( $dt          );
+        $kommentar -> setDatumLetzteAenderung ( $dt          );
+
+        return $kommentar;
     }
 
     public function onFlush ( OnFlushEventArgs $onFlushEventArgs ): void
     {
+        
+        $this -> fehlerChangeEvent ( $onFlushEventArgs );
+        
         $rePersistedIds = [];
 
         $entityManager  = $onFlushEventArgs ->  getEntityManager            ();
