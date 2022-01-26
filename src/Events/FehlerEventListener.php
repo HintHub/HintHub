@@ -10,6 +10,7 @@ use Psr\Log\LoggerInterface;
 use App\Service\FehlerService;
 use App\Service\KommentarService;
 use App\Repository\FehlerRepository;
+use App\Service\BenachrichtigungService;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -33,17 +34,19 @@ class FehlerEventListener
     private     $fehlerRepository;
 
     private $userService;
-
     private $kommentarService;
+    private $benachrichtigungService;
+    
 
     public function __construct ( Session $session, FehlerService $fehlerService, FehlerRepository $fehlerRepository, 
-                                UserService $userService, KommentarService $kommentarService)
+                                UserService $userService, KommentarService $kommentarService, BenachrichtigungService $benachrichtigungService)
     {
         $this -> session = $session;
         $this -> fehlerService = $fehlerService;
         $this -> fehlerRepository = $fehlerRepository;
         $this -> userService = $userService;
         $this -> kommentarService = $kommentarService;
+        $this -> benachrichtigungService = $benachrichtigungService;
     }
 
     public function preRemove   ( LifecycleEventArgs $args ): void
@@ -123,6 +126,12 @@ class FehlerEventListener
         $unitOfWork     -> computeChangeSet( $classMetadata, $foo[0] );
 
         // TRIGGER BENACHRICHTIGUNG HIER
+
+        $fehler = $foo[0]->getFehler();
+        
+        $text = $foo[0]->getText();
+
+        $this -> benachrichtigungService -> fireBenachrichtigungen ($fehler, $text);
     }
 
     private function generateStatusMessage ( $changeSet )  
