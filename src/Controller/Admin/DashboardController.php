@@ -366,30 +366,47 @@ class DashboardController extends AbstractDashboardController
     }
 
     // Kommentar Menu Item
-    private function mBenachrichtigung ( $text = 'Benachrichtigungen', $icon = 'fas fa-bell' )  :CrudMenuItem
+    private function mBenachrichtigung ( $text = 'Benachrichtigungen', $icon = 'fas fa-bell' ) 
     {
-        $numberBenachrichtigungen = $this -> benachrichtigungService -> getNumberOfOpenBenachrichtigungen();
+        $numberBenachrichtigungen = $this -> benachrichtigungService -> getCountUnreadBenachrichtigungen();
 
-        if($numberBenachrichtigungen > 0) {
-            $text = "$text ($numberBenachrichtigungen)";
-        }
+        if ($numberBenachrichtigungen == 0)
+            return null;
         
-        return $this -> getMenuItem ( $text, $icon,     Benachrichtigung::class );
+        return $this -> getMenuItem ( "$text ($numberBenachrichtigungen)", $icon,     Benachrichtigung::class );
     }
 
     private function menuAll()
     {
-        return 
-        [
-            $this -> lDashboard  (),
-            
-            $this -> mBenachrichtigung  (),
-            $this -> mFehler            (),
-            $this -> mUser              (),
-            $this -> mKommentar         (),
-            $this -> mModul             (),
-            $this -> mSkript            (),
-        ];
+        $hasBenachrichtigungen = $this -> mBenachrichtigung  ();
+
+        if ($hasBenachrichtigungen === null)
+        {
+            return 
+            [
+                $this -> lDashboard  (),
+                
+                $this -> mFehler            (),
+                $this -> mUser              (),
+                $this -> mKommentar         (),
+                $this -> mModul             (),
+                $this -> mSkript            (),
+            ];
+        }
+        else
+        {
+            return 
+            [
+                $this -> lDashboard  (),
+                
+                $hasBenachrichtigungen,
+                $this -> mFehler            (),
+                $this -> mUser              (),
+                $this -> mKommentar         (),
+                $this -> mModul             (),
+                $this -> mSkript            (),
+            ];
+        }
     }
 
     private function menuAdmin ()
@@ -399,26 +416,56 @@ class DashboardController extends AbstractDashboardController
 
     private function menuStudent ()
     {
-        return 
-        [
-            $this -> lDashboard         (),
-            
-            $this -> mBenachrichtigung  (),
-            $this -> mFehler            (),
-        ];
+        $hasBenachrichtigungen = $this -> mBenachrichtigung  ();
+
+        if ( $hasBenachrichtigungen === null )
+        {
+            return 
+            [
+                $this -> lDashboard         (),
+
+                $this -> mFehler            (),
+            ];
+        }
+        else
+        {
+            return 
+            [
+                $this -> lDashboard         (),
+                
+                $hasBenachrichtigungen,
+                $this -> mFehler            (),
+            ];
+        }
     }
 
     private function menuTutor () 
     {
-        return 
-        [
-            $this -> lDashboard         (),
+        $hasBenachrichtigungen = $this -> mBenachrichtigung  ();
 
-            $this -> mBenachrichtigung  (),
-            $this -> mFehler            (),
-            $this -> mModul             (),
-            $this -> mSkript            (),
-        ];
+        if ( $hasBenachrichtigungen === null )
+        {
+            return 
+            [
+                $this -> lDashboard         (),
+
+                $this -> mFehler            (),
+                $this -> mModul             (),
+                $this -> mSkript            (),
+            ];
+        }
+        else
+        {
+            return 
+            [
+                $this -> lDashboard         (),
+
+                $hasBenachrichtigungen,
+                $this -> mFehler            (),
+                $this -> mModul             (),
+                $this -> mSkript            (),
+            ];  
+        }
     }
 
     private function menuExtern () 
@@ -434,15 +481,32 @@ class DashboardController extends AbstractDashboardController
 
     private function menuVerwaltung () 
     {
-        return 
-        [
-            $this -> lDashboard         (),
-            
-            $this -> mBenachrichtigung  (),
-            $this -> mUser              (),
-            $this -> mModul             (),
-            $this -> mSkript            (),
-        ];
+        $hasBenachrichtigungen = $this -> mBenachrichtigung ();
+
+        if ($hasBenachrichtigungen === null)
+        {
+            return 
+            [
+                $this -> lDashboard         (),
+                
+                $this -> mBenachrichtigung  (),
+                $this -> mUser              (),
+                $this -> mModul             (),
+                $this -> mSkript            (),
+            ];
+        }
+        else
+        {
+            return 
+            [
+                $this -> lDashboard         (),
+                
+                $hasBenachrichtigungen,
+                $this -> mUser              (),
+                $this -> mModul             (),
+                $this -> mSkript            (),
+            ];           
+        }
     }
 
     public function configureMenuItems(): iterable

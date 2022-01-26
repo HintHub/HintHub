@@ -22,8 +22,11 @@ class BenachrichtigungService
 
     private $userService;
 
-    public function __construct(BenachrichtigungRepository $benachrichtigungRepository, EntityManagerInterface $entityManager,
-                                UserService $userService) 
+    public function __construct (
+        BenachrichtigungRepository $benachrichtigungRepository,
+        EntityManagerInterface $entityManager,
+        UserService $userService
+    ) 
     {
         $this -> entityManager              = $entityManager;
         $this -> benachrichtigungRepository = $benachrichtigungRepository;
@@ -60,8 +63,9 @@ class BenachrichtigungService
     public function delete ( int $id ): int 
     {
         $toDelete = $this -> findById ( $id );
-        $this -> entityManager -> remove ($toDelete);
-        $this -> entityManager -> flush ();
+        
+        $this -> entityManager  -> remove ( $toDelete );
+        $this -> entityManager  -> flush ();
 
         return $toDelete -> getId ();
     }
@@ -69,65 +73,88 @@ class BenachrichtigungService
     //creates the "same" notification twice - once for student once for tutor
     public function fireBenachrichtigungen ( $fehler, $text ) 
     {
-        $einreicher = $fehler->getEinreicher();
-
-        $tutor = $fehler->getSkript()->getModul()->getTutor();
+        $einreicher = $fehler -> getEinreicher ();
+        $tutor      = $fehler -> getSkript () -> getModul () -> getTutor ();
 
         $this -> saveBenachrichtigung ( $fehler, $text, $einreicher );
-        $this -> saveBenachrichtigung ( $fehler, $text, $tutor );
+        $this -> saveBenachrichtigung ( $fehler, $text, $tutor      );
     }
 
     private function saveBenachrichtigung($fehler, $text, $user) 
     {
-        $dt = new \DateTime();
-        $benachrichtigung = new Benachrichtigung();
-        $benachrichtigung -> setText ( $text );
-        $benachrichtigung -> setUser( $user) ;
-        $benachrichtigung -> setFehler( $fehler );
-        $benachrichtigung -> setDatumErstellt ($dt);
-        $benachrichtigung -> setDatumLetzteAenderung ($dt);
-        $benachrichtigung -> setGelesen ( false );
+        $dt = new \DateTime ();
+        $benachrichtigung = new Benachrichtigung ();
+        $benachrichtigung -> setText                  ( $text   );
+        $benachrichtigung -> setUser                  ( $user   ) ;
+        $benachrichtigung -> setFehler                ( $fehler );
+        $benachrichtigung -> setDatumErstellt         ( $dt     );
+        $benachrichtigung -> setDatumLetzteAenderung  ( $dt     );
+        $benachrichtigung -> setGelesen               ( false   );
 
         //persist on Flush!
-
         $unitOfWork     = $this -> entityManager -> getUnitOfWork   ();
-
         $this -> entityManager  ->  persist( $benachrichtigung );
-
-        $benachrichtigungClass = get_class( $benachrichtigung );
-        
-        $classMetadata  = $this -> entityManager -> getClassMetadata ( $benachrichtigungClass );
-        
+        $classMetadata  = $this -> entityManager -> getClassMetadata ( Benachrichtigung::class );
         $unitOfWork     -> computeChangeSet( $classMetadata, $benachrichtigung );
 
     }
 
-    public function getNumberOfOpenBenachrichtigungen() {
+    public function getCountUnreadBenachrichtigungen ()
+    {
 
-        $currentUser = $this -> userService -> getCurrentUser();
+        $currentUser    = $this -> userService -> getCurrentUser ();
 
-        $notNeeded = $currentUser == null || $currentUser -> isAdmin() || $currentUser -> isExtern() || $currentUser -> isVerwaltung();
+        $isAdmin        = $currentUser -> isAdmin       ();
+        $isExtern       = $currentUser -> isExtern      ();
+        $isVerwaltung   = $currentUser -> isVerwaltung  ();
+
+        $notNeeded      = $currentUser === null || $isAdmin || $isExtern || $isVerwaltung;
 
         if ( $notNeeded )
             return 0;
 
-        $userId = $currentUser -> getId();
+        $userId       = $currentUser -> getId ();
 
-        $queryBuilder = $this -> entityManager -> createQueryBuilder ();
-
-        $whereClause = "b.user IN (:userId) AND b.gelesen = 0";
-
-        $className = Benachrichtigung::class;
-
-        $numberUnseenBenachritigungen = $queryBuilder -> select ('COUNT(b)')
-            -> from ($className, 'b')
-            -> where ( $whereClause )
-            -> setParameter('userId', $userId)
-            -> getQuery()
-            -> useQueryCache(true)
-            -> useResultCache(true)
-            -> getSingleScalarResult();
+        $countUnreadBenachrichtigungen = $this -> entityManager 
+            -> createQueryBuilder       ()
+            -> select                   ( 'COUNT(b)'                              ) 
+            -> from                     ( Benachrichtigung::class,          'b'   )
+            -> where                    ( 'b.user IN (:userId) AND b.gelesen = 0' )
+            -> setParameter             ( 'userId', $userId                       )
+            -> getQuery                 ()
+            -> useQueryCache            ( true )
+            -> useResultCache           ( true )
+            -> getSingleScalarResult    ();
         
-        return $numberUnseenBenachritigungen;
+        return $countUnreadBenachrichtigungen;
+    }
+
+
+    /**
+     * Sets the Read Flag of b to true
+     */
+    public function markRead ( $bId )
+    {
+        if ($bId === null || $bId < 1)
+            return false;
+        
+        try 
+        {
+            $b = $this -> benachrichtigungRepository -> find ( $bId );
+            
+            if ( $b === null )
+                return false;
+
+            $b -> setGelesen (true);
+
+            $this -> entityManager -> flush   ();
+
+            return true;
+        } 
+        catch ( Exception $e )
+        {
+            dd($e);
+            return false;
+        }
     }
 }

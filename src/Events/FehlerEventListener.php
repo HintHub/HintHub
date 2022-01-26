@@ -106,7 +106,6 @@ class FehlerEventListener
                 $changes        = array_keys ( $changes_set );
 
                 $message        = $this -> generateStatusMessage ( $changes_set );
-
                 $message        = "$currentUser hat die Fehlermeldung geändert:\n$message";
 
                 $kommentarInstance = $this -> createKommentar ( $message, $entity, $currentUser );
@@ -115,7 +114,7 @@ class FehlerEventListener
             }
         }
 
-        if( !isset($foo[0]) ) 
+        if( !isset ( $foo[0] ) ) 
         {
             return;
         }
@@ -127,11 +126,10 @@ class FehlerEventListener
 
         // TRIGGER BENACHRICHTIGUNG HIER
 
-        $fehler = $foo[0]->getFehler();
-        
-        $text = $foo[0]->getText();
+        $fehler = $foo[0] -> getFehler  ();
+        $text   = $foo[0] -> getText    ();
 
-        $this -> benachrichtigungService -> fireBenachrichtigungen ($fehler, $text);
+        $this -> benachrichtigungService -> fireBenachrichtigungen ( $fehler, $text );
     }
 
     private function generateStatusMessage ( $changeSet )  
@@ -157,7 +155,7 @@ class FehlerEventListener
 
     private function createKommentar( $text, $fehler, $currentUser ) 
     {
-        $dt = new \DateTime();
+        $dt = new \DateTime ();
         $kommentar = new Kommentar ();
         $kommentar -> setFehler               ( $fehler      );
         $kommentar -> setText                 ( $text        );

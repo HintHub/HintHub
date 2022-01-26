@@ -1,0 +1,98 @@
+{% extends '@!EasyAdmin/crud/index.html.twig' %}
+
+{#
+{% block page_actions %}
+    <b></b>
+{% endblock %}
+#}
+
+{#
+main was before content_footer_wrapper
+#}
+{% block main %}
+    <link rel="stylesheet" href="css/benachrichtigungen.css" />
+    
+    <script>
+        window.markRead = async function markRead(e, id) 
+        {
+            var element = document.getElementById(e);
+
+            const data = {
+                "bId":   id,
+                "token": '{{ csrf_token("benachrichtigungMarkRead") }}'
+            };
+
+            // var x =  post ( '/kommentar/add', data);
+            const rawResponse = await fetch('/benachrichtigung/read', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    //'Content-Type': 'application/x-www-form-urlencoded',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify (data)
+            });
+            const content = await rawResponse.json();
+            if ( rawResponse.status == 200 )
+            {
+                if ( element === null )
+                {
+                    window.alert("Ein Fehler ist bei der API Anfrage aufgetreten. #3");
+                    return;
+                }
+                element.style.display = "none"; 
+            }
+            else
+            {
+                if ( rawResponse.status == 404 )
+                {
+                    window.alert("Die Schnittstelle konnte nicht gefunden werden. #404");
+                    return;
+                }
+                else
+                {
+                    window.alert("Ein unbekannter Fehler ist aufgetreten!");
+                    return;
+                }
+            }
+        }
+    </script>
+
+    <div class="benachrichtigungen row col-12">
+    {% set i=0 %}
+    {% for entity in entities %}
+        <div class="benachrichtigung alert alert-primary" id="b_{{ i }}">
+            <div class="row">
+                <div class="col-10">
+                    
+                </div>
+                
+                <div class="col-1">
+                   <button onclick="window.markRead('b_{{ i }}', '{{ entity.primaryKeyValue }}')" type="button" class="btn-close" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-10">
+                {% for field in entity.fields %}
+                    {# field.propertyName #}
+                    {#<div class="benachrichtigung_label">
+                        {{ field.label          }}
+                    </div>#}
+                    <div class="benachrichtigung_text alert-secondary">
+                        {% if field.customOptions is defined and field.customOptions.get("relatedUrl") != null %}
+                            <a href="{{ field.customOptions.get("relatedUrl") }}">
+                                {{ field.formattedValue }}
+                            </a>
+                        {% else %}
+                            {{ field.formattedValue }}
+                            {# {{ dump (field.customOptions) }} #}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% set i=i+1 %}
+    {% endfor %}
+    </div>
+{% endblock %}
