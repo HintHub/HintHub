@@ -15,10 +15,11 @@ use App\Repository\UserRepository;
 use App\Repository\ModulRepository;
 use App\Repository\FehlerRepository;
 
+use App\Service\BenachrichtigungService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Menu\CrudMenuItem;
@@ -45,14 +46,17 @@ class DashboardController extends AbstractDashboardController
 
     // services
     private UserService $userService;
+    private BenachrichtigungService $benachrichtigungService;
 
     // constructor
-    public function __construct ( UserService $userService, FehlerRepository $fehlerRepository, ModulRepository $modulRepository, UserRepository $userRepository) 
+    public function __construct ( UserService $userService, FehlerRepository $fehlerRepository, ModulRepository $modulRepository,
+     UserRepository $userRepository, BenachrichtigungService $benachrichtigungService) 
     {
         $this -> userService        = $userService;
         $this -> fehlerRepository   = $fehlerRepository;
         $this -> modulRepository    = $modulRepository;
         $this -> userRepository     = $userRepository;
+        $this -> benachrichtigungService = $benachrichtigungService;
     }
     
     /**
@@ -364,6 +368,12 @@ class DashboardController extends AbstractDashboardController
     // Kommentar Menu Item
     private function mBenachrichtigung ( $text = 'Benachrichtigungen', $icon = 'fas fa-bell' )  :CrudMenuItem
     {
+        $numberBenachrichtigungen = $this -> benachrichtigungService -> getNumberOfOpenBenachrichtigungen();
+
+        if($numberBenachrichtigungen > 0) {
+            $text = "$text ($numberBenachrichtigungen)";
+        }
+        
         return $this -> getMenuItem ( $text, $icon,     Benachrichtigung::class );
     }
 

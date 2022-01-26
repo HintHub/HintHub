@@ -5,8 +5,11 @@ namespace App\Controller\Admin;
 use App\Service\UserService;
 use Doctrine\ORM\QueryBuilder;
 use App\Entity\Benachrichtigung;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
@@ -37,6 +40,18 @@ class BenachrichtigungCrudController extends AbstractCrudController
     }
     */
 
+    public function configureActions ( Actions $actions ): Actions
+    {
+        return $actions
+            // ...
+            -> add    ( Crud::PAGE_INDEX , Action::DETAIL   )
+            -> remove ( Crud::PAGE_INDEX , Action::NEW      )
+            -> remove ( Crud::PAGE_INDEX , Action::EDIT     )
+            -> remove ( Crud::PAGE_DETAIL, Action::EDIT     )
+        ;
+        
+    }
+
     public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
     {
         parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
@@ -46,8 +61,12 @@ class BenachrichtigungCrudController extends AbstractCrudController
 
         $response = $this -> get ( EntityRepository::class ) -> createQueryBuilder ( $searchDto, $entityDto, $fields, $filters );
 
-        if($user->isTutor()) {
-            
+        if( $user -> isTutor() || $user -> isStudent() ) 
+        {
+            $response
+                -> andWhere     ( 'entity.user = :userId')
+                -> setParameter ( 'userId', $userId         )
+                ;
         }
 
         //-> addOrderBy('entity.status', 'ASC');

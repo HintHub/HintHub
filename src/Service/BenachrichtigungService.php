@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Service\UserService;
 use App\Entity\Benachrichtigung;
 use Symfony\Component\Mime\Address;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,10 +20,14 @@ class BenachrichtigungService
 
     private $benachrichtigungRepository;
 
-    public function __construct(BenachrichtigungRepository $benachrichtigungRepository, EntityManagerInterface $entityManager) 
+    private $userService;
+
+    public function __construct(BenachrichtigungRepository $benachrichtigungRepository, EntityManagerInterface $entityManager,
+                                UserService $userService) 
     {
         $this -> entityManager              = $entityManager;
         $this -> benachrichtigungRepository = $benachrichtigungRepository;
+        $this -> userService                = $userService;
     }
 
     public function findById( int $id ): Benachrichtigung 
@@ -95,5 +100,34 @@ class BenachrichtigungService
         
         $unitOfWork     -> computeChangeSet( $classMetadata, $benachrichtigung );
 
+    }
+
+    public function getNumberOfOpenBenachrichtigungen() {
+
+        $currentUser = $this -> userService -> getCurrentUser();
+
+        $notNeeded = $currentUser == null || $currentUser -> isAdmin() || $currentUser -> isExtern() || $currentUser -> isVerwaltung();
+
+        if ( $notNeeded )
+            return 0;
+
+        $userId = $currentUser -> getId();
+
+        $queryBuilder = $this -> entityManager -> createQueryBuilder ();
+
+        $whereClause = "b.user IN (:userId) AND b.gelesen = 0";
+
+        $className = Benachrichtigung::class;
+
+        $numberUnseenBenachritigungen = $queryBuilder -> select ('COUNT(b)')
+            -> from ($className, 'b')
+            -> where ( $whereClause )
+            -> setParameter('userId', $userId)
+            -> getQuery()
+            -> useQueryCache(true)
+            -> useResultCache(true)
+            -> getSingleScalarResult();
+        
+        return $numberUnseenBenachritigungen;
     }
 }
