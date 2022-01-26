@@ -349,7 +349,7 @@ class AppFixtures extends Fixture
         }
     }
 
-    public function createFehler ( $user, $module, $skripte, $amount=150)
+    public function createFehler ( $user, $module, $skripte, $amount=5000)
     {
         if ( count($user) == 0 )
             throw new \Exception ( "No User given" );
