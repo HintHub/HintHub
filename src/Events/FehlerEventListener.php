@@ -90,8 +90,6 @@ class FehlerEventListener
 
         if($currentUser === null) 
             return;
-        
-
 
         foreach ( $entities as $entity ) 
         {
@@ -113,14 +111,18 @@ class FehlerEventListener
                 array_push( $foo, $kommentarInstance );
             }
         }
-        if( isset($foo[0]) ) 
-        {
-            $entityManager  ->  persist( $foo[0] );
-            $kommentarClass = get_class( $foo[0] );
-            $classMetadata  = $entityManager -> getClassMetadata ( $kommentarClass );
-            $unitOfWork     -> computeChangeSet( $classMetadata, $foo[0] );
-        }
 
+        if( !isset($foo[0]) ) 
+        {
+            return;
+        }
+        
+        $entityManager  ->  persist( $foo[0] );
+        $kommentarClass = get_class( $foo[0] );
+        $classMetadata  = $entityManager -> getClassMetadata ( $kommentarClass );
+        $unitOfWork     -> computeChangeSet( $classMetadata, $foo[0] );
+
+        // TRIGGER BENACHRICHTIGUNG HIER
     }
 
     private function generateStatusMessage ( $changeSet )  
