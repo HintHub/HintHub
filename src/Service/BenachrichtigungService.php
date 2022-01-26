@@ -117,13 +117,12 @@ class BenachrichtigungService
 
         $countUnreadBenachrichtigungen = $this -> entityManager 
             -> createQueryBuilder       ()
-            -> select                   ( 'COUNT(b)'                              ) 
+            -> select                   ( 'COUNT(b.id)'                           ) 
             -> from                     ( Benachrichtigung::class,          'b'   )
             -> where                    ( 'b.user IN (:userId) AND b.gelesen = 0' )
             -> setParameter             ( 'userId', $userId                       )
             -> getQuery                 ()
             -> useQueryCache            ( true )
-            -> useResultCache           ( true )
             -> getSingleScalarResult    ();
         
         return $countUnreadBenachrichtigungen;

@@ -369,7 +369,7 @@ class DashboardController extends AbstractDashboardController
     private function mBenachrichtigung ( $text = 'Benachrichtigungen', $icon = 'fas fa-bell' ) 
     {
         $numberBenachrichtigungen = $this -> benachrichtigungService -> getCountUnreadBenachrichtigungen();
-
+        
         if ($numberBenachrichtigungen == 0)
             return null;
         
