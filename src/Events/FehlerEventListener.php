@@ -86,6 +86,12 @@ class FehlerEventListener
 
         $foo = [];
 
+        $currentUser    = $this ->  userService -> getCurrentUser ();
+
+        if($currentUser === null) 
+            return;
+        
+
 
         foreach ( $entities as $entity ) 
         {
@@ -100,8 +106,6 @@ class FehlerEventListener
 
                 $message        = $this -> generateStatusMessage ( $changes_set );
 
-                $currentUser    = $this ->  userService -> getCurrentUser ();
-
                 $message        = "$currentUser hat die Fehlermeldung geändert:\n$message";
 
                 $kommentarInstance = $this -> createKommentar ( $message, $entity, $currentUser );
@@ -109,10 +113,14 @@ class FehlerEventListener
                 array_push( $foo, $kommentarInstance );
             }
         }
-        $entityManager  ->  persist( $foo[0] );
-        $kommentarClass = get_class( $foo[0] );
-        $classMetadata  = $entityManager -> getClassMetadata ( $kommentarClass );
-        $unitOfWork     -> computeChangeSet( $classMetadata, $foo[0] );
+        if( isset($foo[0]) ) 
+        {
+            $entityManager  ->  persist( $foo[0] );
+            $kommentarClass = get_class( $foo[0] );
+            $classMetadata  = $entityManager -> getClassMetadata ( $kommentarClass );
+            $unitOfWork     -> computeChangeSet( $classMetadata, $foo[0] );
+        }
+
     }
 
     private function generateStatusMessage ( $changeSet )  
