@@ -391,9 +391,10 @@ class DashboardController extends AbstractDashboardController
     {
         return 
         [
-            $this -> lDashboard  (),
+            $this -> lDashboard         (),
             
-            $this -> mFehler     (),
+            $this -> mBenachrichtigung  (),
+            $this -> mFehler            (),
         ];
     }
 
@@ -401,11 +402,12 @@ class DashboardController extends AbstractDashboardController
     {
         return 
         [
-            $this -> lDashboard  (),
+            $this -> lDashboard         (),
 
-            $this -> mFehler     (),
-            $this -> mModul      (),
-            $this -> mSkript     (),
+            $this -> mBenachrichtigung  (),
+            $this -> mFehler            (),
+            $this -> mModul             (),
+            $this -> mSkript            (),
         ];
     }
 
@@ -424,11 +426,12 @@ class DashboardController extends AbstractDashboardController
     {
         return 
         [
-            $this -> lDashboard  (),
+            $this -> lDashboard         (),
             
-            $this -> mUser       (),
-            $this -> mModul      (),
-            $this -> mSkript     (),
+            $this -> mBenachrichtigung  (),
+            $this -> mUser              (),
+            $this -> mModul             (),
+            $this -> mSkript            (),
         ];
     }
 
