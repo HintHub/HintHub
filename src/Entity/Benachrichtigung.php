@@ -35,6 +35,11 @@ class Benachrichtigung
      */
     private $fehler;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $gelesen;
+
     use DatumTrait;
 
     public function getId(): ?int
@@ -74,6 +79,18 @@ class Benachrichtigung
     public function setFehler(?Fehler $fehler): self
     {
         $this->fehler = $fehler;
+
+        return $this;
+    }
+
+    public function getGelesen(): ?bool
+    {
+        return $this->gelesen;
+    }
+
+    public function setGelesen(bool $gelesen): self
+    {
+        $this->gelesen = $gelesen;
 
         return $this;
     }

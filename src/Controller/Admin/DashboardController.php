@@ -10,15 +10,16 @@ use App\Entity\Kommentar;
 
 use App\Service\UserService;
 
-use App\Repository\FehlerRepository;
-use App\Repository\ModulRepository;
+use App\Entity\Benachrichtigung;
 use App\Repository\UserRepository;
-use Symfony\Component\HttpFoundation\Response;
+use App\Repository\ModulRepository;
+use App\Repository\FehlerRepository;
 
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
-use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 
+use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Menu\CrudMenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -360,17 +361,24 @@ class DashboardController extends AbstractDashboardController
         return $this -> getMenuItem ( $text, $icon,     Kommentar::class );
     }
 
+    // Kommentar Menu Item
+    private function mBenachrichtigung ( $text = 'Benachrichtigungen', $icon = 'fas fa-bell' )  :CrudMenuItem
+    {
+        return $this -> getMenuItem ( $text, $icon,     Benachrichtigung::class );
+    }
+
     private function menuAll()
     {
         return 
         [
             $this -> lDashboard  (),
             
-            $this -> mFehler        (),
-            $this -> mUser          (),
-            $this -> mKommentar     (),
-            $this -> mModul         (),
-            $this -> mSkript        (),
+            $this -> mBenachrichtigung  (),
+            $this -> mFehler            (),
+            $this -> mUser              (),
+            $this -> mKommentar         (),
+            $this -> mModul             (),
+            $this -> mSkript            (),
         ];
     }
 

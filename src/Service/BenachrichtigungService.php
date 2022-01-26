@@ -81,6 +81,7 @@ class BenachrichtigungService
         $benachrichtigung -> setFehler( $fehler );
         $benachrichtigung -> setDatumErstellt ($dt);
         $benachrichtigung -> setDatumLetzteAenderung ($dt);
+        $benachrichtigung -> setGelesen ( false );
 
         //persist on Flush!
 
