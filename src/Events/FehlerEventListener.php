@@ -61,18 +61,14 @@ class FehlerEventListener
         $entity         = $args -> getObject        ();
 
         if ( !$entity instanceof Fehler ) 
-        {
             return;
-        }
 
         $fehlerId = $entity -> getId ();
 
         if ( !$entity -> isClosed () || ! $entity -> isRejected () ) 
         {
             $id = $entity -> getId ();
-            
             array_push ( $this -> notClosedOrRejectedIds, $id );
-
             return;
         }
 
@@ -128,9 +124,7 @@ class FehlerEventListener
 
         $fehler = $foo[0] -> getFehler  ();
         $text   = $foo[0] -> getText    ();
-
-        dd("p");
-
+        
         $this -> benachrichtigungService -> fireBenachrichtigungen ( $fehler, $text );
     }
 
