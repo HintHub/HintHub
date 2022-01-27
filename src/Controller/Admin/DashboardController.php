@@ -71,7 +71,7 @@ class DashboardController extends AbstractDashboardController
     /**
      * @Route("/admin", name="admin")
      */
-    public function index(): Response
+    public function index (): Response
     {
         $currentUser = $this -> userService -> getCurrentUser   ();
         $variables   = $this -> getVariables ( $currentUser );
@@ -104,8 +104,8 @@ class DashboardController extends AbstractDashboardController
     {
 
         $moduls                 = $this -> getCountModules   ();
-        $roles                  = $this -> userService->getRoleArray ( $user );
-        $countFehlerNachStatus  = $this -> getFehlerStatusCountArray ( $user );
+        $roles                  = $this -> userService -> getRoleArray  ( $user );
+        $countFehlerNachStatus  = $this -> getFehlerStatusCountArray    ( $user );
         $moduls                 = [ "moduls" => $moduls ];
         $userFrequencies        = $this -> getUserFrequencies ( $user );
         $variables              = array_merge ( $roles, $countFehlerNachStatus, $moduls, $userFrequencies );
@@ -125,9 +125,6 @@ class DashboardController extends AbstractDashboardController
         $moduls = [ "moduls" => $moduls ];
         $userFrequencies = $this -> getUserFrequencies ( $user );
         $variables = array_merge( $moduls, $userFrequencies, $roles, [ "users" => $users ] );
-
-        //dd($variables);
-
         return $variables;
     }
 
