@@ -195,18 +195,22 @@ class FehlerCrudController extends AbstractCrudController
         if ( $user -> isStudent () )
         {
             return [
-                IdField::new            (   'id'               )    -> hideOnForm  (),
-                IdField::new            (   'id'               )    -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
-                TextField::new          (   'name'             ),
-                ChoiceField::new        (   'status'           )    -> hideWhenCreating () -> setChoices ( $statusChoices ),
-                NumberField::new        (   'seite'            ),
-                AssociationField::new   (   'skript'           ),
-                TextField::new    (   'descriptionKommentar'        )    
+                IdField::new            (   'id'                    )    -> hideOnForm  (),
+                IdField::new            (   'id'                    )    -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                TextField::new          (   'name'                  ),
+                ChoiceField::new        (   'status'                )    -> hideWhenCreating () -> setChoices ( $statusChoices ),
+                NumberField::new        (   'seite'                 ),
+                AssociationField::new   (   'skript'                ),
+                TextField::new          (   'descriptionKommentar'  )    
                     -> hideWhenCreating  () 
                     -> setFormTypeOption ( 'disabled', 'disabled' ) 
-                    -> formatValue(function($val, $obj){
-                        return $obj->getDescriptionKommentar();
-                    }),
+                    -> formatValue(
+                        function ( $val, $obj )
+                        {
+                            return $obj -> getDescriptionKommentar ();
+                        }
+                    )
+                ,
                 TextEditorField::new    (   'kommentar'        )    -> onlyWhenCreating  (),
                 DateField::new          (   'datum_erstellt'   )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' ),
             ];
@@ -233,11 +237,15 @@ class FehlerCrudController extends AbstractCrudController
                 -> hideOnIndex(),
                 DateField::new          (   'datum_erstellt'   )    -> hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
 
-                TextEditorField::new('verwandteFehler')
+                TextEditorField::new    ( 'verwandteFehler'    )
+
                 // callables also receives the entire entity instance as the second argument
-                ->formatValue(function ($value, $entity) {
-                    return join("\n", $value->getValues());
-                }) -> hideOnForm(),
+                ->formatValue ( 
+                    function  ( $value, $entity ) 
+                    {
+                        return join( "\n", $value -> getValues () );
+                    }
+                ) -> hideOnForm (),
             ];
         }
 
@@ -271,48 +279,28 @@ class FehlerCrudController extends AbstractCrudController
         // Datum Trait
         $entity -> setDatumLetzteAenderung   ( $currentDateTime );
         $entity -> setDatumErstellt          ( $currentDateTime );
-        //dd($entity->getDatumErstellt());
+
         // Einreicher Trait
         $entity -> setEinreicher             ( $currentUser     );
 
-        // return $this->redirect($this->request->headers->get('referer'));
         return $entity;
-        //return $this->redirect($this->request->headers->get('referer'));
     }
-
-    /*
-        After the insertation to DB / persistence
-        
-        @author karim.saad ( karim.saad@iubh.de )
-        @date 22.12.2021 13:45
-    */
-
-    /*public function persistEntity ( EntityManagerInterface $em, $entity) : void
-    {
-        $currentUser         = $this -> userService -> getCurrentUser ();
-
-        $entity = $this -> fehlerService -> openWithKommentar ( $entity, $currentUser );
-
-        //$this -> updateSlug     ( $entity );
-        parent::persistEntity   ( $em, $entity );
-    }*/
 
     public function persistEntity ( EntityManagerInterface $em, $entity) : void     
     {         
-        $currentUser         = $this -> userService -> getCurrentUser ();          
-        $entity = $this -> fehlerService -> openWithKommentar ( $entity, $currentUser );          
-        // $this -> updateSlug     ( $entity );         
+        $currentUser = $this -> userService   -> getCurrentUser ();          
+        $entity      = $this -> fehlerService -> openWithKommentar ( $entity, $currentUser );
+        
         parent::persistEntity   ( $em, $entity );     
     }
     
 
-    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
+    public function createIndexQueryBuilder ( SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters ): QueryBuilder
     {
-        parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+        parent::createIndexQueryBuilder ( $searchDto, $entityDto, $fields, $filters );
 
-        $user = $this -> userService -> getCurrentUser ();
-        $userId = $user->getId();
-
+        $user   = $this -> userService -> getCurrentUser ();
+        $userId = $user -> getId();
 
         $response = $this -> get ( EntityRepository::class ) -> createQueryBuilder ( $searchDto, $entityDto, $fields, $filters );
 
@@ -382,9 +370,10 @@ class FehlerCrudController extends AbstractCrudController
         return ArrayFilter::new ( 'status' ) -> setChoices ( $this -> getStatusChoices () );
     }
 
-    public function configureFilters(Filters $filters): Filters
+    public function configureFilters ( Filters $filters ): Filters
     {
         $statusChoices = $this -> getArrayFilterStatusChoices ();
+
         return $filters
             -> add ( 'name'         )
             -> add ( 'seite'        )
