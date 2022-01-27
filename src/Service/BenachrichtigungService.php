@@ -71,19 +71,25 @@ class BenachrichtigungService
     }
 
     //creates the "same" notification twice - once for student once for tutor
-    public function fireBenachrichtigungen ( $fehler, $text ) 
+    public function fireBenachrichtigungen ( $fehler, $text, $flush=true ) 
     {
         $einreicher = $fehler -> getEinreicher ();
         $tutor      = $fehler -> getSkript () -> getModul () -> getTutor ();
 
-        $this -> saveBenachrichtigung ( $fehler, $text, $einreicher );
-        $this -> saveBenachrichtigung ( $fehler, $text, $tutor      );
+        $a = $this -> saveBenachrichtigung ( $fehler, $text, $einreicher, $flush );
+        $b = $this -> saveBenachrichtigung ( $fehler, $text, $tutor     , $flush );
+        
+        return [
+            $a,
+            $b
+        ];
     }
 
-    private function saveBenachrichtigung($fehler, $text, $user) 
+    private function saveBenachrichtigung ( $fehler, $text, $user, $flush=true ) 
     {
         $dt = new \DateTime ();
         $benachrichtigung = new Benachrichtigung ();
+        
         $benachrichtigung -> setText                  ( $text   );
         $benachrichtigung -> setUser                  ( $user   ) ;
         $benachrichtigung -> setFehler                ( $fehler );
@@ -91,12 +97,23 @@ class BenachrichtigungService
         $benachrichtigung -> setDatumLetzteAenderung  ( $dt     );
         $benachrichtigung -> setGelesen               ( false   );
 
-        //persist on Flush!
-        $unitOfWork     = $this -> entityManager -> getUnitOfWork   ();
-        $this -> entityManager  ->  persist( $benachrichtigung );
-        $classMetadata  = $this -> entityManager -> getClassMetadata ( Benachrichtigung::class );
-        $unitOfWork     -> computeChangeSet( $classMetadata, $benachrichtigung );
-
+        if ( $flush )
+        {
+            //persist on Flush!
+            $unitOfWork     = $this -> entityManager -> getUnitOfWork   ();
+            $this -> entityManager  ->  persist( $benachrichtigung );
+            $classMetadata  = $this -> entityManager -> getClassMetadata ( Benachrichtigung::class );
+            $unitOfWork     -> computeChangeSet( $classMetadata, $benachrichtigung );
+        }
+        else
+        {
+            $worked = [
+                $this -> entityManager -> persist   ( $benachrichtigung ),
+                $this -> entityManager -> flush     ()
+            ];
+        }
+        
+        return $benachrichtigung;
     }
 
     public function getCountUnreadBenachrichtigungen ()

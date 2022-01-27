@@ -204,3 +204,8 @@ a:hover
 }
 
 
+/* navbar mobile :-) */
+#navigation-toggler
+{
+    color: white !important;
+}
