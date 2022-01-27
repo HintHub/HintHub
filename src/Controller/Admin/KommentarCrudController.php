@@ -118,6 +118,16 @@ class KommentarCrudController extends AbstractCrudController
         {
             // TODO KommentarCrud configureFields isExtern
         }
+
+        if ( $user -> isVerwaltung () )
+        {
+            return [
+                IdField::new            ( 'id'      ) -> hideOnForm(),
+                IdField::new            ( 'id'      ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                TextEditorField::new    ( 'text'    ),
+                AssociationField::new   ( 'fehler'  )
+            ];
+        }
     }
 
 
