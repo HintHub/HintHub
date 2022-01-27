@@ -508,7 +508,6 @@ class DashboardController extends AbstractDashboardController
                 $this -> lDashboard         (),
                 
                 $this -> mSectionProfile    (),
-                $hasBenachrichtigungen,
                 $this -> mEditProfile       (),
 
                 $this -> mSectionSystem     (),
