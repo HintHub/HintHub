@@ -63,20 +63,20 @@ class UserService
     {
         $toUpdate = $this -> findById ( $user -> getId ( ) );
 
-        $toUpdate   ->  setROLES        ($user  ->  getROLES        () );
-        $toUpdate   ->  setEmail        ($user  ->  getEmail        () );
-        $toUpdate   ->  setPfplink      ($user  ->  getPfplink      () ); 
-        $toUpdate   ->  setIsActive     ($user  ->  getIsActive     () );
-        $toUpdate   ->  setIsVerified   ($user  ->  getIsVerified   () );
+        $toUpdate   ->  setROLES        ( $user  ->  getROLES        () );
+        $toUpdate   ->  setEmail        ( $user  ->  getEmail        () );
+        $toUpdate   ->  setPfplink      ( $user  ->  getPfplink      () ); 
+        $toUpdate   ->  setIsActive     ( $user  ->  getIsActive     () );
+        $toUpdate   ->  setIsVerified   ( $user  ->  getIsVerified   () );
 
-        $this -> entityManager -> flush();
+        $this -> entityManager -> flush ();
         return $toUpdate;
     }
 
     //delete
     public function delete ( int $id ): int
     {
-        $toDelete = $this -> findById ($id);
+        $toDelete = $this -> findById ( $id );
 
         $this -> entityManager -> remove      ( $toDelete );
         $this -> entityManager -> flush       ();

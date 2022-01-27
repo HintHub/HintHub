@@ -53,13 +53,18 @@ class DashboardController extends AbstractDashboardController
     private BenachrichtigungService $benachrichtigungService;
 
     // constructor
-    public function __construct ( UserService $userService, FehlerRepository $fehlerRepository, ModulRepository $modulRepository,
-     UserRepository $userRepository, BenachrichtigungService $benachrichtigungService) 
+    public function __construct (
+        UserService             $userService,
+        FehlerRepository        $fehlerRepository,
+        ModulRepository         $modulRepository,
+        UserRepository          $userRepository,
+        BenachrichtigungService $benachrichtigungService
+    ) 
     {
-        $this -> userService        = $userService;
-        $this -> fehlerRepository   = $fehlerRepository;
-        $this -> modulRepository    = $modulRepository;
-        $this -> userRepository     = $userRepository;
+        $this -> userService             = $userService;
+        $this -> fehlerRepository        = $fehlerRepository;
+        $this -> modulRepository         = $modulRepository;
+        $this -> userRepository          = $userRepository;
         $this -> benachrichtigungService = $benachrichtigungService;
     }
     
@@ -68,136 +73,95 @@ class DashboardController extends AbstractDashboardController
      */
     public function index(): Response
     {
-        $currentUser = $this->userService->getCurrentUser();
-        
-
-        $variables = $this->getVariables($currentUser);
-
-        // test t
-        return $this -> 
-            render ( $this -> controllerTwigLocation, $variables);
+        $currentUser = $this -> userService -> getCurrentUser   ();
+        $variables   = $this -> getVariables ( $currentUser );
+        return $this -> render ( $this -> controllerTwigLocation, $variables );
         // return parent::index();
     }
 
     //TODO vom userservice das array nehmen (getRoleArray()) statt String abgleich
-    private function getVariables(User $user) {
-
-        switch($user->getRolesString ()) {
+    private function getVariables ( User $user ) 
+    {
+        switch ( $user -> getRolesString () )
+        {
             case "ROLE_ADMIN":
-                return $this->getAdminVariables($user);
-            //TODO below this line
+                return $this -> getAdminVariables       ( $user );
             case "ROLE_VERWALTUNG":
-                return $this->getVerwaltungVariables($user);
+                return $this -> getVerwaltungVariables  ( $user );
             case "ROLE_EXTERN":
-                return $this->getExternVariables($user);
+                return $this -> getExternVariables      ( $user );
             case "ROLE_TUTOR":
-                return $this->getTutorVariables($user);
+                return $this -> getTutorVariables       ( $user );
             case "ROLE_STUDENT":
-                return $this->getStudentVariables($user);
+                return $this -> getStudentVariables     ( $user );
             default:
                 return [];
         }
     }
     
     //VARIABLES BY CURRENTUSER 
+    private function getAdminVariables ( User $user ) 
+    {
 
-    private function getAdminVariables(User $user) {
+        $moduls                 = $this -> getCountModules   ();
+        $roles                  = $this -> userService->getRoleArray ( $user );
+        $countFehlerNachStatus  = $this -> getFehlerStatusCountArray ( $user );
+        $moduls                 = [ "moduls" => $moduls ];
+        $userFrequencies        = $this -> getUserFrequencies ( $user );
+        $variables              = array_merge ( $roles, $countFehlerNachStatus, $moduls, $userFrequencies );
+        return $variables;
+    }
 
-        $moduls    = $this -> getCountModules();
+    private function getVerwaltungVariables ( User $user ) 
+    {
+        return $this -> getAdminVariables ( $user );
+    }
 
-        $roles                  = $this->userService->getRoleArray($user);
-
-        $countFehlerNachStatus  = $this->getFehlerStatusCountArray($user);
-
-        $moduls = ["moduls" => $moduls];
-
-        $userFrequencies        = $this->getUserFrequencies($user);
-        
-        $variables = array_merge($roles, $countFehlerNachStatus, $moduls, $userFrequencies);
+    private function getExternVariables ( User $user ) 
+    {
+        $moduls    = $this -> getCountModules ();
+        $roles     = $this -> userService       -> getRoleArray ( $user );
+        $users     = $this -> userRepository    -> getAllUsers  ();
+        $moduls = [ "moduls" => $moduls ];
+        $userFrequencies = $this -> getUserFrequencies ( $user );
+        $variables = array_merge( $moduls, $userFrequencies, $roles, [ "users" => $users ] );
 
         //dd($variables);
 
         return $variables;
     }
 
-    private function getVerwaltungVariables(User $user) 
+    private function getStudentVariables ( User $user ) 
     {
-        return $this->getAdminVariables($user);
-    }
-
-    private function getExternVariables(User $user) 
-    {
-        $moduls    = $this -> getCountModules();
-
-        $roles     = $this->userService->getRoleArray($user);
-
-        $users     = $this->userRepository->getAllUsers();
-
-        $moduls = ["moduls" => $moduls];
-
-        $userFrequencies        = $this->getUserFrequencies($user);
-        
-        $variables = array_merge( $moduls, $userFrequencies, $roles, ["users" => $users]);
-
-        //dd($variables);
-
-        return $variables;
-    }
-
-    private function getStudentVariables(User $user) {
-
-        $moduls    = $this -> getCountModules();
-
-        $roles                  = $this->userService->getRoleArray($user);
-
-        $countFehlerNachStatus  = $this->getFehlerStatusCountArray($user);
-
-        $moduls = ["moduls" => $moduls];
-
-        $userFrequencies        = $this->getUserFrequencies($user);
-        
-        $variables = array_merge($roles, $countFehlerNachStatus, $moduls, $userFrequencies);
-
-        //dd($variables);
-
+        $moduls                 = $this -> getCountModules();
+        $roles                  = $this -> userService -> getRoleArray  ( $user );
+        $countFehlerNachStatus  = $this -> getFehlerStatusCountArray    ( $user );
+        $moduls                 = [ "moduls" => $moduls ];
+        $userFrequencies        = $this -> getUserFrequencies ( $user );
+        $variables              = array_merge ( $roles, $countFehlerNachStatus, $moduls, $userFrequencies );
         return $variables;
     }
 
     private function getTutorVariables(User $user) {
 
-        $moduls    = $this -> getCountModules();
-
-        $roles                  = $this->userService->getRoleArray($user);
-
-        $countFehlerNachStatus  = $this->getFehlerStatusCountArray($user);
-
-        $moduls = ["moduls" => $moduls];
-
-        $userFrequencies        = $this->getUserFrequencies($user);
+        $moduls                 = $this -> getCountModules ();
+        $roles                  = $this -> userService -> getRoleArray  ( $user );
+        $countFehlerNachStatus  = $this -> getFehlerStatusCountArray    ( $user );
+        $moduls                 = [ "moduls" => $moduls ];
+        $userFrequencies        = $this -> getUserFrequencies   ( $user );
         
-        $variables = array_merge($roles, $countFehlerNachStatus, $moduls, $userFrequencies);
-
-        //dd($variables);
-
+        $variables = array_merge ( $roles, $countFehlerNachStatus, $moduls, $userFrequencies );
         return $variables;
     }
 
-    
-
-    //VARIABLES BY CURRENTUSER END
-
-     
-
-    //COUNT STATUS
-
-    private function getFehlerStatusCountArray(User $user) 
+    private function getFehlerStatusCountArray ( User $user ) 
     {
    
-        $offeneFehlerCount          = $this -> getCountOpen($user);
-        $geschlosseneFehlerCount    = $this -> getCountClosed($user);
-        $eskaliertFehlerCount       = $this -> getCountEscalated($user);      
-        $wartendFehlerCount         = $this -> getCountWaiting($user);         
-        $abgelehntFehlerCount       = $this -> fehlerRepository->countAllByUserAndStatus($user, 'REJECTED');
+        $offeneFehlerCount          = $this -> getCountOpen         ( $user );
+        $geschlosseneFehlerCount    = $this -> getCountClosed       ( $user );
+        $eskaliertFehlerCount       = $this -> getCountEscalated    ( $user );      
+        $wartendFehlerCount         = $this -> getCountWaiting      ( $user );         
+        $abgelehntFehlerCount       = $this -> getCountRejected     ( $user );
 
         $counts = 
         [
@@ -213,56 +177,54 @@ class DashboardController extends AbstractDashboardController
 
     // Aufruf aus dem FehlerRepository für jeden Status
     // Offene
-    private function getCountOpen(User $user)
+    private function getCountOpen ( User $user )
     {
-        $openByUser                =
-            $this->fehlerRepository->countAllByUserAndOpen($user);
-        return $openByUser;
-    }
-    // Aufruf aus dem FehlerRepository für jeden Status
-    // Geschlossen
-    private function getCountClosed(User $user)
-    {
-        $closedByUser                =
-            $this->fehlerRepository->countAllByUserAndClosed($user);
-        return $closedByUser;
-    }
-    // Aufruf aus dem FehlerRepository für jeden Status
-    // Wartende
-    private function getCountWaiting(User $user)
-    {
-        $waitingByUser                =
-            $this->fehlerRepository->countAllByUserAndWaiting($user);
-        return $waitingByUser;
-    }
-    // Aufruf aus dem FehlerRepository für jeden Status
-    // Eskaliert
-    private function getCountEscalated(User $user)
-    {
-        $escalatedByUser                =
-            $this->fehlerRepository->countAllByUserAndEscalated($user);
-        return $escalatedByUser;
+        return $this -> fehlerRepository -> countAllByUserAndOpen ( $user );
     }
 
-    //COUNT STATUS END
+    // Aufruf aus dem FehlerRepository für jeden Status
+    // Geschlossen
+    private function getCountClosed ( User $user )
+    {
+        return $this -> fehlerRepository -> countAllByUserAndClosed ( $user );
+    }
+
+    // Aufruf aus dem FehlerRepository für jeden Status
+    // Wartende
+    private function getCountWaiting ( User $user )
+    {
+        return $this -> fehlerRepository -> countAllByUserAndWaiting ( $user );
+    }
+
+    // Aufruf aus dem FehlerRepository für jeden Status
+    // Eskaliert
+    private function getCountEscalated ( User $user )
+    {
+        return $this -> fehlerRepository -> countAllByUserAndEscalated ( $user );
+    }
 
 
     // Aufruf alle Module aus dem ModulRepository
     // Alle Module
     private function getCountModules()
     {
-        $allModuls                      =
-            $this->modulRepository->getAllModules();
-        return $allModuls;
+        return $this -> modulRepository -> getAllModules ();
     }
 
-    //COUNT FREQUENCIES ROLES
+    // count rejected
+    private function getCountRejected ($user)
+    {
+        return $this -> fehlerRepository -> countAllByUserAndStatus ( $user, 'REJECTED' );
+    }
 
-    private function getUserFrequencies(User $user) {
-        $students  = $this -> getAllStudents();
-        $tutors    = $this -> getAllTutors();
-        $extern    = $this -> getAllExtern();
-        $verwaltung = $this -> getAllVerwaltung();
+
+    // count roles
+    private function getUserFrequencies ( User $user ) 
+    {
+        $students   = $this -> getAllStudents   ();
+        $tutors     = $this -> getAllTutors     ();
+        $extern     = $this -> getAllExtern     ();
+        $verwaltung = $this -> getAllVerwaltung ();
 
         return [
             "students"      => $students, 
@@ -274,79 +236,63 @@ class DashboardController extends AbstractDashboardController
 
     // Aufruf alle Studenten aus dem UserRepository
     // Alle Studenten
-
-    private function getAllStudents()
+    private function getAllStudents ()
     {
-        $allStudents                    =
-            $this->userRepository->getAllStudents();
-        return $allStudents;
+        return $this -> userRepository -> getAllStudents ();
     }
+
     // Aufruf alle Tutoren aus dem UserRepository
     // Alle Tutoren
-
-    private function getAllTutors()
+    private function getAllTutors ()
     {
-        $allTutors                    =
-            $this->userRepository->getAllTutors();
-        return $allTutors;
+        return $this -> userRepository -> getAllTutors ();
     }
+
     // Aufruf alle Externen aus dem UserRepository
     // Alle Externen
-
-    private function getAllExtern()
+    private function getAllExtern ()
     {
-        $allExtern                   =
-            $this->userRepository->getAllExtern();
-        return $allExtern;
+        return $this -> userRepository -> getAllExtern ();
     }
+
     // Aufruf alle Verwaltung aus dem UserRepository
     // Alle Verwaltung
-
-    private function getAllVerwaltung()
+    private function getAllVerwaltung ()
     {
-        $allVerwaltung               =
-            $this->userRepository->getAllVerwaltung();
-        return $allVerwaltung;
+        return $this -> userRepository -> getAllVerwaltung ();
     }
 
     //COUNT FREQUENCIES ROLES
 
     // INDEX METHODS END
 
-    public function configureDashboard(): Dashboard
+    public function configureDashboard (): Dashboard
     {
-    	// @$appName = !empty ( $_ENV['APP_NAME'] ) ? $_ENV['APP_NAME'] : 'Missing in env';
+    	@$appName = !empty ( $_ENV['APP_NAME'] ) ? $_ENV['APP_NAME'] : 'Missing in env';
     	
         return Dashboard::new()
-            ->setTitle('<img class="logo" src="'. $this -> logoPath . '" alt="HintHub"/>' );
+            ->setTitle('<img class="logo" src="'. $this -> logoPath . '" alt="'.$appName.'"/>' );
         ;
     }
 
     public function configureUserMenu(UserInterface $user): UserMenu
     {
-        // Usually it's better to call the parent method because that gives you a
-        // user menu with some menu items already created ("sign out", "exit impersonation", etc.)
-        // if you prefer to create the user menu from scratch, use: return UserMenu::new()->...
-        return parent::configureUserMenu($user)
-            // use the given $user object to get the user name
-            // ->setName($user->getEmail())
-            // // use this method if you don't want to display the name of the user
-            // ->displayUserName(false)
+        $mail    = $this -> userService -> getCurrentUser () -> getEmail    ();
+        $pfpLink = $this -> userService -> getCurrentUser () -> getPfplink  ();
 
-            // // you can return an URL with the avatar image
-            // ->setAvatarUrl('https://...')
-            // ->setAvatarUrl($user->getProfileImageUrl())
-            // // use this method if you don't want to display the user image
-            // ->displayUserAvatar(false)
-            // // you can also pass an email address to use gravatar's service
-            //->setGravatarEmail($user->getMainEmailAddress())
-            ->setAvatarUrl($this -> userService -> getCurrentUser () -> getPfplink() )
+        return parent::configureUserMenu ( $user )
+            // use the given $user object to get the user name
+            -> setName          ( $mail    )
+            -> displayUserName  ( true     )
+            -> setAvatarUrl     ( $pfpLink )
             // you can use any type of menu item, except submenus
-            -> addMenuItems([
-                MenuItem::linkToRoute('Profil bearbeiten', 'fa fa-id-card', 'profile', []),
-                // MenuItem::section(),
-                // MenuItem::linkToLogout('Logout', 'fa fa-sign-out'),
-            ]);
+            -> addMenuItems(
+                [
+                    MenuItem::linkToRoute ( 'Profil bearbeiten', 'fa fa-id-card', 'profile', [] ),
+                    // MenuItem::section(),
+                    // MenuItem::linkToLogout('Logout', 'fa fa-sign-out'),
+                ]
+            );
     }
 
 
@@ -400,12 +346,27 @@ class DashboardController extends AbstractDashboardController
     // Kommentar Menu Item
     private function mBenachrichtigung ( $text = 'Benachrichtigungen', $icon = 'fas fa-bell' ) 
     {
-        $numberBenachrichtigungen = $this -> benachrichtigungService -> getCountUnreadBenachrichtigungen();
+        $numberBenachrichtigungen = $this -> benachrichtigungService -> getCountUnreadBenachrichtigungen ();
         
         if ($numberBenachrichtigungen == 0)
             return null;
         
         return $this -> getMenuItem ( "$text ($numberBenachrichtigungen)", $icon,     Benachrichtigung::class );
+    }
+
+    private function mEditProfile ()
+    {
+        return MenuItem::linkToRoute('Profil bearbeiten', 'fa fa-id-card', 'profile');
+    }
+
+    private function mSectionProfile ()
+    {
+        return MenuItem::section('Mein Profil');
+    }
+
+    private function mSectionSystem ()
+    {
+        return MenuItem::section('System');
     }
 
     private function menuAll()
@@ -416,8 +377,12 @@ class DashboardController extends AbstractDashboardController
         {
             return 
             [
-                $this -> lDashboard  (),
+                $this -> lDashboard         (),
                 
+                $this -> mSectionProfile    (),
+                $this -> mEditProfile       (),
+
+                $this -> mSectionSystem     (),
                 $this -> mFehler            (),
                 $this -> mUser              (),
                 $this -> mKommentar         (),
@@ -429,14 +394,18 @@ class DashboardController extends AbstractDashboardController
         {
             return 
             [
-                $this -> lDashboard  (),
+                $this -> lDashboard         (),
                 
+                $this -> mSectionProfile    (),
                 $hasBenachrichtigungen,
+                $this -> mEditProfile       (),
+
+                $this -> mSectionSystem     (),
                 $this -> mFehler            (),
                 $this -> mUser              (),
                 $this -> mKommentar         (),
                 $this -> mModul             (),
-                $this -> mSkript            (),
+                $this -> mSkript            ()
             ];
         }
     }
@@ -456,7 +425,11 @@ class DashboardController extends AbstractDashboardController
             [
                 $this -> lDashboard         (),
 
-                $this -> mFehler            (),
+                $this -> mSectionProfile    (),
+                $this -> mEditProfile       (),
+
+                $this -> mSectionSystem     (),
+                $this -> mFehler            ()
             ];
         }
         else
@@ -465,8 +438,12 @@ class DashboardController extends AbstractDashboardController
             [
                 $this -> lDashboard         (),
                 
+                $this -> mSectionProfile    (),
                 $hasBenachrichtigungen,
-                $this -> mFehler            (),
+                $this -> mEditProfile       (),
+
+                $this -> mSectionSystem     (),
+                $this -> mFehler            ()
             ];
         }
     }
@@ -481,6 +458,10 @@ class DashboardController extends AbstractDashboardController
             [
                 $this -> lDashboard         (),
 
+                $this -> mSectionProfile    (),
+                $this -> mEditProfile       (),
+
+                $this -> mSectionSystem     (),
                 $this -> mFehler            (),
                 $this -> mModul             (),
                 $this -> mSkript            (),
@@ -492,7 +473,11 @@ class DashboardController extends AbstractDashboardController
             [
                 $this -> lDashboard         (),
 
+                $this -> mSectionProfile    (),
                 $hasBenachrichtigungen,
+                $this -> mEditProfile       (),
+
+                $this -> mSectionSystem     (),
                 $this -> mFehler            (),
                 $this -> mModul             (),
                 $this -> mSkript            (),
@@ -504,10 +489,14 @@ class DashboardController extends AbstractDashboardController
     {
         return 
         [
-            $this -> lDashboard  (),
+            $this -> lDashboard         (),
             
-            $this -> mModul      (),
-            $this -> mSkript     (),
+            $this -> mSectionProfile    (),
+            $this -> mEditProfile       (),
+
+            $this -> mSectionSystem     (),
+            $this -> mModul             (),
+            $this -> mSkript            (),
         ];
     }
 
@@ -521,10 +510,14 @@ class DashboardController extends AbstractDashboardController
             [
                 $this -> lDashboard         (),
                 
-                $this -> mBenachrichtigung  (),
+                $this -> mSectionProfile    (),
+                $hasBenachrichtigungen,
+                $this -> mEditProfile       (),
+
+                $this -> mSectionSystem     (),
                 $this -> mUser              (),
                 $this -> mModul             (),
-                $this -> mSkript            (),
+                $this -> mSkript            ()
             ];
         }
         else
@@ -533,10 +526,14 @@ class DashboardController extends AbstractDashboardController
             [
                 $this -> lDashboard         (),
                 
+                $this -> mSectionProfile    (),
                 $hasBenachrichtigungen,
+                $this -> mEditProfile       (),
+
+                $this -> mSectionSystem     (),
                 $this -> mUser              (),
                 $this -> mModul             (),
-                $this -> mSkript            (),
+                $this -> mSkript            ()
             ];           
         }
     }
@@ -563,6 +560,6 @@ class DashboardController extends AbstractDashboardController
             return $this -> menuVerwaltung ();
 
         // always return "something"
-        return $this -> menuAll();
+        return $this -> menuAll ();
     }
 }

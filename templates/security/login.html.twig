@@ -1,7 +1,7 @@
 {# created by Symfony upon Auth controller creation php bin/console make:auth karim.saad ( karim.saad@iubh.de ) #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Log in!{% endblock %}
+{% block title %} Login {% endblock %}
 
 
 
@@ -20,9 +20,9 @@
 
     {% if app.user %}
         <div class="mb-3">
-            You are logged in as {{ app.user.username }}, <a href="{{ path('app_logout') }}">Logout</a>
+            Du bist bereits eingeloggt {{ app.user.username }}, <a href="{{ path('app_logout') }}">Hier klicken um Dich auszuloggen. </a>
         </div>
-    {% endif %}
+    {% else %}
 
     <div class="mb-3">
     <span class="logo-custom">
@@ -40,23 +40,13 @@
     </div>
 
     <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" />
-
-    {#
-        Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
-        See https://symfony.com/doc/current/security/remember_me.html
-
-        <div class="checkbox mb-3">
-            <label>
-                <input type="checkbox" name="_remember_me"> Remember me
-            </label>
-        </div>
-    #}
     <br/>
     <button class="btn btn-success" type="submit">
         {{ "loginBtn" | trans ( {}, 'login')}}
     </button>
 </form>
 </div>
+{% endif %}
 <div class="col-lg-3"></div>
 </div>
 </div>
