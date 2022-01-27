@@ -81,8 +81,8 @@ class FehlerEventListener
 
     public function fehlerChangeEvent ( OnFlushEventArgs $args ) 
     {
-        $entityManager  = $args          -> getEntityManager ();
-        $unitOfWork     = $entityManager -> getUnitOfWork   ();
+        $entityManager  = $args          -> getEntityManager    ();
+        $unitOfWork     = $entityManager -> getUnitOfWork       ();
         
         $entities       = $unitOfWork    -> getScheduledEntityUpdates ();
 
@@ -90,12 +90,11 @@ class FehlerEventListener
 
         $currentUser    = $this ->  userService -> getCurrentUser ();
 
-        if($currentUser === null) 
+        if ( $currentUser === null ) 
             return;
       
         foreach ( $entities as $entity ) 
         {
-            
             //continue only if the object to be updated is a Fehler
             if ( $entity instanceof Fehler ) 
             {
@@ -111,20 +110,17 @@ class FehlerEventListener
         }
 
         if( !isset ( $foo[0] ) ) 
-        {
             return;
-        }
         
-        $entityManager  ->  persist ( $foo[0] );
-        $kommentarClass = get_class ( $foo[0] );
+        $entityManager  ->  persist ( $foo [0] );
+        $kommentarClass = get_class ( $foo [0] );
         $classMetadata  = $entityManager -> getClassMetadata ( $kommentarClass );
         $unitOfWork     -> computeChangeSet ( $classMetadata, $foo[0] );
 
         // TRIGGER BENACHRICHTIGUNG HIER
-
         $fehler = $foo[0] -> getFehler  ();
         $text   = $foo[0] -> getText    ();
-        
+
         $this -> benachrichtigungService -> fireBenachrichtigungen ( $fehler, $text );
     }
 

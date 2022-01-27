@@ -150,7 +150,7 @@ class UserCrudController extends AbstractCrudController
                 TextField::new          ( 'email'         ),
                 ChoiceField::new        ( 'ROLESSTRING'   ) -> setChoices   ( $this -> userService -> getRoles() ) -> setLabel ( "Rolle/Funktion" ),
                 TextField::new          ( 'plainPassword' ) -> setFormType  ( PasswordType::class                ) -> onlyOnforms (),
-                TextField::new          ( 'pfplink'       ),
+                TextField::new          ( 'pfplink'       ) -> hideOnIndex(),
                 AssociationField::new   ( 'tutorIn'       )
                     -> hideOnIndex () 
                     -> setLabel    ( 'Tutor in' )
@@ -161,7 +161,7 @@ class UserCrudController extends AbstractCrudController
                         ]
                     ),
                 AssociationField::new   ( 'studentIn' )
-                    -> hideOnIndex () 
+                    -> hideOnIndex ()
                     -> setLabel ( 'Student in' )
                     -> setFormTypeOptions 
                     (
@@ -181,7 +181,7 @@ class UserCrudController extends AbstractCrudController
         {
             return [
                 IdField::new            ( 'id'            ) -> hideOnForm(),
-                TextField::new          ( 'pfplink'       ),
+                TextField::new          ( 'pfplink'       ) -> hideOnIndex(),
                 TextField::new          ( 'email'         ) -> setFormTypeOption ( 'disabled', 'disabled' ) ->hideOnForm (),
             ];
         }

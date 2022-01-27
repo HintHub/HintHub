@@ -118,14 +118,13 @@ class BenachrichtigungService
 
     public function getCountUnreadBenachrichtigungen ()
     {
-
         $currentUser    = $this -> userService -> getCurrentUser ();
 
         $isAdmin        = $currentUser -> isAdmin       ();
         $isExtern       = $currentUser -> isExtern      ();
         $isVerwaltung   = $currentUser -> isVerwaltung  ();
 
-        $notNeeded      = $currentUser === null || $isAdmin || $isExtern || $isVerwaltung;
+        $notNeeded      = $currentUser === null; //$currentUser === null || $isAdmin || $isExtern || $isVerwaltung;
 
         if ( $notNeeded )
             return 0;
@@ -162,7 +161,6 @@ class BenachrichtigungService
                 return false;
 
             $b -> setGelesen (true);
-
             $this -> entityManager -> flush   ();
 
             return true;
