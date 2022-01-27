@@ -268,7 +268,7 @@ class DashboardController extends AbstractDashboardController
     	@$appName = !empty ( $_ENV['APP_NAME'] ) ? $_ENV['APP_NAME'] : 'Missing in env';
     	
         return Dashboard::new()
-            ->setTitle('<img class="logo" src="'. $this -> logoPath . '" alt="'.$appName.'"/>' );
+            -> setTitle('<img class="logo" src="'. $this -> logoPath . '" alt="'.$appName.'"/>' );
         ;
     }
 
@@ -501,7 +501,7 @@ class DashboardController extends AbstractDashboardController
     {
         $hasBenachrichtigungen = $this -> mBenachrichtigung ();
 
-        if ($hasBenachrichtigungen === null)
+        if ( $hasBenachrichtigungen === null )
         {
             return 
             [
