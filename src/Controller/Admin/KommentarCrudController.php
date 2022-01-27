@@ -81,6 +81,23 @@ class KommentarCrudController extends AbstractCrudController
             // TODO KommentarCrud configureCrud isExtern
         }
 
+        if ( $user -> isVerwaltung () )
+        {
+            return Crud::new()
+            -> setPageTitle ( 'index',  'Kommentare'        )
+            -> setPageTitle ( 'new', 'Kommentar erstellen'  )
+            -> setPageTitle ( 'detail', fn ( Kommentar $kommentar ) => sprintf ( 'Kommentar <b>%s</b> betrachten',    $kommmentar -> __toString() ) )
+            -> setPageTitle ( 'edit',   fn ( Kommentar $kommentar ) => sprintf ( 'Kommentar <b>%s</b> bearbeiten',    $kommentar  -> __toString() ) )
+
+            // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
+
+            // ->overrideTemplates([
+            //     'crud/index' => 'admin/pages/index.html.twig',
+            //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
+            // ])
+        ;
+        }
+
     }
 
     public function configureFields(string $pageName): iterable
