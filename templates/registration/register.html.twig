@@ -1,0 +1,30 @@
+{# created by Symfony upon Auth controller creation php bin/console make:auth run by karim.saad ( karim.saad@iubh.de ) #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+    {% for flashError in app.flashes('verify_email_error') %}
+        <div class="alert alert-danger" role="alert">{{ flashError }}</div>
+    {% endfor %}
+
+    <div class="container">
+    <div class="row">
+        <div class="col-lg-2"></div>
+
+        <div class="col-lg-6">
+            <h1> {{ "register" | trans({},'register')  }} </h1>
+            <br/>
+            {{ form_start(registrationForm) }}
+                {{ form_row(registrationForm.email) }}
+                {{ form_row(registrationForm.plainPassword) }}
+                {{ form_row(registrationForm.agreeTerms) }}
+
+                <button type="submit" class="btn btn-danger">{{ "registerBtn" | trans({},'register')  }}</button>
+            {{ form_end(registrationForm) }}
+        </div>
+        <div class="col-lg-2"></div>
+
+        </div>
+    </div>
+{% endblock %}

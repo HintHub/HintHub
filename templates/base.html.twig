@@ -1,0 +1,43 @@
+{# 
+    created by Symfony upon Framework Init symfony new <projectname> run by karim.saad ( karim.saad@iubh.de ) 
+    
+    From this HTML Template everything gets extended (for normal Controllers)
+    Dashboard Controllers are using an EasyAdmin Template (similiar to this file)
+#}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        {# Run `composer require symfony/webpack-encore-bundle`
+           and uncomment the following Encore helpers to start using Symfony UX #}
+        {% block stylesheets %}
+        
+            {{ encore_entry_link_tags('app') }}
+            <!--
+            <link rel="stylesheet" href="/build/app.scss">
+            -->
+        {% endblock %}
+
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+            <!--
+                <script src="/build/runtime.js"></script>
+                <script src="/build/app.js"></script>-->
+        {% endblock %}
+    </head>
+    <body>
+        {% if not (menu is defined) %}
+            {% set menu=true %}
+        {% endif %}
+        {% if menu %}
+            {% include('navbar.html.twig') %}
+        {% endif %}
+        {% block body %}
+       
+        {% endblock %}
+    </body>
+</html>

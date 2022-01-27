@@ -1,0 +1,206 @@
+a 
+{
+    color: #1A4B91;
+}
+
+a:hover 
+{
+    color: #1A4B91;
+}
+
+.content-search-icon
+{
+    padding: 12px;
+}
+
+#sidebar-resizer-handler 
+{
+    color:#1A4B91;
+    background-color: #1A4B91;
+}
+
+#modal-clear-button
+{
+    background-color: red !important;
+    color: white !important;
+}
+
+#modal-apply-button 
+{
+    background-color: green; /*#1A4B91 !important;*/
+}
+
+.sidebar 
+{
+    background-color: #ffffff !important;
+}
+
+.menu-item 
+{
+    color:black !important;
+}
+
+#main-menu .menu a
+{
+    color: black !important;
+    text-decoration: none;
+    padding: 5px;
+    font-size: 1.2em;
+}
+
+#main-menu .menu .menu-item.active a span
+{
+    color: white !important;
+    text-decoration: none;
+    background-color: #1A4B91;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 1.2em;
+}
+
+.fas.fa-search.content-search-icon
+{
+    color: white;
+}
+
+
+.action-new
+{
+    background-color: #1A4B91;
+}
+
+.action-new:hover
+{
+    background-color: #1A4B91 !important;
+}
+
+.action-new:visited
+{
+    background-color: #1A4B91 !important;
+}
+.action-new:link
+{
+    background-color: #1A4B91 !important;
+}
+.action-new:active
+{
+    background-color: #1A4B91 !important;
+}
+.action-saveAndContinue 
+{
+    background-color: green;
+    color: white;
+}
+.action-saveAndReturn
+{
+    background-color: #1A4B91 !important;
+}
+
+.btn-success
+{
+    background-color: #1A4B91 !important;
+}
+
+.action-edit
+{
+    background-color: #1A4B91 !important;
+    color: #ffffff !important;
+}
+
+.action-delete
+{
+    background-color: #e10808 !important;
+    color: #ffffff !important;
+}
+
+.content-top
+{
+    background-color: #1A4B91 !important;
+}
+
+.content-top .content-search .content-search-label input.is-blank
+{
+    background-color: #ffffff;
+}
+
+@media only screen and (max-width: 600px) {
+	.logo
+    {
+        max-width:100% !important;
+    }
+}
+
+@media only screen and (min-width: 600px) {
+	.logo
+    {
+        max-width:100% !important;
+    }
+}
+
+.responsive-header 
+{
+    background-color: #1A4B91; /*#7DA0CD;*/
+}
+
+.user-menu-wrapper .user-details .user-name
+{
+    color: rgb(255, 255, 255);
+}
+
+.description
+{
+    background-color: hsl(0, 0%, 100%) !important;
+    color: #000 !important;
+    font-size: 1.2em !important;
+}
+
+.kommentar
+{
+    background-color: hsl(0, 0%, 100%) !important;
+    color: #000 !important;
+    font-size: 1.2em !important;
+}
+
+.kommentar_new_box
+{
+    background-color: hsl(0, 0%, 100%) !important;
+    color: #000 !important;
+    font-size: 1.2em !important;
+    border: 1px soild;
+    border-color: #1A4B91;
+    
+}
+
+.kommentar_user_link 
+{
+    color: white !important;
+}
+
+.kommentar_header
+{
+    color: white !important;
+    border: 1px solid;
+    background-color: #1A4B91 !important;
+}
+
+.text_kommenar
+{
+    background-color: #1A4B91 !important;
+    color: #ffffff !important;
+    
+}
+
+.text_kommentar_new_text
+{
+    background-color: #1A4B91 !important;
+    color: #ffffff !important;
+    size: 20em;
+}
+
+.page-link
+{
+    background-color: #1A4B91 !important;
+    color: #ffffff !important;
+}
+
+
