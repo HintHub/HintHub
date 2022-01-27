@@ -373,7 +373,7 @@ class DashboardController extends AbstractDashboardController
     {
         $hasBenachrichtigungen = $this -> mBenachrichtigung  ();
 
-        if ($hasBenachrichtigungen === null)
+        if ( $hasBenachrichtigungen === null )
         {
             return 
             [
@@ -385,7 +385,7 @@ class DashboardController extends AbstractDashboardController
                 $this -> mSectionSystem     (),
                 $this -> mFehler            (),
                 $this -> mUser              (),
-                $this -> mKommentar         (),
+                //$this -> mKommentar       (),
                 $this -> mModul             (),
                 $this -> mSkript            (),
             ];
@@ -403,7 +403,7 @@ class DashboardController extends AbstractDashboardController
                 $this -> mSectionSystem     (),
                 $this -> mFehler            (),
                 $this -> mUser              (),
-                $this -> mKommentar         (),
+                //$this -> mKommentar         (),
                 $this -> mModul             (),
                 $this -> mSkript            ()
             ];
@@ -517,7 +517,8 @@ class DashboardController extends AbstractDashboardController
                 $this -> mSectionSystem     (),
                 $this -> mUser              (),
                 $this -> mModul             (),
-                $this -> mSkript            ()
+                $this -> mSkript            (),
+                $this -> mKommentar         ()
             ];
         }
         else
@@ -533,7 +534,8 @@ class DashboardController extends AbstractDashboardController
                 $this -> mSectionSystem     (),
                 $this -> mUser              (),
                 $this -> mModul             (),
-                $this -> mSkript            ()
+                $this -> mSkript            (),
+                $this -> mKommentar         ()
             ];           
         }
     }
