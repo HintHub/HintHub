@@ -93,7 +93,7 @@ class FehlerEventListener
 
         if($currentUser === null) 
             return;
-
+      
         foreach ( $entities as $entity ) 
         {
             
@@ -106,6 +106,7 @@ class FehlerEventListener
                 $changes        = array_keys ( $changes_set );
 
                 $message        = $this -> generateStatusMessage ( $changes_set );
+              
                 $message        = "$currentUser hat die Fehlermeldung geändert:\n$message";
 
                 $kommentarInstance = $this -> createKommentar ( $message, $entity, $currentUser );

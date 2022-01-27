@@ -7,21 +7,24 @@ use App\Entity\Modul;
 use App\Entity\Fehler;
 use App\Entity\Skript;
 use App\Entity\Kommentar;
+use App\Entity\Benachrichtigung;
 
 use App\Service\UserService;
+use App\Service\BenachrichtigungService;
 
-use App\Entity\Benachrichtigung;
 use App\Repository\UserRepository;
 use App\Repository\ModulRepository;
 use App\Repository\FehlerRepository;
 
-use App\Service\BenachrichtigungService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
+
+use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
+use Symfony\Component\Security\Core\User\UserInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Menu\CrudMenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 
@@ -38,6 +41,7 @@ class DashboardController extends AbstractDashboardController
     private $logoPath    = 'hinthub_logo.png';
 
     private $controllerTwigLocation = 'bundles/EasyAdminBundle/crud/DashboardController.html.twig';
+    private $profileTwigLocation    = 'bundles/EasyAdminBundle/crud/profile/profile.html.twig';
 
     //repositories
     private FehlerRepository $fehlerRepository;
@@ -317,6 +321,34 @@ class DashboardController extends AbstractDashboardController
             ->setTitle('<img class="logo" src="'. $this -> logoPath . '" alt="HintHub"/>' );
         ;
     }
+
+    public function configureUserMenu(UserInterface $user): UserMenu
+    {
+        // Usually it's better to call the parent method because that gives you a
+        // user menu with some menu items already created ("sign out", "exit impersonation", etc.)
+        // if you prefer to create the user menu from scratch, use: return UserMenu::new()->...
+        return parent::configureUserMenu($user)
+            // use the given $user object to get the user name
+            // ->setName($user->getEmail())
+            // // use this method if you don't want to display the name of the user
+            // ->displayUserName(false)
+
+            // // you can return an URL with the avatar image
+            // ->setAvatarUrl('https://...')
+            // ->setAvatarUrl($user->getProfileImageUrl())
+            // // use this method if you don't want to display the user image
+            // ->displayUserAvatar(false)
+            // // you can also pass an email address to use gravatar's service
+            //->setGravatarEmail($user->getMainEmailAddress())
+            ->setAvatarUrl($this -> userService -> getCurrentUser () -> getPfplink() )
+            // you can use any type of menu item, except submenus
+            -> addMenuItems([
+                MenuItem::linkToRoute('Profil bearbeiten', 'fa fa-id-card', 'profile', []),
+                // MenuItem::section(),
+                // MenuItem::linkToLogout('Logout', 'fa fa-sign-out'),
+            ]);
+    }
+
 
     public function configureAssets(): Assets
     {

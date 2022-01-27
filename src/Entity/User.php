@@ -94,6 +94,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $benachrichtigungen;
 
+     /*
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $pfplink;
+
     public function __construct ()  
     {
         $this -> isActive               = true;
@@ -102,7 +107,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this -> eingereichteKommentare = new ArrayCollection   ();
         $this -> tutorIn                = new ArrayCollection   ();
         $this -> studentIn              = new ArrayCollection   ();
-        $this->benachrichtigungen = new ArrayCollection();
+        $this -> benachrichtigungen     = new ArrayCollection();
     }   
 
     public function setID ( int $i )
@@ -481,6 +486,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     
     }
 
+
     /**
      * @return Collection|Benachrichtigung[]
      */
@@ -507,6 +513,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $benachrichtigungen->setUser(null);
             }
         }
+    }
+  
+    public function getPfplink(): ?string
+    {
+        return $this->pfplink;
+    }
+
+    public function setPfplink(?string $pfplink): self
+    {
+        $this->pfplink = $pfplink;
+
 
         return $this;
     }
