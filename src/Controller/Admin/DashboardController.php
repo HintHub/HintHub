@@ -543,7 +543,7 @@ class DashboardController extends AbstractDashboardController
         // for testing use menuAll();
 
         if ( $user -> isAdmin       () )
-            return $this -> menuAdmin ();
+            return $this -> menuAdmin      ();
 
         if ( $user -> isStudent     () )
             return $this -> menuStudent    ();
