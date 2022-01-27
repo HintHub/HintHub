@@ -47,14 +47,14 @@ class ModulService
 
     public function update ( Modul $modul ): Modul 
     {
-        $modul  =   $this -> findById ( $modul ->  getId () );
+        $toUpdate  =   $this -> findById ( $modul ->  getId () );
 
-        $modul  ->  setSkript  ( $modul -> getSkript () );
-        $modul  ->  setKuerzel          ( $modul -> getKuerzel         () );
-        $modul  ->  setName             ( $modul -> getName            () );
-        $modul  ->  setTutor            ( $modul -> getTutor           () );
+        $toUpdate  ->  setSkript  ( $modul -> getSkript () );
+        $toUpdate  ->  setKuerzel          ( $modul -> getKuerzel         () );
+        $toUpdate  ->  setName             ( $modul -> getName            () );
+        $toUpdate  ->  setTutor            ( $modul -> getTutor           () );
 
-        return $modul;
+        return $toUpdate;
     }
 
     public function delete ( int $id ): int 

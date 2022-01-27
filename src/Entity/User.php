@@ -90,6 +90,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $studentIn;
 
     /**
+     * @ORM\OneToMany(targetEntity=Benachrichtigung::class, mappedBy="user")
+     */
+    private $benachrichtigungen;
+
+     /*
      * @ORM\Column(type="text", nullable=true)
      */
     private $pfplink;
@@ -102,6 +107,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this -> eingereichteKommentare = new ArrayCollection   ();
         $this -> tutorIn                = new ArrayCollection   ();
         $this -> studentIn              = new ArrayCollection   ();
+        $this -> benachrichtigungen     = new ArrayCollection();
     }   
 
     public function setID ( int $i )
@@ -480,6 +486,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     
     }
 
+
+    /**
+     * @return Collection|Benachrichtigung[]
+     */
+    public function getBenachrichtigungen(): Collection
+    {
+        return $this->benachrichtigungen;
+    }
+
+    public function addBenachrichtigungen(Benachrichtigung $benachrichtigungen): self
+    {
+        if (!$this->benachrichtigungen->contains($benachrichtigungen)) {
+            $this->benachrichtigungen[] = $benachrichtigungen;
+            $benachrichtigungen->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBenachrichtigungen(Benachrichtigung $benachrichtigungen): self
+    {
+        if ($this->benachrichtigungen->removeElement($benachrichtigungen)) {
+            // set the owning side to null (unless already changed)
+            if ($benachrichtigungen->getUser() === $this) {
+                $benachrichtigungen->setUser(null);
+            }
+        }
+    }
+  
     public function getPfplink(): ?string
     {
         return $this->pfplink;
@@ -488,6 +523,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPfplink(?string $pfplink): self
     {
         $this->pfplink = $pfplink;
+
 
         return $this;
     }

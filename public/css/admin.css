@@ -45,7 +45,7 @@ a:hover
     color: black !important;
     text-decoration: none;
     padding: 5px;
-    font-size: 1.2em;
+    font-size: 1.1em;
 }
 
 #main-menu .menu .menu-item.active a span
@@ -55,7 +55,7 @@ a:hover
     background-color: #1A4B91;
     padding: 5px;
     border-radius: 5px;
-    font-size: 1.2em;
+    font-size: 1.1em;
 }
 
 .fas.fa-search.content-search-icon
@@ -204,3 +204,8 @@ a:hover
 }
 
 
+/* navbar mobile :-) */
+#navigation-toggler
+{
+    color: white !important;
+}

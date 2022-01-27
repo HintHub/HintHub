@@ -10,6 +10,7 @@ use Psr\Log\LoggerInterface;
 use App\Service\FehlerService;
 use App\Service\KommentarService;
 use App\Repository\FehlerRepository;
+use App\Service\BenachrichtigungService;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -33,17 +34,19 @@ class FehlerEventListener
     private     $fehlerRepository;
 
     private $userService;
-
     private $kommentarService;
+    private $benachrichtigungService;
+    
 
     public function __construct ( Session $session, FehlerService $fehlerService, FehlerRepository $fehlerRepository, 
-                                UserService $userService, KommentarService $kommentarService)
+                                UserService $userService, KommentarService $kommentarService, BenachrichtigungService $benachrichtigungService)
     {
         $this -> session = $session;
         $this -> fehlerService = $fehlerService;
         $this -> fehlerRepository = $fehlerRepository;
         $this -> userService = $userService;
         $this -> kommentarService = $kommentarService;
+        $this -> benachrichtigungService = $benachrichtigungService;
     }
 
     public function preRemove   ( LifecycleEventArgs $args ): void
@@ -90,9 +93,7 @@ class FehlerEventListener
 
         if($currentUser === null) 
             return;
-        
-
-
+      
         foreach ( $entities as $entity ) 
         {
             
@@ -105,7 +106,7 @@ class FehlerEventListener
                 $changes        = array_keys ( $changes_set );
 
                 $message        = $this -> generateStatusMessage ( $changes_set );
-
+              
                 $message        = "$currentUser hat die Fehlermeldung geändert:\n$message";
 
                 $kommentarInstance = $this -> createKommentar ( $message, $entity, $currentUser );
@@ -113,14 +114,23 @@ class FehlerEventListener
                 array_push( $foo, $kommentarInstance );
             }
         }
-        if( isset($foo[0]) ) 
-        {
-            $entityManager  ->  persist( $foo[0] );
-            $kommentarClass = get_class( $foo[0] );
-            $classMetadata  = $entityManager -> getClassMetadata ( $kommentarClass );
-            $unitOfWork     -> computeChangeSet( $classMetadata, $foo[0] );
-        }
 
+        if( !isset ( $foo[0] ) ) 
+        {
+            return;
+        }
+        
+        $entityManager  ->  persist( $foo[0] );
+        $kommentarClass = get_class( $foo[0] );
+        $classMetadata  = $entityManager -> getClassMetadata ( $kommentarClass );
+        $unitOfWork     -> computeChangeSet( $classMetadata, $foo[0] );
+
+        // TRIGGER BENACHRICHTIGUNG HIER
+
+        $fehler = $foo[0] -> getFehler  ();
+        $text   = $foo[0] -> getText    ();
+
+        $this -> benachrichtigungService -> fireBenachrichtigungen ( $fehler, $text );
     }
 
     private function generateStatusMessage ( $changeSet )  
@@ -146,7 +156,7 @@ class FehlerEventListener
 
     private function createKommentar( $text, $fehler, $currentUser ) 
     {
-        $dt = new \DateTime();
+        $dt = new \DateTime ();
         $kommentar = new Kommentar ();
         $kommentar -> setFehler               ( $fehler      );
         $kommentar -> setText                 ( $text        );
