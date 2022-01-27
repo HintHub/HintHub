@@ -38,7 +38,7 @@ class UserService
     }
 
     //findById
-    public function findById(int $id): User 
+    public function findById ( int $id ): User 
     {
         return $this -> userRepository -> find ( $id );
     }
@@ -68,8 +68,10 @@ class UserService
         $toUpdate   ->  setPfplink      ( $user  ->  getPfplink      () ); 
         $toUpdate   ->  setIsActive     ( $user  ->  getIsActive     () );
         $toUpdate   ->  setIsVerified   ( $user  ->  getIsVerified   () );
-
+        
+        $this -> entityManager -> persist ( $toUpdate );
         $this -> entityManager -> flush ();
+
         return $toUpdate;
     }
 
@@ -94,7 +96,8 @@ class UserService
         if ( $this -> tokenStorage -> getToken () === null                ) return null;
         if ( $this -> tokenStorage -> getToken () -> getUser () === null  ) return null;
 
-        return $this -> tokenStorage -> getToken () -> getUser ();
+        $currentUser = $this -> tokenStorage -> getToken () -> getUser ();
+        return $currentUser;
     }
 
     /**

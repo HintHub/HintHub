@@ -94,8 +94,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $benachrichtigungen;
 
-     /*
-     * @ORM\Column(type="text", nullable=true)
+    /**
+     * @ORM\Column(type="text")
      */
     private $pfplink;
 
@@ -514,16 +514,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             }
         }
     }
-  
+
     public function getPfplink(): ?string
     {
         return $this->pfplink;
     }
 
-    public function setPfplink(?string $pfplink): self
+    public function setPfplink(string $pfplink): self
     {
         $this->pfplink = $pfplink;
-
 
         return $this;
     }

@@ -19,7 +19,7 @@ final class Version20220127005417 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE user ADD pfplink LONGTEXT DEFAULT NULL');
+        $this->addSql('ALTER TABLE user ADD pfplink LONGTEXT CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`');
     }
 
     public function down(Schema $schema): void

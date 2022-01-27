@@ -544,19 +544,19 @@ class DashboardController extends AbstractDashboardController
         
         // for testing use menuAll();
 
-        if ( $user -> isAdmin () )
+        if ( $user -> isAdmin       () )
             return $this -> menuAdmin ();
 
-        if ( $user -> isStudent () )
+        if ( $user -> isStudent     () )
             return $this -> menuStudent    ();
 
-        if ( $user -> isTutor() )
+        if ( $user -> isTutor       () )
             return $this -> menuTutor      ();
 
-        if ( $user -> isExtern () )
+        if ( $user -> isExtern      () )
             return $this -> menuExtern     ();
 
-        if ( $user -> isVerwaltung () )
+        if ( $user -> isVerwaltung  () )
             return $this -> menuVerwaltung ();
 
         // always return "something"

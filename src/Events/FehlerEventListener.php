@@ -38,54 +38,57 @@ class FehlerEventListener
     private $benachrichtigungService;
     
 
-    public function __construct ( Session $session, FehlerService $fehlerService, FehlerRepository $fehlerRepository, 
-                                UserService $userService, KommentarService $kommentarService, BenachrichtigungService $benachrichtigungService)
+    public function __construct ( 
+        Session                 $session,
+        FehlerService           $fehlerService,
+        FehlerRepository        $fehlerRepository, 
+        UserService             $userService,
+        KommentarService        $kommentarService,
+        BenachrichtigungService $benachrichtigungService
+    )
     {
-        $this -> session = $session;
-        $this -> fehlerService = $fehlerService;
-        $this -> fehlerRepository = $fehlerRepository;
-        $this -> userService = $userService;
-        $this -> kommentarService = $kommentarService;
-        $this -> benachrichtigungService = $benachrichtigungService;
+        $this -> session                    = $session;
+        $this -> fehlerService              = $fehlerService;
+        $this -> fehlerRepository           = $fehlerRepository;
+        $this -> userService                = $userService;
+        $this -> kommentarService           = $kommentarService;
+        $this -> benachrichtigungService    = $benachrichtigungService;
     }
 
     public function preRemove   ( LifecycleEventArgs $args ): void
     {
-        $entityManager = $args->getObjectManager();
-        $entity = $args -> getObject();
+        $entityManager  = $args -> getObjectManager ();
+        $entity         = $args -> getObject        ();
 
         if ( !$entity instanceof Fehler ) 
         {
             return;
         }
 
-        $fehlerId = $entity -> getId();
+        $fehlerId = $entity -> getId ();
 
-        if ( !$entity -> isClosed() || ! $entity -> isRejected() ) 
+        if ( !$entity -> isClosed () || ! $entity -> isRejected () ) 
         {
             $id = $entity -> getId ();
             
-            array_push($this -> notClosedOrRejectedIds, $id);
+            array_push ( $this -> notClosedOrRejectedIds, $id );
 
             return;
         }
 
         // Detachen der offenen Fehler -> Löschen der closed/rejected
-        $entity         ->  detachNotClosedChildren();
+        $entity         ->  detachNotClosedChildren ();
 
         // Flush Entity Manager
         $entityManager  ->  flush ();
     }
 
-    public function fehlerChangeEvent( OnFlushEventArgs $args ) 
+    public function fehlerChangeEvent ( OnFlushEventArgs $args ) 
     {
-
-        //fuer onflush
-
-        $entityManager  = $args          -> getEntityManager();
+        $entityManager  = $args          -> getEntityManager ();
         $unitOfWork     = $entityManager -> getUnitOfWork   ();
-
-        $entities       = $unitOfWork    -> getScheduledEntityUpdates();
+        
+        $entities       = $unitOfWork    -> getScheduledEntityUpdates ();
 
         $foo = [];
 
@@ -102,15 +105,11 @@ class FehlerEventListener
             {
                 
                 //get all the changed properties of the Fehler object
-                $changes_set    = $unitOfWork -> getEntityChangeSet ( $entity );
-                $changes        = array_keys ( $changes_set );
-
-                $message        = $this -> generateStatusMessage ( $changes_set );
-              
-                $message        = "$currentUser hat die Fehlermeldung geändert:\n$message";
-
+                $changes_set       = $unitOfWork -> getEntityChangeSet ( $entity );
+                $changes           = array_keys ( $changes_set );
+                $message           = $this -> generateStatusMessage ( $changes_set );
+                $message           = "$currentUser hat die Fehlermeldung geändert:\n$message";
                 $kommentarInstance = $this -> createKommentar ( $message, $entity, $currentUser );
-
                 array_push( $foo, $kommentarInstance );
             }
         }
@@ -120,15 +119,17 @@ class FehlerEventListener
             return;
         }
         
-        $entityManager  ->  persist( $foo[0] );
-        $kommentarClass = get_class( $foo[0] );
+        $entityManager  ->  persist ( $foo[0] );
+        $kommentarClass = get_class ( $foo[0] );
         $classMetadata  = $entityManager -> getClassMetadata ( $kommentarClass );
-        $unitOfWork     -> computeChangeSet( $classMetadata, $foo[0] );
+        $unitOfWork     -> computeChangeSet ( $classMetadata, $foo[0] );
 
         // TRIGGER BENACHRICHTIGUNG HIER
 
         $fehler = $foo[0] -> getFehler  ();
         $text   = $foo[0] -> getText    ();
+
+        dd("p");
 
         $this -> benachrichtigungService -> fireBenachrichtigungen ( $fehler, $text );
     }
@@ -154,7 +155,7 @@ class FehlerEventListener
         return $message;
     }
 
-    private function createKommentar( $text, $fehler, $currentUser ) 
+    private function createKommentar ( $text, $fehler, $currentUser ) 
     {
         $dt = new \DateTime ();
         $kommentar = new Kommentar ();
@@ -169,7 +170,6 @@ class FehlerEventListener
 
     public function onFlush ( OnFlushEventArgs $onFlushEventArgs ): void
     {
-        
         $this -> fehlerChangeEvent ( $onFlushEventArgs );
         
         $rePersistedIds = [];
@@ -231,7 +231,7 @@ class FehlerEventListener
         }
 
 
-        $idsStr = implode(',', $this -> notClosedOrRejectedIds);
+        $idsStr = implode ( ',', $this -> notClosedOrRejectedIds );
 
         if ( strlen ( $idsStr ) > 0 )
         {
