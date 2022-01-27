@@ -43,7 +43,7 @@ class FehlerService
             $statusChoicesValues = array_values ( $this -> getStatusChoices () );
 
             $dt   = new \DateTime ();
-            $text = "User (ID:". $currentUser -> getId () . ") hat ein Ticket erstellt";
+            $text = "User (ID:". $currentUser -> getId () . ") hat eine Fehlermeldung erstellt";
             
             $kommentar  = new Kommentar ( );
             $kommentar
