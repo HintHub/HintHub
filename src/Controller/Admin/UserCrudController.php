@@ -29,6 +29,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 // For password Hashing
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\ArrayFilter;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
@@ -323,7 +324,20 @@ class UserCrudController extends AbstractCrudController
 
     private function getRolesArrayFilter()
     {
-        return ArrayFilter::new ( 'ROLES' ) -> setChoices ( $this -> userService -> getRoles () );
+        $roles  = $this->getRolesArrayManipulated();
+        return ChoiceFilter::new ( 'ROLES' ) -> setChoices ( $roles );
+    }
+
+    private function getRolesArrayManipulated() 
+    {
+        $roles = $this -> userService -> getRoles();
+        
+        foreach ($roles as $key => $value) 
+        {
+            $roles[$key] = '["'.$value.'"]';
+        }
+
+        return $roles;
     }
 
     public function configureFilters(Filters $filters): Filters
