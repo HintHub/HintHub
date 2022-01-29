@@ -21,6 +21,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\ArrayFilter;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -166,10 +167,9 @@ class FehlerCrudController extends AbstractCrudController
             return [
                 IdField::new            (   'id'               )    -> hideOnForm  (),
                 IdField::new            (   'id'               )    -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
-                AssociationField::new   (   'einreicher'       )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          (   'name'             ),
                 ChoiceField::new        (   'status'           )    -> setChoices ( $statusChoices ) -> hideOnIndex  (),
-                TextField::new          (   'status'           )    -> onlyOnIndex  (),
+                TextField::new          (   'status'           )    -> formatValue ( function ($val,$entity) { return $this -> formatFehlerStatus ($val,$entity); } ) -> onlyOnIndex  (),
                 NumberField::new        (   'seite'            ),
                 AssociationField::new   (   'skript'           ),
                 TextEditorField::new    (   'kommentar'        )    -> onlyWhenCreating  (),
@@ -180,7 +180,6 @@ class FehlerCrudController extends AbstractCrudController
                     'by_reference' => false,
                     ]
                 ),
-                DateField::new          (   'datum_erstellt'   )    -> hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
 
                 TextEditorField::new('verwandteFehler')
                 // callables also receives the entire entity instance as the second argument
@@ -189,6 +188,8 @@ class FehlerCrudController extends AbstractCrudController
                 }) 
 
                 -> hideOnForm(),
+                AssociationField::new   (   'einreicher'       )    -> hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                DateTimeField::new      (   'datum_erstellt'   )    -> hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' )
             ];
         }
 
@@ -198,7 +199,8 @@ class FehlerCrudController extends AbstractCrudController
                 IdField::new            (   'id'                    )    -> hideOnForm  (),
                 IdField::new            (   'id'                    )    -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          (   'name'                  ),
-                ChoiceField::new        (   'status'                )    -> hideWhenCreating () -> setChoices ( $statusChoices ),
+                ChoiceField::new        (   'status'                )    -> hideWhenCreating () -> hideOnIndex () -> setChoices  ( $statusChoices ),
+                TextxField::new         (   'status'                )    -> formatValue ( function ($val,$entity) { return $this -> formatFehlerStatus ($val,$entity); } ) -> onlyOnIndex  (),
                 NumberField::new        (   'seite'                 ),
                 AssociationField::new   (   'skript'                ),
                 TextField::new          (   'descriptionKommentar'  )    
@@ -212,7 +214,8 @@ class FehlerCrudController extends AbstractCrudController
                     )
                 ,
                 TextEditorField::new    (   'kommentar'        )    -> onlyWhenCreating  (),
-                DateField::new          (   'datum_erstellt'   )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                AssociationField::new   (   'einreicher'       )    -> hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                DateTimeField::new      (   'datum_erstellt'   )    -> hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' )
             ];
         }
 
@@ -221,9 +224,9 @@ class FehlerCrudController extends AbstractCrudController
             return [
                 IdField::new            (   'id'               )    -> hideOnForm  (),
                 IdField::new            (   'id'               )    -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
-                AssociationField::new   (   'einreicher'       )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          (   'name'             ),
-                ChoiceField::new        (   'status'           )    -> setChoices ( $statusChoices ),
+                ChoiceField::new        (   'status'           )    -> setChoices  ( $statusChoices ) -> hideOnIndex (),
+                TextxField::new         (   'status'           )    -> formatValue ( function ($val,$entity) { return $this -> formatFehlerStatus ($val,$entity); } ) -> onlyOnIndex  (),
                 NumberField::new        (   'seite'            ),
                 AssociationField::new   (   'skript'           ),
                 TextEditorField::new    (   'kommentar'        )    -> onlyWhenCreating  (),
@@ -235,10 +238,7 @@ class FehlerCrudController extends AbstractCrudController
                     ]
                 ) 
                 -> hideOnIndex(),
-                DateField::new          (   'datum_erstellt'   )    -> hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
-
                 TextEditorField::new    ( 'verwandteFehler'    )
-
                 // callables also receives the entire entity instance as the second argument
                 ->formatValue ( 
                     function  ( $value, $entity ) 
@@ -246,6 +246,8 @@ class FehlerCrudController extends AbstractCrudController
                         return join( "\n", $value -> getValues () );
                     }
                 ) -> hideOnForm (),
+                AssociationField::new   (   'einreicher'       )    -> hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                DateTimeField::new      (   'datum_erstellt'   )    -> hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' )
             ];
         }
 
@@ -382,4 +384,14 @@ class FehlerCrudController extends AbstractCrudController
         ;
     }
 
+    public function formatFehlerStatus ($val, $entity)
+    {
+        $badgeInfo = $entity -> badgeByStatus ();
+        if($badgeInfo === null)
+            dd($entity);
+        $badgeType = $badgeInfo [0];
+        $badgeText = $badgeInfo [1];
+
+        return '<span class="badge '.$badgeType.'">'.$badgeText.'</span>';
+    }
 }

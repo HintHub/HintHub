@@ -209,3 +209,19 @@ a:hover
 {
     color: white !important;
 }
+
+/* user-avatar (pfp) */
+.user-avatar:hover
+{
+    max-width:100% !important;
+    height:64px !important;
+}
+
+
+.fehlerBadge 
+{
+	height: auto;
+	font-size: 0.9em;
+    width: 100%;
+    padding: 15px;
+}

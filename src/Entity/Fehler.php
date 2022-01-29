@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Model\DatumTrait;
 use App\Model\EinreicherTrait;
+use App\Service\FehlerService;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\FehlerRepository;
 use Doctrine\Common\Collections\Collection;
@@ -211,6 +212,31 @@ class Fehler
         $this -> setStatus ( 'WAITING' );
     }
 
+    public function isOpened ()
+    {
+        return ( $this -> getStatus() == 'OPEN'    );
+    }
+
+    public function isClosed ()
+    {
+        return ( $this -> getStatus() == 'CLOSED'    );
+    }
+
+    public function isWaiting ()
+    {
+        return ( $this -> getStatus() == 'WAITING'   );
+    }
+
+    public function isRejected ()
+    {
+        return ( $this -> getStatus() == 'REJECTED'  );
+    }
+
+    public function isEscalated ()
+    {
+        return ( $this -> getStatus() == 'ESCALATED' );
+    }
+
     public function getSkript (): ?Skript
     {
         return $this -> skript;
@@ -233,16 +259,6 @@ class Fehler
         return $this;
     }
 
-    public function isClosed() 
-    {
-        return $this -> getStatus() == "CLOSED";
-    }
-
-    public function isRejected()
-    {
-        return $this -> getStatus() == "REJECTED";
-    }
-
 
     public function detachNotClosedChildren()
     {
@@ -250,15 +266,37 @@ class Fehler
         $arr = $this -> getVerwandteFehler() -> getValues();
         $len = count ($arr);
 
-        for ($i = 0; $i < $len; $i++) 
+        for ( $i = 0; $i < $len; $i++ )
         {
-            $fehler     = $arr[$i];
+            $fehler     = $arr [$i];
             $tempStatus = $fehler -> getStatus();
 
-            if ( !$fehler -> isClosed() ) 
+            if ( !$fehler -> isClosed () ) 
             {
                 $this -> removeVerwandteFehler ( $fehler );
             }
         }
+    }
+
+
+    public function badgeByStatus ()
+    {
+        $badgeText = FehlerService::getFehlerStatusTextByType ( $this -> getStatus() );
+        
+        if ( $this -> isOpened   ()  )
+            return [ "badge-danger",  $badgeText ];
+
+        if ( $this -> isClosed   ()  )
+            return [ "badge-success", $badgeText ];
+        
+        if ( $this -> isWaiting  ()  )
+            return [ "badge-warning", $badgeText ];
+
+        if ( $this -> isRejected ()  )
+            return [ "badge-primary", $badgeText ];
+
+        if ( $this -> isEscalated () )
+            return [ "badge-secondary", $badgeText ]; 
+        
     }
 }

@@ -109,6 +109,12 @@ main was before content_footer_wrapper
     </script>
 
     <div class="main">
+        {% set badgeInfo = entity.instance.badgeByStatus () %}
+        {% set badgeType = badgeInfo[0] %}
+        {% set badgeText = badgeInfo[1] %}
+       
+        <h1><span class="fehlerBadge badge {{badgeType}}">{{badgeText}}</span></h1>
+
         <div class="description">
             {{ entity.instance.getDescriptionKommentar() | striptags }}
         </div>

@@ -1,6 +1,33 @@
 {# templates/emails/signup.html.twig #}
-<h1>Test E-Mail {{ email.toName }}!</h1>
+<style>
+    .mailHead {
+        background-color: #1A4B91;
+        color: white;
+    }
 
+    .mailText
+    {
+        background-color: #f0f0f0;
+    }
+</style>
+{% if realMessage is defined %}
+    <div class="mailHead">
+        <h1>
+            <center>{{title}}</center>
+        </h1>
+    </div>
+    <div class="mailText">
+        <p>
+        {{text}}
+        <br/>
+        Klicken auf <a href="{{linkUrl}}">'{{linkText}}'</a>, um {{linkText}} einzusehen.
+        </p>
+    </div>
+{% else %}
+    <center>
+        <h1>This E-Mail System works!</h1>
+    </center>
+{% endif %}
 {#
 <p>
     You signed up as {{ username }} the following email:
