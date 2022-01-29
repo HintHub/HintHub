@@ -16,7 +16,8 @@ use Symfony\Component\Mailer\MailerInterface;
  */
 class EmailService
 {
-    private $mailer = null;
+    public static $systemEmail = "noreply@hinthub.de";
+    private $mailer            = null;
     
     public function __construct (MailerInterface $mailer)
     {

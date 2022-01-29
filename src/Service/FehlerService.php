@@ -71,6 +71,17 @@ class FehlerService
         return $entity;
     }
 
+    public static function getFehlerStatusTextByType ($type)
+    {
+        return [
+            'OPEN'          =>  'offen',
+            'CLOSED'        =>  'geschlossen',
+            'REJECTED'      =>  'abgelehnt',
+            'ESCALATED'     =>  'eskaliert',
+            'WAITING'       =>  'wartend'
+        ][$type];
+    }
+
     public function getStatusChoices ( $user = null )
     {
         if ( $user === null )
