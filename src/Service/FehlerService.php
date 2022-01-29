@@ -24,6 +24,9 @@ class FehlerService
     {
         $this -> entityManager      = $entityManager;
         $this -> fehlerRepository   = $fehlerRepository;
+
+        //debug
+        $this -> escalateFehler();
     }
 
     public function findById ( int $id ): Fehler 
@@ -163,7 +166,7 @@ class FehlerService
         $toUpdate   ->  setStatus                   ( $fehler    ->  getStatus               () );
         //$toUpdate ->  setDatumErstellt            ( $fehler    ->  getDatumErstellt        () );
         $toUpdate   ->  setDatumLetzteAenderung     ( $fehler    ->  getDatumLetzteAenderung () );
-        $toUpdate   ->  setDatumGeschlossen         ( $fehler    ->  getDatumGeschlossen     () );
+        //$toUpdate   ->  setDatumGeschlossen         ( $fehler    ->  getDatumGeschlossen     () );
 
         return $toUpdate;
     }
@@ -174,5 +177,15 @@ class FehlerService
         $this -> entityManager -> remove ( $toDelete );
         
         return $toDelete -> getId ();
+    }
+
+    public function escalateFehler() {
+        $toEscalate = $this -> fehlerRepository -> getAllFehlerForEscalation();
+
+        foreach($toEscalate as $fehler) 
+        {
+            $fehler -> escalate();
+            $this -> update ($fehler);
+        }
     }
 }

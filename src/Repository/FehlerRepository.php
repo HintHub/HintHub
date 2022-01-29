@@ -134,4 +134,18 @@ class FehlerRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function getAllFehlerForEscalation() {
+        $queryBuilder = $this->createQueryBuilder('f');
+
+        $result = $queryBuilder
+            -> andWhere    ("f.status in ('OPEN', 'WAITING')")
+            -> getQuery ()
+            -> useQueryCache(true)   
+            -> useResultCache(true)
+            -> getResult()
+        ;
+        
+        return $result;
+    }
 }
