@@ -200,7 +200,7 @@ class FehlerCrudController extends AbstractCrudController
                 IdField::new            (   'id'                    )    -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          (   'name'                  ),
                 ChoiceField::new        (   'status'                )    -> hideWhenCreating () -> hideOnIndex () -> setChoices  ( $statusChoices ),
-                TextxField::new         (   'status'                )    -> formatValue ( function ($val,$entity) { return $this -> formatFehlerStatus ($val,$entity); } ) -> onlyOnIndex  (),
+                TextField::new          (   'status'                )    -> formatValue ( function ($val,$entity) { return $this -> formatFehlerStatus ($val,$entity); } ) -> onlyOnIndex  (),
                 NumberField::new        (   'seite'                 ),
                 AssociationField::new   (   'skript'                ),
                 TextField::new          (   'descriptionKommentar'  )    
@@ -226,7 +226,7 @@ class FehlerCrudController extends AbstractCrudController
                 IdField::new            (   'id'               )    -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          (   'name'             ),
                 ChoiceField::new        (   'status'           )    -> setChoices  ( $statusChoices ) -> hideOnIndex (),
-                TextxField::new         (   'status'           )    -> formatValue ( function ($val,$entity) { return $this -> formatFehlerStatus ($val,$entity); } ) -> onlyOnIndex  (),
+                TextField::new          (   'status'           )    -> formatValue ( function ($val,$entity) { return $this -> formatFehlerStatus ($val,$entity); } ) -> onlyOnIndex  (),
                 NumberField::new        (   'seite'            ),
                 AssociationField::new   (   'skript'           ),
                 TextEditorField::new    (   'kommentar'        )    -> onlyWhenCreating  (),
