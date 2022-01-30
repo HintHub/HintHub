@@ -7,6 +7,7 @@ use App\Entity\Kommentar;
 
 use Doctrine\ORM\EntityManager;
 use App\Repository\FehlerRepository;
+use App\Service\BenachrichtigungService;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -17,13 +18,15 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class FehlerService
 {
-    public FehlerRepository $fehlerRepository;
-    public EntityManager    $entityManager;
+    private FehlerRepository        $fehlerRepository;
+    private EntityManager           $entityManager;
+    private BenachrichtigungService $benachrichtigungService;
 
-    public function __construct ( FehlerRepository $fehlerRepository, EntityManagerInterface $entityManager ) 
+    public function __construct ( FehlerRepository $fehlerRepository, EntityManagerInterface $entityManager, BenachrichtigungService $benachrichtigungService) 
     {
-        $this -> entityManager      = $entityManager;
-        $this -> fehlerRepository   = $fehlerRepository;
+        $this -> entityManager              = $entityManager;
+        $this -> fehlerRepository           = $fehlerRepository;
+        $this -> benachrichtigungService    = $benachrichtigungService;
     }
 
     public function findById ( int $id ): Fehler 
@@ -163,7 +166,7 @@ class FehlerService
         $toUpdate   ->  setStatus                   ( $fehler    ->  getStatus               () );
         //$toUpdate ->  setDatumErstellt            ( $fehler    ->  getDatumErstellt        () );
         $toUpdate   ->  setDatumLetzteAenderung     ( $fehler    ->  getDatumLetzteAenderung () );
-        $toUpdate   ->  setDatumGeschlossen         ( $fehler    ->  getDatumGeschlossen     () );
+        //$toUpdate   ->  setDatumGeschlossen         ( $fehler    ->  getDatumGeschlossen     () );
 
         return $toUpdate;
     }
@@ -174,5 +177,18 @@ class FehlerService
         $this -> entityManager -> remove ( $toDelete );
         
         return $toDelete -> getId ();
+    }
+
+    public function escalateFehler() 
+    {
+        $toEscalate = $this -> fehlerRepository -> getAllFehlerForEscalation();
+
+        foreach($toEscalate as $fehler) 
+        {   
+            $fehler -> escalate ();
+            $this   -> update   ($fehler);
+            $this -> entityManager -> flush();
+        }
+        
     }
 }
