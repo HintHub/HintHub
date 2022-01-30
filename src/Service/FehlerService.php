@@ -179,13 +179,14 @@ class FehlerService
         return $toDelete -> getId ();
     }
 
-    public function escalateFehler() {
+    public function escalateFehler() 
+    {
         $toEscalate = $this -> fehlerRepository -> getAllFehlerForEscalation();
 
         foreach($toEscalate as $fehler) 
         {
-            $fehler -> escalate();
-            $this -> update ($fehler);
+            $fehler -> escalate ();
+            $this   -> update   ($fehler);
         }
     }
 }

@@ -135,15 +135,16 @@ class FehlerRepository extends ServiceEntityRepository
     }
     */
 
-    public function getAllFehlerForEscalation() {
-        $queryBuilder = $this->createQueryBuilder('f');
+    public function getAllFehlerForEscalation() 
+    {
+        $queryBuilder = $this -> createQueryBuilder ('f');
 
         $result = $queryBuilder
-            -> andWhere    ("f.status in ('OPEN', 'WAITING')")
-            -> getQuery ()
-            -> useQueryCache(true)   
-            -> useResultCache(true)
-            -> getResult()
+            -> andWhere         ("f.status in ('OPEN', 'WAITING') AND date_diff(current_date(), f.datumLetzteAenderung) > 4")
+            -> getQuery         ()
+            -> useQueryCache    (true)
+            -> useResultCache   (true)   
+            -> getResult        ()
         ;
         
         return $result;
