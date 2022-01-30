@@ -183,6 +183,7 @@ class FehlerService
     {
         $toEscalate = $this -> fehlerRepository -> getAllFehlerForEscalation();
 
+
         foreach($toEscalate as $fehler) 
         {   
             $fehler -> escalate ();

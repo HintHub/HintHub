@@ -27,7 +27,7 @@ class FehlerEscalateCommand extends Command
     {
         $this
             ->setDescription('Escalates Fehler instances after 4 days')
-            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Dry run')
+            //->addOption('dry-run', null, InputOption::VALUE_NONE, 'Dry run')
         ;
     }
 
