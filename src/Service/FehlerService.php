@@ -7,6 +7,7 @@ use App\Entity\Kommentar;
 
 use Doctrine\ORM\EntityManager;
 use App\Repository\FehlerRepository;
+use App\Service\BenachrichtigungService;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -17,16 +18,15 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class FehlerService
 {
-    public FehlerRepository $fehlerRepository;
-    public EntityManager    $entityManager;
+    private FehlerRepository        $fehlerRepository;
+    private EntityManager           $entityManager;
+    private BenachrichtigungService $benachrichtigungService;
 
-    public function __construct ( FehlerRepository $fehlerRepository, EntityManagerInterface $entityManager ) 
+    public function __construct ( FehlerRepository $fehlerRepository, EntityManagerInterface $entityManager, BenachrichtigungService $benachrichtigungService) 
     {
-        $this -> entityManager      = $entityManager;
-        $this -> fehlerRepository   = $fehlerRepository;
-
-        //debug
-        $this -> escalateFehler();
+        $this -> entityManager              = $entityManager;
+        $this -> fehlerRepository           = $fehlerRepository;
+        $this -> benachrichtigungService    = $benachrichtigungService;
     }
 
     public function findById ( int $id ): Fehler 
@@ -184,9 +184,11 @@ class FehlerService
         $toEscalate = $this -> fehlerRepository -> getAllFehlerForEscalation();
 
         foreach($toEscalate as $fehler) 
-        {
+        {   
             $fehler -> escalate ();
             $this   -> update   ($fehler);
+            $this -> entityManager -> flush();
         }
+        
     }
 }

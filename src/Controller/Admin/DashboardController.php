@@ -7,21 +7,22 @@ use App\Entity\Modul;
 use App\Entity\Fehler;
 use App\Entity\Skript;
 use App\Entity\Kommentar;
-use App\Entity\Benachrichtigung;
-
 use App\Service\UserService;
-use App\Service\BenachrichtigungService;
+
+use App\Service\FehlerService;
+use App\Entity\Benachrichtigung;
 
 use App\Repository\UserRepository;
 use App\Repository\ModulRepository;
 use App\Repository\FehlerRepository;
 
+use App\Service\BenachrichtigungService;
 use Symfony\Component\HttpFoundation\Response;
+
 use Symfony\Component\Routing\Annotation\Route;
-
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
-use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 
+use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -49,8 +50,9 @@ class DashboardController extends AbstractDashboardController
     private UserRepository $userRepository;
 
     // services
-    private UserService $userService;
+    private UserService             $userService;
     private BenachrichtigungService $benachrichtigungService;
+    private FehlerService           $fehlerService;
 
     // constructor
     public function __construct (
@@ -66,6 +68,8 @@ class DashboardController extends AbstractDashboardController
         $this -> modulRepository         = $modulRepository;
         $this -> userRepository          = $userRepository;
         $this -> benachrichtigungService = $benachrichtigungService;
+
+        //$this -> fehlerService -> escalateFehler();
     }
     
     /**
