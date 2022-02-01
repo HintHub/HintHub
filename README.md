@@ -12,6 +12,19 @@ https://github.com/HintHub/hh-prodstack
 
 ## Upgrades
 
+### Downloading new Pushed Files (upgrading the Software itself)
+
+```bash
+git fetch
+git pull
+#git reset -head HARD 
+```
+
+
+
+
+### Packages
+
 For upgrades you need to run the following commands
 
 **jump into the php-fpm container**
