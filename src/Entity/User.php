@@ -479,14 +479,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $tutorIn   = $this -> tutorIn   -> getValues ();
         $studentIn = $this -> studentIn -> getValues ();
-        
-        if ( count ( $tutorIn ) == 0 && count ( $studentIn ) == 0 )
+
+        $countTutorIn   = count ( $tutorIn   );
+        $countStudentIn = count ( $studentIn );
+
+        if ( $countTutorIn == 0 && $countStudentIn == 0 )
             return null;
 
         $str1 = implode ( '<br/>', $tutorIn   );
         $str2 = implode ( '<br/>', $studentIn );
 
-        $str4 = "<b>StudentIn:</b><br/>".$str2."<br/><br/><b>TutorIn:</b><br/>".$str1;
+        $str4 = "";
+
+        if ( $countStudentIn > 0 && $countTutorIn > 0)
+        {
+            $str4 = "<b>StudentIn:</b><br/>".$str2."<br/><br/><b>TutorIn:</b><br/>".$str1;
+        }
+        else
+        {
+            if ( $countStudentIn > 0 )
+            {
+                $str4 = "<b>StudentIn:</b><br/>".$str2;
+            }
+
+            if ( $countTutorIn > 0 )
+            {
+                $str4 = "<b>TutorIn:</b><br/>".$str1;
+            }
+        }
+        
         return $str4;
     }
 
