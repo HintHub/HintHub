@@ -61,8 +61,8 @@
 
     <div class="benachrichtigungen row col-12">
     {% set i=0 %}
-    {% for entity in entities %}
-        <div class="benachrichtigung alert alert-primary" id="b_{{ i }}">
+    {% for entity in entities | sort ( ( a,b ) => a.instance.getDatumErstellt () < b.instance.getDatumErstellt () )  %}
+       <div class="benachrichtigung alert alert-primary" id="b_{{ i }}">
             <div class="row">
                 <div class="col-10">
                     
