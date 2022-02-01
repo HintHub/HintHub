@@ -26,6 +26,17 @@ For upgrades you need to run the following commands
 
 Also, a cache:clear `php /var/www/bin/console cache:clear` inside the php-fpm container is recommended
 
+Optionally you can add a Cronjob (crontab -e) for the automation of escalateFehler (escalaiting long unedited Fehlermeldungen)
+
+add to `/etc/crontab` (every 5 min means /5)
+
+```bash
+# /etc/crontab
+*/5 * * * * docker exec -it <stackName>_php-fpm_1 bash -c "php /var/www/bin/console escalate" 
+```
+
+add sudo before the command if necessary
+
 ### DB Changes (Entities/Schema)
 
 If you upgrade the DB schema, please regenerate the database:
@@ -40,8 +51,6 @@ sudo docker exec -it <stackName>_php-fpm_1 php /var/www/bin/console doctrine:mig
 sudo docker exec -it <stackName>_php-fpm_1 php /var/www/bin/console doctrine:fixtures:load -n
 
 ```
-
-
 
 ## Helper Scripts
 
