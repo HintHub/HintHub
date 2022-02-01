@@ -493,21 +493,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         if ( $countStudentIn > 0 && $countTutorIn > 0)
         {
-            $str4 = "<b>StudentIn:</b><br/>".$str2."<br/><br/><b>TutorIn:</b><br/>".$str1;
+            $str4 = "<b>Student in:</b><br/>".$str2."<br/><br/><b>TutorIn:</b><br/>".$str1;
         }
         else
         {
             if ( $countStudentIn > 0 )
             {
-                $str4 = "<b>StudentIn:</b><br/>".$str2;
+                $str4 = "<b>Student in:</b><br/>".$str2;
             }
 
             if ( $countTutorIn > 0 )
             {
-                $str4 = "<b>TutorIn:</b><br/>".$str1;
+                $str4 = "<b>Tutor in:</b><br/>".$str1;
             }
         }
-        
+
         return $str4;
     }
 
