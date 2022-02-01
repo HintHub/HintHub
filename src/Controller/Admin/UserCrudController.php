@@ -151,7 +151,7 @@ class UserCrudController extends AbstractCrudController
                         ]
                     ),
                 
-                TextEditorField::new ( 'tutorAndStudentIn' )
+                TextEditorField::new ( 'tutorAndStudentIn', 'Tutor/Student in' )
                     -> setTemplatePath  ( 'bundles/EasyAdminBundle/crud/TextEditorField.html.twig' ) 
                     -> hideWhenUpdating ()
                     -> hideWhenCreating ()
@@ -197,7 +197,7 @@ class UserCrudController extends AbstractCrudController
                         ]
                     ),
                 
-                TextEditorField::new ( 'tutorAndStudentIn' )
+                TextEditorField::new ( 'tutorAndStudentIn', 'Tutor/Student in')
                     -> setTemplatePath  ( 'bundles/EasyAdminBundle/crud/TextEditorField.html.twig' )
                     -> hideWhenUpdating ()
                     -> hideWhenCreating ()
