@@ -31,12 +31,12 @@ class UserRepository extends ServiceEntityRepository
             throw new Exception ( "Rolle angeben!" );
         
         return $this -> createQueryBuilder ( 'u' )
-                        -> andWhere        ( 'u.ROLES LIKE :role'  )
-                        -> setParameter    ( 'role', '%'.$role.'%' )
-                        -> getQuery        ()
-                        -> useQueryCache   ( true )   
-                        -> useResultCache  ( true )
-                        -> getResult       ();
+                    -> andWhere            ( 'u.ROLES LIKE :role'  )
+                    -> setParameter        ( 'role', '%'.$role.'%' )
+                    -> getQuery            ()
+                    -> useQueryCache       ( true )   
+                    -> useResultCache      ( true )
+                    -> getResult           ();
     }
 
     // Alle Studenten ausgeben
@@ -78,14 +78,14 @@ class UserRepository extends ServiceEntityRepository
 
      public function countUsersByRole ( $role )
      {
-        return $this -> createQueryBuilder        ( 'u' )
-                        -> select                 ( 'count(u.id)'         )
-                        -> andWhere               ( 'u.ROLES LIKE :role'  )
-                        -> setParameter           ( 'role', '%'.$role.'%' )
-                        -> getQuery               ()
-                        -> useQueryCache          ( true )  
-                        -> useResultCache         ( true )
+        return $this -> createQueryBuilder          ( 'u' )
+                        -> select                   ( 'count(u.id)'         )
+                        -> andWhere                 ( 'u.ROLES LIKE :role'  )
+                        -> setParameter             ( 'role', '%'.$role.'%' )
+                        -> getQuery                 ()
+                        -> useQueryCache            ( true )  
+                        -> useResultCache           ( true )
                         -> setResultCacheLifetime   ( 60   )
-                        -> getSingleScalarResult  ();
+                        -> getSingleScalarResult    ();
      }
 }

@@ -101,7 +101,7 @@ class FehlerEventListener
                 $changer           = $currentUser;
                 $changes_set       = $unitOfWork -> getEntityChangeSet ( $entity );
                 $changes           = array_keys ( $changes_set );
-                $message           = $this -> generateStatusMessage ( $changes_set );
+                $message           = $this -> generateStatusMessage ( $changes_set, $entity );
 
                 if ( $changes [ 0 ] == 'datumLetzteAenderung' && count ( $changes ) <= 1 )
                 {
@@ -138,7 +138,7 @@ class FehlerEventListener
         $this -> benachrichtigungService -> fireBenachrichtigungen ( $fehler, $text );
     }
 
-    private function generateStatusMessage ( $changeSet )  
+    private function generateStatusMessage ( $changeSet, $fehler )  
     {
         $message = "";
 
@@ -158,14 +158,27 @@ class FehlerEventListener
                 
                 if ( $key != 'datumLetzteAenderung' )
                 {
-                    $subMessage = "'$key' wurde von '$contentBefore' auf '$contentAfter' gesetzt\n";
-                    $message .= $subMessage;
+                    if ( $contentAfter == 'ESCALATED' )
+                    {
+                        $d = $this   -> fehlerService -> loadUnbearbeitetTage ( $fehler );
+                        $d = $d -> getUnbearbeitetTage ();
+
+                        $subMessage = "Diese Fehlermeldung war $d Tage(n) unbearbeitet.\n\n";
+                        $subMessage .= "'$key' wurde von '$contentBefore' auf '$contentAfter' gesetzt\n";
+                        $message .= $subMessage;
+                    }
+                    else 
+                    {
+                        $subMessage = "'$key' wurde von '$contentBefore' auf '$contentAfter' gesetzt\n";
+                        $message .= $subMessage;
+                    }
                 }
             }
 
         } 
         catch ( Exception $e ) 
         {
+            dd ( $e);
             dd( $changeSet );
         }
 

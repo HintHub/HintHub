@@ -145,7 +145,7 @@ class FehlerRepository extends ServiceEntityRepository
             -> setParameter             ( 'fehlerId', $fehlerId )
             -> getQuery                 ()
             -> useQueryCache            ( true )
-            -> useResultCache           ( true )
+            -> useResultCache           ( false )
             -> setResultCacheLifetime   ( 60   )
             -> getSingleScalarResult    ()
         ;

@@ -186,8 +186,7 @@ class FehlerService
             //echo "[+] updating $fId";
             $fehler -> setSystemUpdate ( true );
             $fehler -> escalate ();
-            $fehler = $this -> loadUnbearbeitetTage ( $fehler );
-            $this -> update ( $fehler );
+            $this   -> update ( $fehler );
             $this -> entityManager -> flush ();
             //echo "[i] update complete";
         }
