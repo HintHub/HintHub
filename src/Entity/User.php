@@ -479,14 +479,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $tutorIn   = $this -> tutorIn   -> getValues ();
         $studentIn = $this -> studentIn -> getValues ();
-
+        
         if ( count ( $tutorIn ) == 0 && count ( $studentIn ) == 0 )
             return null;
 
         $str1 = implode ( '<br/>', $tutorIn   );
         $str2 = implode ( '<br/>', $studentIn );
 
-        $str4 = "<b>StudentIn:</b><br/>".$str2."<br/><br/><b>TutorIn:</b><br/>".$str2;
+        $str4 = "<b>StudentIn:</b><br/>".$str2."<br/><br/><b>TutorIn:</b><br/>".$str1;
         return $str4;
     }
 
