@@ -21,36 +21,29 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
  */
 class KommentarCrudController extends AbstractCrudController
 {
-    private UserService $userService;
+    private $userService;
 
-    public function __construct (UserService $userService) 
+    public function __construct ( UserService $userService ) 
     {
         $this -> userService = $userService;
     }
     
-    public static function getEntityFqcn(): string
+    public static function getEntityFqcn (): string
     {
         return Kommentar::class;
     }
 
-    public function configureCrud ($crud): Crud
+    public function configureCrud ( $crud ): Crud
     {
         $user = $this -> userService -> getCurrentUser ();
 
         if ( $user -> isAdmin () )
         {         
             return Crud::new()
-                -> setPageTitle ( 'index',  'Kommentare'        )
-                -> setPageTitle ( 'new', 'Kommentar erstellen'  )
-                -> setPageTitle ( 'detail', fn ( Kommentar $kommentar ) => sprintf ( 'Kommentar <b>%s</b> betrachten',    $kommmentar -> __toString() ) )
-                -> setPageTitle ( 'edit',   fn ( Kommentar $kommentar ) => sprintf ( 'Kommentar <b>%s</b> bearbeiten',    $kommentar  -> __toString() ) )
-
-                // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
-
-                // ->overrideTemplates([
-                //     'crud/index' => 'admin/pages/index.html.twig',
-                //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
-                // ])
+                -> setPageTitle ( 'index',  'Kommentare'          )
+                -> setPageTitle ( 'new',    'Kommentar erstellen' )
+                -> setPageTitle ( 'detail', fn ( Kommentar $kommentar ) => sprintf ( 'Kommentar <b>%s</b> betrachten',    $kommmentar -> __toString () ) )
+                -> setPageTitle ( 'edit',   fn ( Kommentar $kommentar ) => sprintf ( 'Kommentar <b>%s</b> bearbeiten',    $kommentar  -> __toString () ) )
             ;
         }
 
@@ -62,17 +55,10 @@ class KommentarCrudController extends AbstractCrudController
         if ( $user -> isTutor () )
         {
             return Crud::new()
-                -> setPageTitle ( 'index',  'Kommentare'        )
-                -> setPageTitle ( 'new', 'Kommentar erstellen'  )
-                -> setPageTitle ( 'detail', fn ( Kommentar $kommentar ) => sprintf ( 'Kommentar <b>%s</b> betrachten',    $kommmentar -> __toString() ) )
-                -> setPageTitle ( 'edit',   fn ( Kommentar $kommentar ) => sprintf ( 'Kommentar <b>%s</b> bearbeiten',    $kommentar  -> __toString() ) )
-
-                // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
-
-                // ->overrideTemplates([
-                //     'crud/index' => 'admin/pages/index.html.twig',
-                //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
-                // ])
+                -> setPageTitle ( 'index',  'Kommentare'          )
+                -> setPageTitle ( 'new',    'Kommentar erstellen' )
+                -> setPageTitle ( 'detail', fn ( Kommentar $kommentar ) => sprintf ( 'Kommentar <b>%s</b> betrachten',    $kommmentar -> __toString () ) )
+                -> setPageTitle ( 'edit',   fn ( Kommentar $kommentar ) => sprintf ( 'Kommentar <b>%s</b> bearbeiten',    $kommentar  -> __toString () ) )
             ;
         }
 
@@ -84,23 +70,16 @@ class KommentarCrudController extends AbstractCrudController
         if ( $user -> isVerwaltung () )
         {
             return Crud::new()
-            -> setPageTitle ( 'index',  'Kommentare'        )
-            -> setPageTitle ( 'new', 'Kommentar erstellen'  )
-            -> setPageTitle ( 'detail', fn ( Kommentar $kommentar ) => sprintf ( 'Kommentar <b>%s</b> betrachten',    $kommmentar -> __toString() ) )
-            -> setPageTitle ( 'edit',   fn ( Kommentar $kommentar ) => sprintf ( 'Kommentar <b>%s</b> bearbeiten',    $kommentar  -> __toString() ) )
-
-            // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
-
-            // ->overrideTemplates([
-            //     'crud/index' => 'admin/pages/index.html.twig',
-            //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
-            // ])
+            -> setPageTitle ( 'index',  'Kommentare'          )
+            -> setPageTitle ( 'new',    'Kommentar erstellen' )
+            -> setPageTitle ( 'detail', fn ( Kommentar $kommentar ) => sprintf ( 'Kommentar <b>%s</b> betrachten',    $kommmentar -> __toString () ) )
+            -> setPageTitle ( 'edit',   fn ( Kommentar $kommentar ) => sprintf ( 'Kommentar <b>%s</b> bearbeiten',    $kommentar  -> __toString () ) )
         ;
         }
 
     }
 
-    public function configureFields(string $pageName): iterable
+    public function configureFields ( string $pageName ): iterable
     {
         $user = $this -> userService -> getCurrentUser ();
         /*
@@ -113,36 +92,20 @@ class KommentarCrudController extends AbstractCrudController
         if ( $user -> isAdmin () )
         {
             return [
-                IdField::new            ( 'id'      ) -> hideOnForm(),
-                IdField::new            ( 'id'      ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
-                TextEditorField::new    ( 'text'    ),
-                AssociationField::new   ( 'fehler'  )
+                IdField::new            ( 'id'     ) -> hideOnForm  (),
+                IdField::new            ( 'id'     ) -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                TextEditorField::new    ( 'text'   ),
+                AssociationField::new   ( 'fehler' )
             ];
-        }
-        
-
-        if ( $user -> isStudent () )
-        {
-            // TODO KommentarCrud configureFields isStudent
-        }
-
-        if ( $user -> isTutor () )
-        {
-            // TODO KommentarCrud configureFields isTutor
-        }
-
-        if ( $user -> isExtern () )
-        {
-            // TODO KommentarCrud configureFields isExtern
         }
 
         if ( $user -> isVerwaltung () )
         {
             return [
-                IdField::new            ( 'id'      ) -> hideOnForm(),
-                IdField::new            ( 'id'      ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
-                TextEditorField::new    ( 'text'    ),
-                AssociationField::new   ( 'fehler'  )
+                IdField::new            ( 'id'     ) -> hideOnForm  (),
+                IdField::new            ( 'id'     ) -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                TextEditorField::new    ( 'text'   ),
+                AssociationField::new   ( 'fehler' )
             ];
         }
     }
@@ -161,21 +124,6 @@ class KommentarCrudController extends AbstractCrudController
             ;
         }
 
-        if ( $user -> isStudent () )
-        {
-            //TODO KommentarCrud configureActions isStudent
-        }
-
-        if ( $user -> isTutor () )
-        {
-            //TODO KommentarCrud configureActions isTUtor
-        }
-        
-        if ( $user -> isExtern () )
-        {
-            //TODO KommentarCrud configureActions isExtern
-        }
-
         return $actions;
     }
 
@@ -184,10 +132,10 @@ class KommentarCrudController extends AbstractCrudController
         @author Karim Saad (karim.saad@iubh.de)
         @date 20.12.2021 03:05
     */
-    public function createEntity (string $entityFqcn) 
+    public function createEntity ( string $entityFqcn ) 
     {
-        $currentUser    = $this -> userService -> getCurrentUser ();
-        $entity          = new Kommentar    ();
+        $currentUser     = $this -> userService -> getCurrentUser ();
+        $entity          = new Kommentar ();
         $currentDateTime = new \DateTime ();
 
         // Datum Trait

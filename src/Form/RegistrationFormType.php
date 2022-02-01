@@ -17,46 +17,59 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  * part of php bin/console make:auth (compare https://symfony.com/doc/current/security.html#the-user)
  * 
  * @author karim.saad ( karim.saad@ubh.de )
+ * 
+ * Last Edit: 01.02.2022 0049
  */
 class RegistrationFormType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm ( FormBuilderInterface $builder, array $options )
     {
         $builder
-            ->add('email', null, ['translation_domain' => 'register', 'label' => 'email'])
-            ->add('agreeTerms', CheckboxType::class, [
-                'mapped' => false,
-                'constraints' => [
-                    new IsTrue([
-                        'message' => 'You should agree to our terms.',
-                    ]),
-                ],
-            ])
-            ->add('plainPassword', PasswordType::class, [
-                'translation_domain' => 'register', 
-                'label' => 'password',
-                // instead of being set onto the object directly,
-                // this is read and encoded in the controller
-                'mapped' => false,
-                'attr' => ['autocomplete' => 'new-password'],
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please enter a password',
-                    ]),
-                    new Length([
-                        'min' => 6,
-                        'minMessage' => 'Your password should be at least {{ limit }} characters',
-                        // max length allowed by Symfony for security reasons
-                        'max' => 4096,
-                    ]),
-                ],
-            ]);
+            -> add ( 'email',       null, [ 'translation_domain' => 'register', 'label' => 'email' ] )
+            -> add ( 'agreeTerms', 
+                CheckboxType::class, [
+                    'mapped'      => false,
+                    'constraints' => [
+                        new IsTrue (
+                            [
+                                'message' => 'You should agree to our terms.',
+                            ]
+                        ),
+                    ],
+                ]
+            )
+            -> add ( 'plainPassword',
+                PasswordType::class, [
+                    'translation_domain' => 'register', 
+                    'label'              => 'password',
+                    'mapped'             => false,
+                    'attr'               => [ 'autocomplete' => 'new-password' ],
+
+                    'constraints'        => [
+                        new NotBlank(
+                            [
+                                'message' => 'Please enter a password',
+                            ]
+                        ),
+                        new Length(
+                            [
+                                'min' => 6,
+                                'minMessage' => 'Your password should be at least {{ limit }} characters',
+                                // max length allowed by Symfony for security reasons
+                                'max' => 4096,
+                            ]
+                        ),
+                    ],
+                ]
+            );
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions ( OptionsResolver $resolver )
     {
-        $resolver->setDefaults([
-            'data_class' => User::class,
-        ]);
+        $resolver->setDefaults (
+            [
+                'data_class' => User::class,
+            ]
+        );
     }
 }

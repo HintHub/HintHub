@@ -12,6 +12,8 @@ use Doctrine\ORM\EntityManagerInterface;
  *
  * @author Ali Kemal Yalama (ali-kemal.yalama@iubh.de)
  * @date 18.12.2021
+ * 
+ * lastEdit: 01.02.2022 0133 by karim.saad (karim.saad@iub.de) (code format fixing)
  */
 class SkriptService {
 
@@ -48,7 +50,7 @@ class SkriptService {
     public function update ( Skript $skript ): Skript 
     {
         $toUpdate = $this -> skriptRepository -> find ( $skript -> getId () );
-        $toUpdate -> setVersion  ( $toUpdate -> getVersion () );
+        $toUpdate -> setVersion ( $toUpdate -> getVersion () );
 
         return      $toUpdate;
     }

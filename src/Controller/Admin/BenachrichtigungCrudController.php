@@ -22,12 +22,19 @@ use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
+/**
+ * @author ali.kemal-yalama (ali.kemal-yalama@iubh.de)
+ * @author karim.saad       (karim.saad@iubh.de)
+ */
 class BenachrichtigungCrudController extends AbstractCrudController
 {
-    private $bService;      // benachrichtigung
+    private $bService;      // benachrichtigungService
     private $userService;
     
-    public function __construct ( UserService $userService, BenachrichtigungService $bService ) 
+    public function __construct ( 
+        UserService $userService,
+        BenachrichtigungService $bService
+    ) 
     {
         $this -> bService        = $bService;
         $this -> userService     = $userService;
@@ -43,8 +50,8 @@ class BenachrichtigungCrudController extends AbstractCrudController
         $user = $this -> userService -> getCurrentUser ();
 
         return Crud::new()
-            -> setPageTitle     ( 'index',  'Benachrichtigungen' )
-            -> setPageTitle     ( 'new',    'Benachrichtigungen anlegen' )
+            -> setPageTitle     ( 'index',      'Benachrichtigungen'         )
+            -> setPageTitle     ( 'new',        'Benachrichtigungen anlegen' )
             -> setPageTitle     ( 'detail', fn ( Benachrichtigung $b ) => sprintf ( 'Benachrichtigung <b>%s</b> betrachten',    $b -> __toString() ) )
             -> setPageTitle     ( 'edit',   fn ( Benachrichtigung $b ) => sprintf ( 'Benachrichtigung <b>%s</b> bearbeiten',    $b -> __toString() ) )
             -> overrideTemplate ( 'crud/index', 'bundles/EasyAdminBundle/crud/Benachrichtigung.html.twig' )
@@ -53,7 +60,6 @@ class BenachrichtigungCrudController extends AbstractCrudController
 
     public function configureFields ( string $pageName ): iterable
     {
-        //       IdField::new             (  'id'             ),
         return [
             AssociationField::new    (  'fehler'         ),
             TextField::new           (  'text'           ),
@@ -81,34 +87,32 @@ class BenachrichtigungCrudController extends AbstractCrudController
         $user   = $this -> userService -> getCurrentUser ();
         $userId = $user -> getId ();
 
-        $response = $this -> get ( EntityRepository::class ) -> createQueryBuilder ( $searchDto, $entityDto, $fields, $filters );
+        $query = $this -> get ( EntityRepository::class ) -> createQueryBuilder ( $searchDto, $entityDto, $fields, $filters );
 
-        if( $user -> isTutor() || $user -> isStudent() ) 
+        if( $user -> isTutor () || $user -> isStudent () || $user -> isAdmin() ) 
         {
-            $response
-                -> where        ( 'entity.user = :userId AND entity.gelesen <> 1'   )
+            $query
+                -> where        ( 'entity.user = :userId AND entity.gelesen <> 1' )
                 -> setParameter ( 'userId', $userId )
-                ;
+            ;
         }
         else
         {
-            // if not false
-            //$response -> andWhere ( ' 0=1 ');
-            throw new \Exception ( " Auf diesen Bereich haben Sie keinen Zugriff! " );
+            throw new \Exception ( " kein Zugriff auf diesen Bereich! " );
         }
 
-        $response -> addOrderBy('entity.datumErstellt', 'ASC');
-        return $response;
+        $query -> addOrderBy('entity.datumErstellt', 'ASC');
+        return $query;
     }
 
-    public function index (AdminContext $adminContext)
+    public function index ( AdminContext $adminContext )
     {
-        // If unreads is 0 try to forward to /
-        if ( $this -> bService -> getCountUnreadBenachrichtigungen () == 0 )
-        {
-            return $this -> redirect ('/');
-        }
+        // If unreads is 0 try to forward to route /
+        $unreadsIs0 = $this -> bService -> getCountUnreadBenachrichtigungen () == 0;
 
-        return parent::index($adminContext);
+        if ( $unreadsIs0 )
+            return $this -> redirect ('/');
+        
+        return parent::index ( $adminContext );
     }
 }

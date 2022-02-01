@@ -17,11 +17,13 @@ class KommentarController extends AbstractController
 {
     #[Route('kommentar/add', name: 'kommentar_add')]
     public function add ( 
-        Request $request,
-        KommentarService $kommentarService,
+        
+        Request                 $request,
+        KommentarService        $kommentarService,
         BenachrichtigungService $benachrichtigungService,
-        UserService $userService,
-        FehlerService $fehlerService 
+        UserService             $userService,
+        FehlerService           $fehlerService 
+
     ): Response
     {
         $parameters = json_decode ( $request -> getContent (), true );
@@ -63,7 +65,7 @@ class KommentarController extends AbstractController
 
         if ( $kommentarService -> save ( $kommentar ) )
         {
-            $c = $benachrichtigungService -> fireBenachrichtigungen ( $fehler, "$currentUser hat einen Kommentar hinterlassen.", false);
+            $c = $benachrichtigungService -> fireBenachrichtigungen ( $fehler, "$currentUser hat einen Kommentar hinterlassen.", false );
             
             return new JsonResponse ( [ "status" => "ok" ], 200 );
         }

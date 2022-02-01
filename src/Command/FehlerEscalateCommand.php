@@ -14,26 +14,26 @@ class FehlerEscalateCommand extends Command
 {
     private $fehlerService;
 
-    protected static $defaultName = 'app:escalate';
+    protected static $defaultName = 'escalate';
 
-    public function __construct(FehlerService $fehlerService)
+    public function __construct ( FehlerService $fehlerService )
     {
-        $this->fehlerService = $fehlerService;
+        $this -> fehlerService = $fehlerService;
 
-        parent::__construct();
+        parent::__construct ();
     }
 
-    protected function configure()
+    protected function configure ()
     {
         $this
-            ->setDescription('Escalates Fehler instances after 4 days')
+            -> setDescription('Escalates Fehler instances after 4 days')
             //->addOption('dry-run', null, InputOption::VALUE_NONE, 'Dry run')
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function execute ( InputInterface $input, OutputInterface $output ): int
     {
-        $this -> fehlerService -> escalateFehler();
+        $this -> fehlerService -> escalateFehler ();
         return 1;
     }
 }

@@ -16,9 +16,9 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
  */
 class FehlerRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct( ManagerRegistry $registry )
     {
-        parent::__construct($registry, Fehler::class);
+        parent::__construct ( $registry, Fehler::class );
     }
 
     //Wir nutzen die Repositories, da ja dinge wie der QueryBuilder geerbt werden
@@ -29,13 +29,20 @@ class FehlerRepository extends ServiceEntityRepository
      * 
      * status ist ein string
      */
-    public function findAllByUserAndStatus(User $user, $status) 
+    public function findAllByUserAndStatus ( User $user, $status ) 
     {
-        $response = $this -> createQueryBuilder ('f');
-        $response = $this -> addWheres ( $response, $user );
-        $response -> setParameter ( 'status',  $status  );
-        $repsonse -> getQuery() -> useQueryCache(true) -> useResultCache(true);  // and here
-        return $response;
+        $query = $this -> createQueryBuilder ( 'f' );
+
+        $query = $this 
+            -> addWheres                ( $query, $user      )
+            -> setParameter             ( 'status',  $status ) 
+            -> getQuery                 () 
+            -> useQueryCache            ( true )
+            -> useResultCache           ( true )
+            -> setResultCacheLifetime   ( 60 )
+        ;
+
+        return $query;
     }
 
 
@@ -44,109 +51,105 @@ class FehlerRepository extends ServiceEntityRepository
      */
     public function countAllByUserAndStatus ( $user, $status ) 
     {
-        $response = $this -> createQueryBuilder ('f');
-        $response -> select ( "count (f.id) " );
-        $response = $this -> addWheres ( $response, $user );
-        $response -> setParameter ( 'status', $status     );
-        $response -> getQuery()  -> useQueryCache(true)   -> useResultCache(true);
-        return $response -> getQuery() -> useQueryCache(true)   -> useResultCache(true) -> getSingleScalarResult();  
+        $query = $this -> createQueryBuilder ( 'f' );
+
+        $query -> select ( "count (f.id) " );
+        $query = $this -> addWheres ( $query, $user );
+        $query -> setParameter ( 'status', $status     );
+
+        return $query -> getQuery () -> useQueryCache ( true )   -> useResultCache ( true ) -> setResultCacheLifetime   ( 60 ) -> getSingleScalarResult ();  
     }
 
-    private function addWheres  ($response, $user )
+    private function addWheres  ( $query, $user )
     {
         if ( $user -> isAdmin () || $user -> isVerwaltung () )
-            $response -> andWhere     ( 'f.status IN (:status)' );
+            $query -> andWhere     ( 'f.status IN (:status)' );
 
         if ( $user -> isStudent () )
-            $response
+            $query
                 -> andWhere     ( 'f.status IN (:status) AND f.einreicher IN (:studentId)' )
                 -> setParameter ( 'studentId', $user -> getId ()     );
 
         if ( $user -> isTutor () )
         {
             $tutorModule = $user -> getOnlyIdsFromTutorIn ();
-            $response
+            $query
                 -> andWhere     ( 'f.status IN (:status) AND f.einreicher IN (:module)' )
-                -> setParameter('module', $tutorModule, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
+                -> setParameter ( 'module', $tutorModule, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY );
         }
 
-        return $response;
+        return $query;
     }
 
-    //TODO: Absprechen mit Stefan: Hat die obere Methode gebuggt?
-
-    // Fehler by User und jeweils nach Status
-    // Offene Fehler
-
+    /* 
+        Fehler by User und jeweils nach Status
+        Offene Fehler
+    */
     public function countAllByUserAndOpen       ( User $user ) 
     {
         return $this -> countAllByUserAndStatus ($user, "OPEN"       );
     }
 
-    // Fehler by User und jeweils nach Status
-    // Geschlossene Fehler
-
+    /*
+        Fehler by User und jeweils nach Status
+        Geschlossene Fehler
+    */
     public function countAllByUserAndClosed     ( User $user )
     {
         return $this -> countAllByUserAndStatus ($user, "CLOSED"     );
     }
-    // Fehler by User und jeweils nach Status
-    // Wartend Fehler
-
+    
+    /*
+        Fehler by User und jeweils nach Status
+        Wartend Fehler
+    */
     public function countAllByUserAndWaiting    ( User $user ) 
     {
         return $this -> countAllByUserAndStatus ($user, "WAITING"    );
     }
-    // Fehler by User und jeweils nach Status
-    // Eskalierte Fehler
 
+    /*
+        Fehler by User und jeweils nach Status
+        Eskalierte Fehler
+    */
     public function countAllByUserAndESCALATED  ( User $user ) 
     {
         return $this -> countAllByUserAndStatus ($user, "ESCALATED"  );
     }
 
-
-    // /**
-    //  * @return Fehler[] Returns an array of Fehler objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function getAllFehlerForEscalation () 
     {
-        return $this->createQueryBuilder('f')
-            ->andWhere('f.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('f.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $queryBuilder = $this -> createQueryBuilder ( 'f' );
 
-    /*
-    public function findOneBySomeField($value): ?Fehler
-    {
-        return $this->createQueryBuilder('f')
-            ->andWhere('f.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
-
-    public function getAllFehlerForEscalation() 
-    {
-        $queryBuilder = $this -> createQueryBuilder ('f');
-
-        $result = $queryBuilder
-            -> andWhere         ("f.status in ('OPEN', 'WAITING') AND date_diff(current_date(), f.datumLetzteAenderung) > 4")
-            -> getQuery         ()
-            -> useQueryCache    (true)
-            -> useResultCache   (true)   
-            -> getResult        ()
+        $query = $queryBuilder
+            -> andWhere                 ( "f.status in ('OPEN', 'WAITING') AND date_diff(current_date(), f.datumLetzteAenderung) > 4" )
+            -> getQuery                 ()
+            -> useQueryCache            ( true )
+            -> useResultCache           ( false )
+            -> getResult                ()
         ;
         
-        return $result;
+        return $query;
+    }
+
+    public function getUnbearbeitetTage ( $fehlerId ) 
+    {
+        if ( $fehlerId <= 0 )
+            return -1;
+        
+        $query = $this -> createQueryBuilder ( 'f' );
+
+        $k =  $query
+            -> select                   ( "date_diff(current_date(), f.datumLetzteAenderung)" )
+            -> AndWhere                 ( "f.id = :fehlerId" )
+            -> setParameter             ( 'fehlerId', $fehlerId )
+            -> getQuery                 ()
+            -> useQueryCache            ( true )
+            -> useResultCache           ( true )
+            -> setResultCacheLifetime   ( 60   )
+            -> getSingleScalarResult    ()
+        ;
+
+        return $k;
     }
 }

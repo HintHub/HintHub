@@ -52,10 +52,10 @@ use Symfony\Component\PasswordHasher\Hasher\PasswordHasherAwareInterface;
  */
 class UserCrudController extends AbstractCrudController
 {
-    private UserService $userService;
-    private             $passwordHasher;
+    private $userService;
+    private $passwordHasher;
 
-    public function __construct (UserService $userService) 
+    public function __construct ( UserService $userService ) 
     {
         $this->passwordHasher = new PasswordHasherFactory (
             [
@@ -66,12 +66,12 @@ class UserCrudController extends AbstractCrudController
         $this -> userService = $userService;
     }
 
-    public static function getEntityFqcn(): string
+    public static function getEntityFqcn (): string
     {
         return User::class;
     }
 
-    public function configureCrud ($crud): Crud
+    public function configureCrud ( $crud ): Crud
     {
         $user = $this -> userService -> getCurrentUser ();
 
@@ -80,46 +80,25 @@ class UserCrudController extends AbstractCrudController
             return Crud::new()
                 -> setPageTitle ( 'index',  'Benutzer'         )
                 -> setPageTitle ( 'new',    'Benutzer anlegen' )
-                -> setPageTitle ( 'detail', fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> betrachten',    $user -> __toString() ) )
-                -> setPageTitle ( 'edit',   fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> bearbeiten',    $user -> __toString() ) )
-
-                // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
-
-                // ->overrideTemplates([
-                //     'crud/index' => 'admin/pages/index.html.twig',
-                //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
-                // ])
+                -> setPageTitle ( 'detail', fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> betrachten',    $user -> __toString () ) )
+                -> setPageTitle ( 'edit',   fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> bearbeiten',    $user -> __toString () ) )
             ;
         }
 
         if ( $user -> isTutor () ||  $user -> isStudent () ||  $user -> isExtern () )
         {
-            return Crud::new()
-                -> setPageTitle ( 'detail', fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> betrachten',    $user -> __toString() ) )
-
-                // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
-
-                // ->overrideTemplates([
-                //     'crud/index' => 'admin/pages/index.html.twig',
-                //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
-                // ])
+            return Crud::new ()
+                -> setPageTitle ( 'detail', fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> betrachten',    $user -> __toString () ) )
             ;
         }
 
         if ( $user -> isVerwaltung () )
         {
-            return Crud::new()
+            return Crud::new ()
                 -> setPageTitle ( 'index',  'Benutzer'         )
                 -> setPageTitle ( 'new',    'Benutzer anlegen' )
-                -> setPageTitle ( 'detail', fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> betrachten',    $user -> __toString() ) )
-                -> setPageTitle ( 'edit',   fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> bearbeiten',    $user -> __toString() ) )
-
-                // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
-
-                // ->overrideTemplates([
-                //     'crud/index' => 'admin/pages/index.html.twig',
-                //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
-                // ])
+                -> setPageTitle ( 'detail', fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> betrachten',    $user -> __toString () ) )
+                -> setPageTitle ( 'edit',   fn ( User $user ) => sprintf ( 'Benutzer <b>%s</b> bearbeiten',    $user -> __toString () ) )
             ;
         }
     }
@@ -142,36 +121,38 @@ class UserCrudController extends AbstractCrudController
                 eingereichteKommentare
                 module
         */
-
         if ( $user -> isAdmin () )
         {
             return [
                 IdField::new            ( 'id'            ) -> hideOnForm  (),
-                IdField::new            ( 'id'            ) -> onlyOnForms () ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                IdField::new            ( 'id'            ) -> onlyOnForms () -> hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          ( 'email'         ),
-                ChoiceField::new        ( 'ROLESSTRING'   ) -> setChoices   ( $this -> userService -> getRoles() ) -> setLabel ( "Rolle/Funktion" ),
-                TextField::new          ( 'plainPassword' ) -> setFormType  ( PasswordType::class                ) -> onlyOnforms (),
-                TextField::new          ( 'pfplink'       ) -> hideOnIndex(),
+                ChoiceField::new        ( 'ROLESSTRING'   ) -> setChoices   ( $this -> userService -> getRoles () ) -> setLabel ( "Rolle/Funktion" ),
+                TextField::new          ( 'plainPassword' ) -> setFormType  ( PasswordType::class ) -> onlyOnforms (),
+                TextField::new          ( 'pfplink'       ) -> hideOnIndex (),
+
                 AssociationField::new   ( 'tutorIn'       )
                     -> hideOnIndex () 
                     -> setLabel    ( 'Tutor in' )
                     -> setFormTypeOptions 
                     (
                         [
-                        'by_reference' => false,
+                            'by_reference' => false,
                         ]
                     ),
+                
                 AssociationField::new   ( 'studentIn' )
-                    -> hideOnIndex ()
-                    -> setLabel ( 'Student in' )
+                    -> hideOnIndex  ()
+                    -> setLabel     ( 'Student in' )
                     -> setFormTypeOptions 
                     (
                         [
                             'by_reference' => false,
                         ]
                     ),
+                
                 TextEditorField::new ( 'tutorAndStudentIn' )
-                    -> setTemplatePath('bundles/EasyAdminBundle/crud/TextEditorField.html.twig')
+                    -> setTemplatePath  ( 'bundles/EasyAdminBundle/crud/TextEditorField.html.twig' ) 
                     -> hideWhenUpdating ()
                     -> hideWhenCreating ()
             ];
@@ -181,9 +162,9 @@ class UserCrudController extends AbstractCrudController
         if ( $user -> isTutor () ||  $user -> isStudent () ||  $user -> isExtern () )
         {
             return [
-                IdField::new            ( 'id'            ) -> hideOnForm(),
-                TextField::new          ( 'pfplink'       ) -> hideOnIndex(),
-                TextField::new          ( 'email'         ) -> setFormTypeOption ( 'disabled', 'disabled' ) ->hideOnForm (),
+                IdField::new            ( 'id'            ) -> hideOnForm  (),
+                TextField::new          ( 'pfplink'       ) -> hideOnIndex (),
+                TextField::new          ( 'email'         ) -> setFormTypeOption ( 'disabled', 'disabled' ) -> hideOnForm (),
             ];
         }
 
@@ -191,11 +172,12 @@ class UserCrudController extends AbstractCrudController
         {
             return [
                 IdField::new            ( 'id'            ) -> hideOnForm  (),
-                IdField::new            ( 'id'            ) -> onlyOnForms () ->  hideWhenCreating()    -> setFormTypeOption ( 'disabled', 'disabled' ),
+                IdField::new            ( 'id'            ) -> onlyOnForms () -> hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          ( 'email'         ),
                 ChoiceField::new        ( 'ROLESSTRING'   ) -> setChoices  ( $this -> userService  -> getRoles() ) -> setLabel ( "Rolle/Funktion" ),
                 TextField::new          ( 'plainPassword' ) -> setFormType ( PasswordType::class                 ) -> onlyOnforms (),
                 TextField::new          ( 'pfplink'       ),
+
                 AssociationField::new   ( 'tutorIn'       )
                     -> hideWhenCreating ()
                     -> hideOnIndex      ()
@@ -206,15 +188,17 @@ class UserCrudController extends AbstractCrudController
                         'by_reference' => false,
                         ]
                     ),
-                AssociationField::new   ( 'studentIn'     ) -> hideWhenCreating() -> setLabel('Student in') -> hideOnIndex()
+                
+                AssociationField::new   ( 'studentIn'    ) -> hideWhenCreating () -> setLabel ( 'Student in' ) -> hideOnIndex ()
                     -> setFormTypeOptions 
                     (
                         [
                             'by_reference' => false,
                         ]
                     ),
+                
                 TextEditorField::new ( 'tutorAndStudentIn' )
-                    -> setTemplatePath('bundles/EasyAdminBundle/crud/TextEditorField.html.twig')
+                    -> setTemplatePath  ( 'bundles/EasyAdminBundle/crud/TextEditorField.html.twig' )
                     -> hideWhenUpdating ()
                     -> hideWhenCreating ()
             ];
@@ -256,34 +240,31 @@ class UserCrudController extends AbstractCrudController
         return $actions;
     }
 
-    /*
-        Taken out of:
-        https://github.com/EasyCorp/EasyAdminBundle/issues/3349#issuecomment-695214741
-    */
 
-    public function createEditFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
+    public function createEditFormBuilder ( EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context ): FormBuilderInterface
     {
-        $formBuilder = parent::createEditFormBuilder ($entityDto, $formOptions, $context);
+        // Look at: https://github.com/EasyCorp/EasyAdminBundle/issues/3349#issuecomment-695214741
+        $formBuilder = parent::createEditFormBuilder ( $entityDto, $formOptions, $context );
 
-        $this -> addHashPasswordEventListener ($formBuilder);
+        $this -> addHashPasswordEventListener ( $formBuilder );
 
         return $formBuilder;
     }
 
-    public function createNewFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
+    public function createNewFormBuilder ( EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context ): FormBuilderInterface
     {
-        $formBuilder = parent::createNewFormBuilder ($entityDto, $formOptions, $context);
+        $formBuilder = parent::createNewFormBuilder ( $entityDto, $formOptions, $context );
 
-        $this -> addHashPasswordEventListener ($formBuilder);
+        $this -> addHashPasswordEventListener ( $formBuilder );
 
         return $formBuilder;
     }
 
-    protected function addHashPasswordEventListener(FormBuilderInterface $formBuilder)
+    protected function addHashPasswordEventListener ( FormBuilderInterface $formBuilder )
     {
         $formBuilder -> addEventListener (
             FormEvents::SUBMIT, 
-            function (FormEvent $event) 
+            function ( FormEvent $event ) 
             {
                 /** @var User $user */
                 $obj = $event -> getData ();
@@ -302,35 +283,26 @@ class UserCrudController extends AbstractCrudController
         );
     }
 
-    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters) :QueryBuilder
+    public function createIndexQueryBuilder ( SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters ) :QueryBuilder
     {
-        parent::createIndexQueryBuilder ($searchDto, $entityDto, $fields, $filters);
-
-        $request     = $searchDto -> getRequest();
-
+        parent::createIndexQueryBuilder ( $searchDto, $entityDto, $fields, $filters );
+        
+        $request     = $searchDto -> getRequest ();
         $qb = $this -> get ( EntityRepository::class ) -> createQueryBuilder ( $searchDto, $entityDto, $fields, $filters );
 
-        /*$deletedOnly = $request->query->get('deletedOnly') == 1;
-        if ($deletedOnly)
-        {
-            $qb->andWhere('entity.deleted_at IS NOT NULL');
-        }
-        else
-        {
-            $qb->andWhere('entity.deleted_at IS NULL');
-        }*/
+        // manipulation of query (via QB) is here possible
         return $qb;
     }
 
-    private function getRolesArrayFilter()
+    private function getRolesArrayFilter ()
     {
-        $roles  = $this->getRolesArrayManipulated();
+        $roles  = $this -> getRolesArrayManipulated ();
         return ChoiceFilter::new ( 'ROLES' ) -> setChoices ( $roles );
     }
 
-    private function getRolesArrayManipulated() 
+    private function getRolesArrayManipulated () 
     {
-        $roles = $this -> userService -> getRoles();
+        $roles = $this -> userService -> getRoles ();
         
         foreach ($roles as $key => $value) 
         {
@@ -340,9 +312,9 @@ class UserCrudController extends AbstractCrudController
         return $roles;
     }
 
-    public function configureFilters(Filters $filters): Filters
+    public function configureFilters ( Filters $filters ): Filters
     {
-        $rolesArrayFilter = $this -> getRolesArrayFilter();
+        $rolesArrayFilter = $this -> getRolesArrayFilter ();
         return $filters
             -> add ( 'email'              )
             -> add ( $rolesArrayFilter    )

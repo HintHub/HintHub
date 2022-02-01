@@ -27,10 +27,11 @@ class BenachrichtigungController extends AbstractController
         $currentUser = $userService -> getCurrentUser ();
 
         /*
-        $notAllowed   = $currentUser -> isStudent () || $currentUser -> isVerwaltung () || $currentUser -> isExtern ();
+            TODO: add configured permissions
+            $notAllowed   = $currentUser -> isStudent () || $currentUser -> isVerwaltung () || $currentUser -> isExtern ();
 
-        if  ( $notAllowed )
-            return new JsonResponse ( [ "status" => "failed", "message" => "no permission!" ], 500 );
+            if  ( $notAllowed )
+                return new JsonResponse ( [ "status" => "failed", "message" => "no permission!" ], 500 );
         */
         
         $token        = $parameters [ 'token'    ];

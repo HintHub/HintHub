@@ -1,14 +1,14 @@
+{#
+   Renders the detailview of FehlerCrudController
+   (for Kommentare)
+   
+   @author karim.saad        (karim.saad@iubh.de)
+   @author stefan.baltschun  (stefan.baltschun@iubh.de)
+   @author philipp.kalscheid (philipp.kalscheid@iubh.de)
+#}
+
 {% extends '@!EasyAdmin/crud/detail.html.twig' %}
 
-{#
-{% block page_actions %}
-    <b></b>
-{% endblock %}
-#}
-
-{#
-main was before content_footer_wrapper
-#}
 {% block main %}
     <style>
         .kommentar_header
@@ -54,31 +54,6 @@ main was before content_footer_wrapper
     </style>
 
     <script>
-        /*function post (url, data) 
-        {
-            var q = confirm('Möchten Sie den Kommentar hinzufügen?');
-            if ( !q )
-            {
-                // aborted
-                return false;
-            }
-
-            var x = fetch(url, { method: "POST", headers: { 'Content-Type': "multipart/form-data; charset=utf-8; boundary=" + Math.random().toString().substr(2) }, body: data } );
-            x.then(
-                (x1) => {
-                    console.log(x1);
-                    if ( x1.status == 200 )
-                    {
-                        window.location += "#kommentare";
-                        window.location.reload (true);
-                    }
-                    return false;
-                }
-            );
-            return false;
-        }
-        */
-
         window.doRequest = async function doRequest() 
         {
             var html = document.getElementById('kommentar_new_text').value;
@@ -90,15 +65,18 @@ main was before content_footer_wrapper
             };
 
             // var x =  post ( '/kommentar/add', data);
-            const rawResponse = await fetch('/kommentar/add', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    //'Content-Type': 'application/x-www-form-urlencoded',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify (data)
-            });
+            const rawResponse = await fetch (
+                '/kommentar/add', 
+                {
+                    method: 'POST',
+                    headers: 
+                    {
+                        'Accept':       'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify (data)
+                }
+            );
             const content = await rawResponse.json();
             if ( rawResponse.status == 200 )
             {
@@ -113,33 +91,37 @@ main was before content_footer_wrapper
         {% set badgeType = badgeInfo[0] %}
         {% set badgeText = badgeInfo[1] %}
        
-        <h1><span class="fehlerBadge badge {{badgeType}}">{{badgeText}}</span></h1>
+        <h1>
+            <span class="fehlerBadge badge {{badgeType}}">{{badgeText}}</span>
+        </h1>
 
         <div class="description">
+            Unbearbeitet seit: {{entity.instance.getUnbearbeitetTage()}} Tage(n)
+            <br/><br/>
             {{ entity.instance.getDescriptionKommentar() | striptags }}
         </div>
 
         <br/>
 
         <div class="kommentare" id="kommentare">
-        {% for kommentar in entity.instance.getKommentare() | sort((a,b) => a.getDatumErstellt() <=> b.getDatumErstellt()) %}
-            <div class = "kommentar" id="kommentar_{{ kommentar.getId() }}">
-                <div class="kommentar_header">
-                    {% 
-                        set url = ea_url()
-                        .setController('App\\Controller\\Admin\\UserCrudController')
-                        .setAction('detail')
-                        .setEntityId( kommentar.getEinreicher().getId() )
-                    %}
+            {% for kommentar in entity.instance.getKommentare() | sort( (a,b) => a.getDatumErstellt() <=> b.getDatumErstellt() ) %}
+                <div class = "kommentar" id="kommentar_{{ kommentar.getId() }}">
+                    <div class="kommentar_header">
+                        {% 
+                            set url = ea_url()
+                            .setController ( 'App\\Controller\\Admin\\UserCrudController' )
+                            .setAction     ( 'detail' )
+                            .setEntityId   ( kommentar.getEinreicher().getId() )
+                        %}
 
-                    <a href="{{url}}" class="kommentar_user_link">{{ kommentar.getEinreicher()}}</a> schrieb am {{ kommentar.getDatumErstellt() | date('d.m.Y')}} um {{ kommentar.getDatumErstellt() | date ('H:i:s') }}:
-                </div>
+                        <a href="{{url}}" class="kommentar_user_link">{{ kommentar.getEinreicher() }}</a> schrieb am {{ kommentar.getDatumErstellt() | date('d.m.Y')}} um {{ kommentar.getDatumErstellt() | date ('H:i:s') }}:
+                    </div>
 
-                <div id="text_kommenar">
-                    {{ kommentar.getText() | striptags | nl2br }}
+                    <div id="text_kommenar">
+                        {{ kommentar.getText() | striptags | nl2br }}
+                    </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
         </div>
         <br/>
         <div class="kommentar_new">

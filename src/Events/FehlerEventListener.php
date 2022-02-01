@@ -21,17 +21,18 @@ use Symfony\Component\HttpFoundation\Session\Session;
  * @author ali-kemal.yalama ( ali-kemal.yalama@iubh.de  )
  * @author karim.saad       ( karim.saad@iubh.de        )
  * 
- * Laste Edit 19.01.22
+ * Before Last Edit 19.01.22
+ * Last Edit 01.02.22 (code formatting fix)
  */
 class FehlerEventListener 
 {
-    private     $session;
+    private $session;
 
-    private     $maximumDeleteOperations = 100;
-    private     $notClosedOrRejectedIds  = [];
+    private $maximumDeleteOperations = 100;
+    private $notClosedOrRejectedIds  = [];
 
-    private     $fehlerService;
-    private     $fehlerRepository;
+    private $fehlerService;
+    private $fehlerRepository;
 
     private $userService;
     private $kommentarService;
@@ -81,12 +82,10 @@ class FehlerEventListener
 
     public function fehlerChangeEvent ( OnFlushEventArgs $args ) 
     {
-        $entityManager  = $args          -> getEntityManager    ();
-        $unitOfWork     = $entityManager -> getUnitOfWork       ();
-        
+        $foo            = [];
+        $entityManager  = $args          -> getEntityManager          ();
+        $unitOfWork     = $entityManager -> getUnitOfWork             ();
         $entities       = $unitOfWork    -> getScheduledEntityUpdates ();
-
-        $foo = [];
 
         $currentUser    = $this ->  userService -> getCurrentUser ();
 
@@ -98,16 +97,31 @@ class FehlerEventListener
             //continue only if the object to be updated is a Fehler
             if ( $entity instanceof Fehler ) 
             {
-                
                 //get all the changed properties of the Fehler object
+                $changer           = $currentUser;
                 $changes_set       = $unitOfWork -> getEntityChangeSet ( $entity );
                 $changes           = array_keys ( $changes_set );
                 $message           = $this -> generateStatusMessage ( $changes_set );
-                $message           = "$currentUser hat die Fehlermeldung geändert:\n$message";
+
+                if ( $changes [ 0 ] == 'datumLetzteAenderung' && count ( $changes ) <= 1 )
+                {
+                    $beforeValue = $changes_set [ $changes [ 0 ] ] [ 0 ];    // beforeValue
+                    $entity -> setNoUpdateDatumAenderung  ( true );         // prevent Override
+                    $entity -> setDatumLetzteAenderung    ( $beforeValue );
+                    continue;
+                }
+                
+                if ( $entity -> getSystemUpdate () )
+                {
+                    $changer = "System";
+                }
+
+                $message           = "$changer hat die Fehlermeldung geändert:\n$message";
                 $kommentarInstance = $this -> createKommentar ( $message, $entity, $currentUser );
                 array_push( $foo, $kommentarInstance );
             }
         }
+        
 
         if( !isset ( $foo[0] ) ) 
             return;
@@ -117,9 +131,9 @@ class FehlerEventListener
         $classMetadata  = $entityManager -> getClassMetadata ( $kommentarClass );
         $unitOfWork     -> computeChangeSet ( $classMetadata, $foo[0] );
 
-        // TRIGGER BENACHRICHTIGUNG HIER
-        $fehler = $foo[0] -> getFehler  ();
-        $text   = $foo[0] -> getText    ();
+        // TRIGGER BENACHRICHTIGUNG
+        $fehler = $foo [0] -> getFehler  ();
+        $text   = $foo [0] -> getText    ();
 
         $this -> benachrichtigungService -> fireBenachrichtigungen ( $fehler, $text );
     }
@@ -132,8 +146,21 @@ class FehlerEventListener
         {
             foreach ( $changeSet as $key => $value ) 
             {
-                $subMessage = "'$key' wurde von '$value[0]' auf '$value[1]' gesetzt\n";
-                $message .= $subMessage;
+                $contentBefore = $value [0];
+                $contentAfter  = $value [1];
+
+                if ( $contentBefore instanceof \DateTime )
+                {
+                    
+                    $contentBefore = $contentBefore -> format ( 'd.m.Y H:i:s' );
+                    $contentAfter  = $contentAfter  -> format ( 'd.m.Y H:i:s' );
+                }
+                
+                if ( $key != 'datumLetzteAenderung' )
+                {
+                    $subMessage = "'$key' wurde von '$contentBefore' auf '$contentAfter' gesetzt\n";
+                    $message .= $subMessage;
+                }
             }
 
         } 

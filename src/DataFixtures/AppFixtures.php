@@ -47,6 +47,9 @@ class AppFixtures extends Fixture
     private $module;
     private $skripte;
 
+    public static $amountFehler      = 50;
+
+
 
     public function __construct (
         FehlerService               $fehlerService,
@@ -67,13 +70,17 @@ class AppFixtures extends Fixture
     
     public function load ( ObjectManager $manager ): void
     {
+        $amountF = AppFixtures::$amountFehler;
+
+        echo "[+] starting load of AppFixtures (Fehler: $amountF) \n";
+
         $data = $this -> loadTestModuleSkriptTestData ();
 
         
         $modul   = $this -> addModul  ( "Platzhalter", "pp", $tutor=null,  $studenten=null, $skript=null );
         $skript  = $this -> addSkript ( "Platzhalter", "0",  $fehler=null, $modul=$modul );
 
-        $createdUsers = $this -> flatten          ( $this -> createUser()            );
+        $createdUsers = $this -> flatten          ( $this -> createUsers ()          );
         $module       = $this -> createModule     ( $data                            );
         $skripte      = $this -> createSkripte    ( $data, $module                   );
         $fehler       = $this -> createFehler     ( $createdUsers, $module, $skripte );
@@ -81,20 +88,20 @@ class AppFixtures extends Fixture
         $this -> module    =      $module;
         $this -> skripte   =      $skripte;
         $this -> fehler    =      $fehler;
-        //$kommentare   = $this -> createKommentare ();
 
         //associations
-
         $this -> assignTutoren    ();
         $this -> assignStudenten  ();
         $this -> assignFehler     ();
+
+        echo "[+] completed loading of AppFixtures\n";
 
     }
 
     private function flatten ( $array ) 
     {
         $return = array();
-        array_walk_recursive(
+        array_walk_recursive (
             $array, 
             function($a) use (&$return) 
             { 
@@ -119,12 +126,13 @@ class AppFixtures extends Fixture
     {
         foreach ( $this -> module as $modul ) 
         {
-            $studentenArr = $this->getRandomStudenten ();
+            $studentenArr = $this -> getRandomStudenten ();
 
             foreach( $studentenArr as $student ) 
             {
                 $modul -> addStudenten ( $student ) ;
             }
+
             $this -> modulService -> save ( $modul );
         }
     }
@@ -137,14 +145,13 @@ class AppFixtures extends Fixture
 
         for( $i = 0; $i < $len; $i++ ) 
         {
-            print_r($i);
-            // [-2; +2]
             $k = ($i*2);
             if ($k > 1)
             {
                 if ( count ( $this -> fehler [$k] -> getVerwandteFehler () ) < 5)
                 {
                     $fehler1 = $this -> fehler [$k] -> addVerwandteFehler(  $this -> fehler [ ( $k - 1 ) ] );
+
                     array_push($arNewFehler, $fehler1);
                     
                     foreach ( $arNewFehler as $r )
@@ -164,7 +171,7 @@ class AppFixtures extends Fixture
     {
         $len    = count ( $this -> tutoren );
         $index  = rand( 0, $len-1 );
-        return $this -> tutoren [$index];
+        return $this -> tutoren [ $index ];
     }
 
     private function getRandomStudenten () 
@@ -172,7 +179,7 @@ class AppFixtures extends Fixture
         $studenten = [];
         for($i = 0; $i < 5; $i++) 
         {
-            array_push ( $studenten, $this -> getRandomStudent() );
+            array_push ( $studenten, $this -> getRandomStudent () );
         }
         return $studenten;
     }
@@ -181,7 +188,7 @@ class AppFixtures extends Fixture
     {
         $len    = count ( $this->studenten  );
         $index  = rand  ( 0, $len-1         );
-        return $this->studenten[$index];
+        return $this -> studenten [ $index ];
     }
 
     private function getRandomFehler () 
@@ -191,19 +198,11 @@ class AppFixtures extends Fixture
         return $this -> fehler [ $index ];
     }
 
-    //rand methods end
-
-    public function createUser ()
+    /**
+     * Creates standard User Accounts + randomized Account data
+     */
+    public function createUsers ()
     {
-        // email, pw, role
-        /*$admin      = $this -> addUser  ( 'admin@hinthub.de',      'test',     'ROLE_ADMIN'      );
-        $student    = $this -> addUser  ( 'student@hinthub.de',    'test',     'ROLE_STUDENT'    );
-        $tutor      = $this -> addUser  ( 'tutor@hinthub.de',      'test',     'ROLE_TUTOR'      );
-        
-        $extern     = $this -> addUser  ( 'extern@hinthub.de',     'test',     'ROLE_EXTERN'     );
-        $verwaltung = $this -> addUser  ( 'verwaltung@hinthub.de', 'test',     'ROLE_VERWALTUNG' );*/
-        
-
         $tutoren        =   $this -> createTutoren        ();
         $studenten      =   $this -> createStudenten      ();
         $externe        =   $this -> createExterne        ();
@@ -241,7 +240,7 @@ class AppFixtures extends Fixture
 
         for ( $i = 0; $i < 10; $i++) 
         {
-            $tutor = $this -> addUser  ( "tutor$i@hinthub.de",  'test', 'ROLE_TUTOR'  );
+            $tutor = $this -> addUser     ( "tutor$i@hinthub.de",  'test', 'ROLE_TUTOR'  );
             array_push  ( $tutoren, $tutor );
         }
         
@@ -251,7 +250,7 @@ class AppFixtures extends Fixture
     private function createExterne () 
     {
         $externe   = [];
-        $extern    = $this -> addUser  ( 'extern@hinthub.de',     'test',  'ROLE_EXTERN' );
+        $extern    = $this -> addUser   ( 'extern@hinthub.de',     'test',  'ROLE_EXTERN' );
         
         array_push  ( $externe, $extern );
 
@@ -273,7 +272,7 @@ class AppFixtures extends Fixture
         
         for ( $i = 0; $i < 10; $i++ ) 
         {
-            $extern = $this -> addUser  ( "verwaltung$i@hinthub.de", 'test', 'ROLE_VERWALTUNG' );
+            $extern = $this -> addUser         ( "verwaltung$i@hinthub.de", 'test', 'ROLE_VERWALTUNG' );
             array_push  ( $verwaltungen, $verwaltung );
         }
         
@@ -283,7 +282,7 @@ class AppFixtures extends Fixture
     private function createAdmins() 
     {
         $admins  = [];
-        $admin    = $this -> addUser  ( 'admin@hinthub.de', 'test', 'ROLE_ADMIN');
+        $admin    = $this -> addUser   ( 'admin@hinthub.de', 'test', 'ROLE_ADMIN');
         
         array_push      ( $admins, $admin );
 
@@ -340,30 +339,24 @@ class AppFixtures extends Fixture
         return $skripte;
     }
 
-    public function createKommentare ()
+    /**
+     * Creates Fehler by amount of self::amountFehler
+     */
+    public function createFehler ( $user, $module, $skripte )
     {
-        for ( $i=0; $i < 4; $i++ )
-        {
-            $text = $this -> getRandomText ( 40 ); // 40 Words
-            //$this ->  addKommentar ( $text, $fehler=null, $einreicher=null, $datum=null );
-        }
-    }
+        if ( count ( $user    ) == 0 )
+            throw new \Exception ( "No User given"    );
 
-    public function createFehler ( $user, $module, $skripte, $amount=50)
-    {
-        if ( count($user) == 0 )
-            throw new \Exception ( "No User given" );
-
-        if ( count($module) == 0 )
+        if ( count ( $module  ) == 0 )
             throw new \Exception ( "No Modules given" );
         
-        if ( count($skripte) == 0 )
+        if ( count ( $skripte ) == 0 )
             throw new \Exception ( "No Skripte given" );
 
 
         $fehlerAr = [];
 
-        for ( $i=0; $i < $amount; $i++ )
+        for ( $i=0; $i < AppFixtures::$amountFehler; $i++ )
         {
             $seite               = rand ( 0, 250 );
             $name                = $this -> getRandomText ( 40 ); // 40 Words
@@ -384,6 +377,9 @@ class AppFixtures extends Fixture
         return $fehlerAr;
     }
 
+    /**
+     * Add a Fehler to DB
+     */
     public function addFehler ( $name, $status, $seite, $initKommentar=null, $kommentare=null, $verwandteFehler=null, $skript=null, $einreicher=null, $datum=null ) 
     {
         $fehler  = new Fehler ();
@@ -420,6 +416,9 @@ class AppFixtures extends Fixture
         return $fehler;
     }
 
+    /**
+     * Adds Kommentar to DB
+     */
     public function addKommentar ( $text, $fehler=null, $einreicher=null, $datum=null )
     {
         $kommentar  = new Kommentar ();
@@ -443,6 +442,9 @@ class AppFixtures extends Fixture
         return $kommentar;
     }
 
+    /**
+     * Adds a Modul to DB
+     */
     public function addModul ( $name, $kuerzel, $tutor=null, $studenten=null, $skript=null, $datum=null )
     {
         $modul = new Modul ();
@@ -461,9 +463,13 @@ class AppFixtures extends Fixture
             //$skript -> setModul ($modul);
 
         $this -> modulService -> save ($modul);
+
         return $modul;
     }
 
+    /**
+     * adds a Script to DB
+     */
     public function addSkript ( $name, $version, $fehler=null, $modul=null )
     {
         $skript = new Skript ();
@@ -482,6 +488,9 @@ class AppFixtures extends Fixture
         return $skript;
     }
 
+    /**
+     * Adds a User to DB
+     */
     public function addUser ( $email, $pw, $role=[], $isVerified=true, $isActive=true )
     {
         if ( gettype ( $role ) === "string" ) $role = [ $role ];
@@ -501,6 +510,9 @@ class AppFixtures extends Fixture
     }
     
 
+    /**
+     * Generates lorem ipsum Phrases
+     */
     private function getRandomText ( $wordCount=10 )
     {
         $loremIpsum = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.';
@@ -517,12 +529,14 @@ class AppFixtures extends Fixture
         return $newSt;
     }
 
+    /**
+     * Loads predefined TestData from testmodule_skript.txt
+     */
     private function loadTestModuleSkriptTestData ()
     {
         $fname   = "testmodule_skript.txt";
         $newData = [];
-
-        $data = $this -> loadTestData ( $fname );
+        $data    = $this -> loadTestData ( $fname );
 
         if ( count ( $data ) == 0 )
             throw new \Exception ( "'$fname' has no data " );
@@ -534,8 +548,8 @@ class AppFixtures extends Fixture
         for ( $i = 0; $i < count ( $data ); $i++ )
         {
             $row = $data [$i];
-
             $spl = explode ( ',', $row );
+
             if ( count ( $spl ) !== 2 || $i==0 )
                 continue;
             
@@ -544,18 +558,21 @@ class AppFixtures extends Fixture
         return $newData;
     }
 
+    /**
+     * Loads TestData from $fname
+     */
     private function loadTestData ( $fname )
     {
+        $newData  = [];
         $dir      = dirname(__FILE__).'/testData/'; 
-        $fullpath = $dir.$fname;
+        $fullpath = $dir.$fname; // dirname(__FILE__).'/testData/testmodule_skript.txt'
 
         if ( ! file_exists ( $fullpath ) )
             throw new \Exception ("'$fullpath' existiert nicht!");
         
-        // dirname(__FILE__).'/testData/testmodule_skript.txt'
-        $csv = file_get_contents ($fullpath);
-        $newData = [];
-        $data = explode(PHP_EOL,$csv);
+        $csv  = file_get_contents ( $fullpath );
+        $data = explode ( PHP_EOL, $csv );
+
         return $data;
     }
 }

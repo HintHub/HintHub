@@ -1,14 +1,14 @@
+{#
+    Used in BenachrichtigungCrudController.php -> configureCrud
+    Renders Benachrichtungen
+
+    @author ali-kemal.yalama  (ali-kemal.yalama@iubh.de)
+    @author karim.saad        (karim.saad@iubh.de)
+    @author stefan.baltschun  (stefan.baltschun@iubh.de)
+    @author philipp.kalscheid (philipp.kalscheid@iubh.de)
+#}
 {% extends '@!EasyAdmin/crud/index.html.twig' %}
 
-{#
-{% block page_actions %}
-    <b></b>
-{% endblock %}
-#}
-
-{#
-main was before content_footer_wrapper
-#}
 {% block main %}
     <link rel="stylesheet" href="css/benachrichtigungen.css" />
     
@@ -75,10 +75,6 @@ main was before content_footer_wrapper
             <div class="row">
                 <div class="col-10">
                 {% for field in entity.fields %}
-                    {# field.propertyName #}
-                    {#<div class="benachrichtigung_label">
-                        {{ field.label          }}
-                    </div>#}
                     <div class="benachrichtigung_text alert-secondary">
                         {% if field.customOptions is defined and field.customOptions.get("relatedUrl") != null %}
                             <a href="{{ field.customOptions.get("relatedUrl") }}">
@@ -86,7 +82,6 @@ main was before content_footer_wrapper
                             </a>
                         {% else %}
                             {{ field.formattedValue }}
-                            {# {{ dump (field.customOptions) }} #}
                         {% endif %}
                     </div>
                 {% endfor %}

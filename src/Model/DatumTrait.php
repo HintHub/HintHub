@@ -8,6 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
  * Provides Entity Properties like "datumErstellt", "datumGeschlossen" etc.
  * 
  * @author ali-kemal.yalama (ali-kemal.yalama@iubh.de)
+ * 
+ * Last Edit: 01.02.2022 (code formatting fix)
  */
 trait DatumTrait
 {
@@ -31,7 +33,7 @@ trait DatumTrait
      * Gets the created date
      * @return DateTime
      */
-    public function getDatumErstellt() : \DateTime
+    public function getDatumErstellt () : \DateTime
     {
         return $this -> datumErstellt;
     }
@@ -41,7 +43,7 @@ trait DatumTrait
      * @param mixed $datumErstellt
      * @return Entity
      */
-    public function setDatumErstellt ($datumErstellt)
+    public function setDatumErstellt ( $datumErstellt )
     {
         $this -> datumErstellt = $datumErstellt;
         return $this;
@@ -61,7 +63,7 @@ trait DatumTrait
      * @param DateTime $datumGeschlossen
      * @return mixed Entity
      */
-    public function setDatumGeschlossen(\DateTime $datumGeschlossen)
+    public function setDatumGeschlossen ( \DateTime $datumGeschlossen )
     {
         $this -> datumGeschlossen = $datumGeschlossen;
         return $this;
@@ -81,7 +83,7 @@ trait DatumTrait
      * @param DateTime $datumLetzteAenderung
      * @return mixed Entity
      */
-    public function setDatumLetzteAenderung (\DateTime $datumLetzteAenderung)
+    public function setDatumLetzteAenderung ( \DateTime $datumLetzteAenderung )
     {
         $this -> datumLetzteAenderung = $datumLetzteAenderung;
         return $this;
@@ -91,7 +93,7 @@ trait DatumTrait
      * updates the last changed date
      * @return mixed Entity
      */
-    public function aktualisiereDatum (\DateTime $date)
+    public function aktualisiereDatum ( \DateTime $date )
     {
         $this -> datumLetzteAenderung = $date;
         return $this;

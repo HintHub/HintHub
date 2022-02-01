@@ -9,7 +9,9 @@ use Doctrine\ORM\Mapping as ORM;
  * Provides Entity property Einreicher
  * 
  * @author ali-kemal.yalama (ali-kemal.yalama@iubh.de)
- * @author_edit karim.saad  (karim.saad@iubh.de)
+ * @author karim.saad       (karim.saad@iubh.de)
+ * 
+ * Last Edit: 01.02.2022 (code formatting fix)
  */
 trait EinreicherTrait
 {

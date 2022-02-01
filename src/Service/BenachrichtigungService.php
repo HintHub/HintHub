@@ -2,28 +2,36 @@
 
 namespace App\Service;
 
+use App\Controller\Admin\FehlerCrudController;
+
 use App\Service\UserService;
 use App\Service\EmailService;
+
 use App\Entity\Benachrichtigung;
-use Symfony\Component\Mime\Address;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Component\Mailer\MailerInterface;
-use App\Controller\Admin\FehlerCrudController;
+
 use App\Repository\BenachrichtigungRepository;
+
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+
+use Doctrine\ORM\EntityManagerInterface;
+
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 
 /**
-
- */
+ * BenachrichtungsService is used for the Benachrichtungen in EA:Dashboard 
+ *  @author ali.kemal-yalama@iubh.de
+ *  
+ * lastEdit: 01.02.2022 0133 by karim.saad (karim.saad@iub.de) (code format fixing)
+*/
 class BenachrichtigungService
 { 
 
     private $entityManager;
 
     private $benachrichtigungRepository;
-
     private $userService;
 
     public function __construct (
@@ -43,7 +51,7 @@ class BenachrichtigungService
 
     public function findById( int $id ): Benachrichtigung 
     {
-        return $this -> benachrichtigungRepository -> find ($id);
+        return $this -> benachrichtigungRepository -> find ( $id );
     }
 
     public function findAll(): array 
@@ -61,9 +69,9 @@ class BenachrichtigungService
 
     public function update ( Benachrichtigung $benachrichtigung ): Benachrichtigung 
     {
-        $toUpdate = $this -> findById ( $benachrichtigung -> getId () );
+        $toUpdate = $this -> findById ( $benachrichtigung -> getId ()   );
 
-        $toUpdate = $this -> setText ( $benachrichtigung -> getText() );
+        $toUpdate = $this -> setText  ( $benachrichtigung -> getText () );
 
         return $toUpdate;
     }
@@ -79,7 +87,7 @@ class BenachrichtigungService
     }
 
     //creates the "same" notification twice - once for student once for tutor
-    public function fireBenachrichtigungen ( $fehler, $text, $flush=true ) 
+    public function fireBenachrichtigungen ( $fehler, $text, $flush=true, $system=False ) 
     {
         $einreicher = $fehler -> getEinreicher ();
         $tutor      = $fehler -> getSkript () -> getModul () -> getTutor ();
@@ -90,7 +98,14 @@ class BenachrichtigungService
         $eMailEinreicherAddress = $einreicher  -> getEmail ();
         $eMailTutorAddress      = $tutor       -> getEmail ();
 
-        $currentUser    = $this -> userService -> getCurrentUser();
+        if ( ! $system )
+        {
+            $currentUser    = $this -> userService -> getCurrentUser();
+        }
+        else
+        {
+            $currentUser    = "System";
+        }
 
         $sysMailAddress = EmailService::$systemEmail;
         $title          = "'$currentUser' hat '$fehler' geändert";
@@ -106,6 +121,7 @@ class BenachrichtigungService
             "linkText"    => $linkText
         ];
         
+
         $t2 = $title . " (An '$eMailEinreicherAddress')";
         $email1 = $this -> emailService -> sendMail ( $eMailEinreicherAddress,  $sysMailAddress, $t2, $data );
 
@@ -152,29 +168,14 @@ class BenachrichtigungService
     public function getCountUnreadBenachrichtigungen ()
     {
         $currentUser    = $this -> userService -> getCurrentUser ();
-
-        $isAdmin        = $currentUser -> isAdmin       ();
-        $isExtern       = $currentUser -> isExtern      ();
-        $isVerwaltung   = $currentUser -> isVerwaltung  ();
-
-        $notNeeded      = $currentUser === null; //$currentUser === null || $isAdmin || $isExtern || $isVerwaltung;
+        $notNeeded      = $currentUser === null; 
 
         if ( $notNeeded )
             return 0;
 
-        $userId       = $currentUser -> getId ();
-
-        $countUnreadBenachrichtigungen = $this -> entityManager 
-            -> createQueryBuilder       ()
-            -> select                   ( 'COUNT(b.id)'                           ) 
-            -> from                     ( Benachrichtigung::class,          'b'   )
-            -> where                    ( 'b.user IN (:userId) AND b.gelesen = 0' )
-            -> setParameter             ( 'userId', $userId                       )
-            -> getQuery                 ()
-            -> useQueryCache            ( true )
-            -> getSingleScalarResult    ();
+        $userId = $currentUser -> getId ();
         
-        return $countUnreadBenachrichtigungen;
+        return $this -> benachrichtigungRepository -> getCountUnreadBenachrichtigungen ( $userId );
     }
 
 
@@ -193,14 +194,14 @@ class BenachrichtigungService
             if ( $b === null )
                 return false;
 
-            $b -> setGelesen (true);
-            $this -> entityManager -> flush   ();
+            $b    -> setGelesen ( true );
+            $this -> entityManager -> flush ();
 
             return true;
         } 
         catch ( Exception $e )
         {
-            dd($e);
+            dd ( $e );
             return false;
         }
     }
@@ -208,10 +209,10 @@ class BenachrichtigungService
 
     public function generateFehlerDetailUrl ( $fehler )
     {
-        if (!$fehler)
+        if ( ! $fehler )
             return "";
         
-        $id = $fehler -> getId();
+        $id = $fehler -> getId ();
 
         return $this
         -> adminUrlGenerator

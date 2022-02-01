@@ -12,11 +12,9 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
- * Profil bearbeiten
+ * Saves changes to profile
  * 
- * @author Stefan Baltschun
- *
- * TODO: schick machen
+ * @author Stefan Baltschun (stefan.baltschun@iubh.de)
  */
 class ProfileController extends AbstractController
 {

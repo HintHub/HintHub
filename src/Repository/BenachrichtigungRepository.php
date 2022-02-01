@@ -14,37 +14,19 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class BenachrichtigungRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct ( ManagerRegistry $registry )
     {
-        parent::__construct($registry, Benachrichtigung::class);
+        parent::__construct ( $registry, Benachrichtigung::class );
     }
 
-    // /**
-    //  * @return Benachrichtigung[] Returns an array of Benachrichtigung objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function getCountUnreadBenachrichtigungen ( $userId )
     {
-        return $this->createQueryBuilder('b')
-            ->andWhere('b.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('b.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        return $this -> createQueryBuilder          ('b')
+                        -> select                   ( 'COUNT(b.id)'                           ) 
+                        -> where                    ( 'b.user IN (:userId) AND b.gelesen = 0' )
+                        -> setParameter             ( 'userId', $userId                       )
+                        -> getQuery                 ()
+                        -> useQueryCache            ( true )
+                        -> getSingleScalarResult    ();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Benachrichtigung
-    {
-        return $this->createQueryBuilder('b')
-            ->andWhere('b.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

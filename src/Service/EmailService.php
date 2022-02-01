@@ -3,8 +3,8 @@
 namespace App\Service;
 
 use Symfony\Component\Mime\Address;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
 /**
  * Provides the System with Sending E-Mail possibilities
@@ -13,13 +13,15 @@ use Symfony\Component\Mailer\MailerInterface;
  * @date 24.01.2022
  * 
  * you need to insert MAILER_DSN=smtp://user:pass@smtp.example.com:port in .env.local
+ * 
+ * lastEdit: 01.02.2022 0133 by karim.saad (karim.saad@iub.de) (code format fixing)
  */
 class EmailService
 {
     public static $systemEmail = "noreply@hinthub.de";
     private $mailer            = null;
     
-    public function __construct (MailerInterface $mailer)
+    public function __construct ( MailerInterface $mailer )
     {
         $this -> mailer = $mailer;
     }
@@ -28,7 +30,7 @@ class EmailService
     public function sendMail ( $to, $from, $title, $data=[], $template="email/default.html.twig" )
     {
         if ( $this -> mailer === null )
-            throw new \Exception ("Mailer is null");
+            throw new \Exception ( "Mailer is null" );
         
         $email = ( new TemplatedEmail () )
             -> from         ( $from                 )
