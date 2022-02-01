@@ -407,7 +407,7 @@ class FehlerCrudController extends AbstractCrudController
         {
             $userModuleIds = $user -> getOnlyIdsFromTutorIn ();
 
-            if  ( count($userModuleIds) == 0  ) 
+            if  ( count ( $userModuleIds ) == 0  ) 
             {
                 // Tutor hat keine Module
                 throw new \Exception("keine Module zugewiesen");
