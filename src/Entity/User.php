@@ -444,6 +444,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         ) -> getValues ();
     }
 
+    public function getSkriptIdsFromTutorIn () 
+    {
+        return $this -> tutorIn -> map ( 
+            function ( $obj ) 
+            {
+                return $obj -> getSkript() -> getId ();
+            }
+        ) -> getValues ();
+    }
+
     /**
      * @return Collection|Modul[]
      */
