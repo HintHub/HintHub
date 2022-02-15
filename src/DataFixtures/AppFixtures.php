@@ -47,7 +47,7 @@ class AppFixtures extends Fixture
     private $module;
     private $skripte;
 
-    public static $amountFehler      = 5000;
+    public static $amountFehler      = 50;
 
 
 
