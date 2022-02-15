@@ -74,7 +74,7 @@ class FehlerRepository extends ServiceEntityRepository
         {
             $tutorSkripteUeberModule = $user -> getSkriptIdsFromTutorIn ();
             $query
-                -> andWhere     ( 'f.status IN (:status) AND f.skript IN (:skripte)'); // OR f.einreicher IN (:tutorId)' )
+                -> andWhere     ( 'f.status IN (:status) AND f.skript IN (:skripte)' ) // OR f.einreicher IN (:tutorId)' )
                 -> setParameter ( 'skripte', $tutorSkripteUeberModule, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY );
                 //-> setParameter ( 'tutorId', $user -> getId (),        );
         }
