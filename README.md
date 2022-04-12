@@ -1,8 +1,8 @@
-# HintHub
+# HintHub :de: :uk: :us:
 
-This system improves the IU (IUBH) University Quality Management (QM) capabilities. Students can easily report mistakes in, for example, Scripts of Modules or other materials provided by the University.
+This system improves the [IU (IUBH)](https://www.iu.org/) University Quality Management (QM) capabilities. Students can easily report mistakes in, for example, Scripts of Modules or other materials provided by the University.
 
-Hinthub uses Symfony 5.3+ and EasyAdmin 3.x. Symfony uses Doctrine 2, the Twig Templating Engine and other various packages (upgradeable with composer, npm and yarn). Furthermore docker and docker-compose is being used.
+Hinthub uses [Symfony 5.3+](https://symfony.com/) and [EasyAdmin 3.x](https://symfony.com/bundles/EasyAdminBundle/current/index.html). Symfony uses [Doctrine 2](https://www.doctrine-project.org/), the [Twig Templating Engine](https://twig.symfony.com/) and other various packages (upgradeable with [composer](https://getcomposer.org/), [npm](https://www.npmjs.com/) and [yarn](https://yarnpkg.com/) ). Furthermore [docker](https://www.docker.com/) and  [docker-compose](https://docs.docker.com/compose/) is being used.
 
 <img alt="HintHub Dashboard" src="screenshots/2.png?raw=true" width="100%" height="75%" />
 <img alt="HintHub Login" src="screenshots/1.png?raw=true" width="50%" height="50%" />
@@ -12,82 +12,9 @@ Hinthub uses Symfony 5.3+ and EasyAdmin 3.x. Symfony uses Doctrine 2, the Twig T
 - [documentation.md](/documentation.md)
 - [More Screenshots](/screenshots)
 ## Installation
-For the Installation, please look at 
-
-- [HH-Prodstack (not public yet)](https://github.com/HintHub/hh-prodstack)
+For the Installation, please look at [HH-Prodstack (not public yet)](https://github.com/HintHub/hh-prodstack)
 
 ## Upgrades
+Please look at [upgrades.md](upgrades.md)
 
-### Downloading new Pushed Files (upgrading the Software itself)
-
-```bash
-git fetch
-git pull
-#git reset -head HARD 
-```
-
-### Packages
-
-For upgrades you need to run the following commands
-
-**jump into the php-fpm container**
-
-`sudo docker exec -it testprojekt_php-fpm_1 "bash"`
-
-**and run the upgrades (composer, npm, yarn)**
-
-`cd /var/www/ && composer upgrade && npm upgrade && yarn upgrade`
-
-
-
-Also, a cache:clear `php /var/www/bin/console cache:clear` inside the php-fpm container is recommended
-
-Optionally you can add a Cronjob (crontab -e) for the automation of escalateFehler (escalaiting long unedited Fehlermeldungen)
-
-add to `/etc/crontab` (every 5 min means /5)
-
-```bash
-# /etc/crontab
-*/5 * * * * docker exec -it <stackName>_php-fpm_1 bash -c "php /var/www/bin/console escalate" 
-```
-
-add sudo before the command if necessary
-
-### DB Changes (Entities/Schema)
-
-If you upgrade the DB schema, please regenerate the database:
-
-use the following commands:
-
-```bash
-#!/bin/bash
-sudo docker exec -it <stackName>_php-fpm_1 php /var/www/bin/console doctrine:database:drop --force -n
-sudo docker exec -it <stackName>_php-fpm_1 php /var/www/bin/console doctrine:database:create -n
-sudo docker exec -it <stackName>_php-fpm_1 php /var/www/bin/console doctrine:migrations:migrate -n
-sudo docker exec -it <stackName>_php-fpm_1 php /var/www/bin/console doctrine:fixtures:load -n
-
-```
-
-## Helper Scripts
-
-### Production
-
-In Production you should use the Helper Scripts of the HH-Prod-Stack.
-
-### Dev-VM
-
-Inside the Dev VM it's recommended to use the prebuild Helper Scripts
-
-```bash
-/bin/restartdockercontainer
-/usr/bin/rebuilddatabase
-/usr/bin/clearsymfonycache
-/usr/bin/jumpinphpfpm
-/usr/bin/jumpinmysqlshell
-```
-
-The names are descriptive therefore any further explaination is not available.
-
-
-
-***HintHub Dev Team 01.02.2022***
+***Last Edit: HintHub Dev Team 12.04.2022 04/12/2022 ***
