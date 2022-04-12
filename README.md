@@ -4,8 +4,9 @@ This system improves the IU (IUBH) University Quality Management (QM) capabiliti
 
 Hinthub uses Symfony 5.3+ and EasyAdmin 3.x. Symfony uses Doctrine 2, the Twig Templating Engine and other various packages (upgradeable with composer, npm and yarn). Furthermore docker and docker-compose is being used.
 
-![Screenshot_Login](screenshots/1.png?raw=true=250x250)
-![Screenshot_dashboard](screenshots/2.png?raw=true=250x250)
+<img alt="HintHub Dashboard" src="screenshots/2.png?raw=true" width="100%" height="75%" />
+<img alt="HintHub Login" src="screenshots/1.png?raw=true" width="50%" height="50%" />
+
 
 ## deep-dive Tech Documentation
 - https://github.com/HintHub/HintHub/blob/main/documentation.md
