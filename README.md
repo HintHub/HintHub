@@ -9,13 +9,12 @@ Hinthub uses Symfony 5.3+ and EasyAdmin 3.x. Symfony uses Doctrine 2, the Twig T
 
 
 ## deep-dive Tech Documentation
-- https://github.com/HintHub/HintHub/blob/main/documentation.md
+- [documentation.md](/documentation.md)
 
 ## Installation
-
 For the Installation, please look at 
 
-https://github.com/HintHub/hh-prodstack
+- [HH-Prodstack (not public yet)](https://github.com/HintHub/hh-prodstack)
 
 ## Upgrades
 
