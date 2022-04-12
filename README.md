@@ -15,6 +15,6 @@ Hinthub uses [Symfony 5.3+](https://symfony.com/) and [EasyAdmin 3.x](https://sy
 For the Installation, please look at [HH-Prodstack (not public yet)](https://github.com/HintHub/hh-prodstack)
 
 ## Upgrades
-Please look at [upgrades.md](upgrades.md)
+Please look at [upgrades.md](UPGRADES.md)
 
 ***Last Edit: HintHub Dev Team 12.04.2022 04/12/2022 ***
