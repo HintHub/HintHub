@@ -11,6 +11,8 @@ Unlimited teas and coffees to the developers of Open Source Software such as [Op
 
 
 ## deep-dive Tech Documentation
+We describe in more depth all aspects of this project and the technical components. 
+#### Look here:
 - [documentation.md](/documentation.md)
 - [More Screenshots](/screenshots)
 ## Installation
