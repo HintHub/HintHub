@@ -12,11 +12,9 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
- * Profil bearbeiten
+ * Saves changes to profile
  * 
- * @author Stefan Baltschun
- *
- * TODO: schick machen
+ * @author Stefan Baltschun (stefan.baltschun@iubh.de)
  */
 class ProfileController extends AbstractController
 {
@@ -44,20 +42,18 @@ class ProfileController extends AbstractController
 
                 // PW hashing
                 $npw        = $newUser -> getPlainPassword ();
-                $npwEmpty   = empty ($npw);
 
-                if ( ! $npwEmpty ) 
+                if ( $npw ) 
                 {
                     $hashedPW =  $userService -> getHashedPW ( $newUser, $npw );
-                    $newUser -> setPassword ( $hashedPW );   
-                }
-                // Update
-                $success = ( $userService -> update ($newUser) ) ? true : false;
-
-                if ( ! $npwEmpty )
-                {
+                    $newUser -> setPassword ( $hashedPW );
+                    $userService -> update ( $newUser );
                     return $this -> redirectToRoute("app_logout");
                 }
+
+                // Update
+                $u = $userService -> update ( $newUser );
+                $success = ( $u ) ? true : false;
                 
                 // Rendering
                 return $this -> renderIt ( $user, $userForm, $success );

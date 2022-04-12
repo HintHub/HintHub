@@ -1,19 +1,32 @@
-{# @var ea \EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext #}
-{# @var field \EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto #}
-{# @var entity \EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto #}
+{#
+   Renders the configured TextEditorField in UserCrudContronller
+   
+   @author karim.saad        (karim.saad@iubh.de)
+   @author stefan.baltschun  (stefan.baltschun@iubh.de)
+   @author philipp.kalscheid (philipp.kalscheid@iubh.de)
+#}
+
 <!-- Own template in templates/bundles/EasyAdminBundle-->
 {% if ea.crud.currentAction == 'detail' %}
+
     {{ field.value|raw }}
+
 {% else %}
+
     {% set html_id = 'ea-text-editor-' ~ field.uniqueId %}
     
     {% if field.formattedValue != null %}
-    <a href="#" data-bs-toggle="modal" data-bs-target="#{{ html_id }}">
-        <i class="far fa-file-alt"></i> {{ 'field.text_editor.view_content'|trans([], domain = 'EasyAdminBundle') }}
-    </a>
+
+        <a href="#" data-bs-toggle="modal" data-bs-target="#{{ html_id }}">
+            <i class="far fa-file-alt"></i> {{ 'field.text_editor.view_content'|trans([], domain = 'EasyAdminBundle') }}
+        </a>
+        
     {% else %}
+
         <div class="badge badge-warning">0</div>
+
     {% endif %}
+
     <div class="modal fade" id="{{ html_id }}" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -29,4 +42,5 @@
             </div>
         </div>
     </div>
+
 {% endif %}

@@ -63,13 +63,6 @@ class ModulCrudController extends AbstractCrudController
                 -> setPageTitle ( 'new',    'Modul anlegen' )
                 -> setPageTitle ( 'detail', fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> betrachten',    $modul -> __toString() ) )
                 -> setPageTitle ( 'edit',   fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> bearbeiten',    $modul -> __toString() ) )
-
-                //-> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
-
-                // ->overrideTemplates([
-                //     'crud/index' => 'admin/pages/index.html.twig',
-                //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
-                // ])
             ;
         }
 
@@ -80,13 +73,6 @@ class ModulCrudController extends AbstractCrudController
                 -> setPageTitle ( 'new',    'Modul anlegen' )
                 -> setPageTitle ( 'detail', fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> betrachten',    $modul -> __toString() ) )
                 -> setPageTitle ( 'edit',   fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> bearbeiten',    $modul -> __toString() ) )
-
-                // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
-
-                // ->overrideTemplates([
-                //     'crud/index' => 'admin/pages/index.html.twig',
-                //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
-                // ])
             ;
         }
 
@@ -97,13 +83,6 @@ class ModulCrudController extends AbstractCrudController
                 -> setPageTitle ( 'new',    'Modul anlegen' )
                 -> setPageTitle ( 'detail', fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> betrachten',    $modul -> __toString() ) )
                 -> setPageTitle ( 'edit',   fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> bearbeiten',    $modul -> __toString() ) )
-
-                // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
-
-                // ->overrideTemplates([
-                //     'crud/index' => 'admin/pages/index.html.twig',
-                //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
-                // ])
             ;
         }
 
@@ -114,8 +93,6 @@ class ModulCrudController extends AbstractCrudController
                 -> setPageTitle ( 'new',    'Modul anlegen'  )
                 -> setPageTitle ( 'detail', fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> betrachten',    $modul -> __toString() ) )
                 -> setPageTitle ( 'edit',   fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> bearbeiten',    $modul -> __toString() ) )
-
-                // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
             ;
         }
 
@@ -126,24 +103,9 @@ class ModulCrudController extends AbstractCrudController
                 -> setPageTitle ( 'new',    'Modul anlegen' )
                 -> setPageTitle ( 'detail', fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> betrachten',    $modul -> __toString() ) )
                 -> setPageTitle ( 'edit',   fn ( Modul $modul ) => sprintf ( 'Modul <b>%s</b> bearbeiten',    $modul -> __toString() ) )
-
-                // -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
             ;
         }
     }
-
-    /*public function createEditFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
-    {
-        // +dd("test");
-        $formBuilder = parent::createEditFormBuilder ($entityDto, $formOptions, $context);
-
-        $entity = $context->getEntity()->getInstance();
-
-        //$this->choices = $entity->getSkripte();
-        $formBuilder->add('aktuellesSkript', EntityType::class, ['class' => 'App\Entity\Skript','choices' => $entity->getSkripte()]);
-        //$formBuilder->add('aktuellesSkript', ChoiceType::class, ['choices' => ['hi', 'aaa']]);
-        return $formBuilder;
-    }*/
 
     public function configureFields (string $pageName): iterable
     {
@@ -162,11 +124,246 @@ class ModulCrudController extends AbstractCrudController
         if ( $user -> isAdmin () )
         {
             return [
-                IdField::new            ( 'id'              ) -> hideOnForm(),
-                IdField::new            ( 'id'              ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                IdField::new            ( 'id'              ) -> hideOnForm  (),
+                IdField::new            ( 'id'              ) -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          ( 'name'            ),
                 TextField::new          ( 'kuerzel'         ),
                 AssociationField::new   ( 'skript'          ),
+                AssociationField::new   ( 'tutor'           ) 
+                    -> setQueryBuilder ( 
+                        function ( $queryBuilder ) 
+                        {
+                            $queryBuilder
+                            -> andWhere      ( 'entity.ROLES LIKE :role'    )
+                            -> setParameter  ( 'role', '%ROLE_TUTOR%'       )
+                            ;
+                        }
+                    ) 
+                    -> onlyOnForms(),
+
+                    AssociationField::new   ( 'studenten' )  
+                        -> setQueryBuilder ( function ( $queryBuilder )               
+                            {
+                                $queryBuilder
+                                -> andWhere      ( 'entity.ROLES LIKE :role'    )
+                                -> setParameter  ( 'role', '%ROLE_STUDENT%'     )
+                                ;
+                            })
+                        -> setFormTypeOptions 
+                            (
+                                [
+                                'by_reference' => false,
+                                ]
+                            ) 
+                        -> onlyOnForms(),
+
+
+                    TextEditorField::new ( 'tutor' )
+                        -> formatValue (
+                            function ( $value, $entity )
+                            {
+                                return $value;
+                            }
+                        ) -> hideOnForm (),
+
+                    TextEditorField::new ( 'studenten' )
+                        -> formatValue (
+                            function ( $value, $entity ) 
+                            {
+                                return join ( "\n", $value -> getValues () );
+                            }
+                        ) -> hideOnForm (),
+
+
+            ];
+        }
+
+        if ( $user -> isStudent () )
+        {
+            return [
+                IdField::new            ( 'id'              ) -> hideOnForm  (),
+                IdField::new            ( 'id'              ) -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                TextField::new          ( 'name'            ),
+                TextField::new          ( 'kuerzel'         ),
+                AssociationField::new   ( 'skript'          ),
+
+                AssociationField::new   ( 'tutor'           ) 
+                    -> setQueryBuilder ( 
+                        function ( $queryBuilder ) 
+                        {
+                            $queryBuilder
+                            -> andWhere      ( 'entity.ROLES LIKE :role'    )
+                            -> setParameter  ( 'role', '%ROLE_TUTOR%'       )
+                            ;
+                        }
+                    ) 
+                    -> onlyOnForms (),
+
+                AssociationField::new   ( 'studenten'       )  
+                    -> setQueryBuilder ( 
+                        function ( $queryBuilder )               
+                        {
+                            $queryBuilder
+                            -> andWhere      ( 'entity.ROLES LIKE :role'    )
+                            -> setParameter  ( 'role', '%ROLE_STUDENT%'     )
+                            ;
+                        }
+                    )
+                    -> setFormTypeOptions 
+                        (
+                            [
+                                'by_reference' => false,
+                            ]
+                        ) 
+                    -> onlyOnForms (),
+
+
+                TextEditorField::new ( 'tutor' )
+                    ->formatValue (
+                        function ( $value, $entity )
+                        {
+                            return $value;
+                        }
+                    ) -> hideOnForm (),
+
+                TextEditorField::new ( 'studenten' )
+                    ->formatValue (
+                        function ( $value, $entity )
+                        {
+                            return join ( "\n", $value -> getValues () );
+                        }
+                    ) -> hideOnForm (),
+
+            ];
+        }
+
+        if ( $user -> isTutor () )
+        {
+            return [
+                IdField::new            ( 'id'              ) -> hideOnForm  (),
+                IdField::new            ( 'id'              ) -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                TextField::new          ( 'name'            ),
+                TextField::new          ( 'kuerzel'         ),
+                AssociationField::new   ( 'skript'          ),
+                
+                AssociationField::new   ( 'tutor'           ) 
+                    -> setQueryBuilder ( 
+                        function ( $queryBuilder ) 
+                        {
+                            $queryBuilder
+                            -> andWhere      ( 'entity.ROLES LIKE :role'    )
+                            -> setParameter  ( 'role', '%ROLE_TUTOR%'       )
+                            ;
+                        }
+                    ) 
+                    -> onlyOnForms (),
+
+                AssociationField::new   ( 'studenten'       )  
+                    -> setQueryBuilder ( 
+                        function ( $queryBuilder )               
+                        {
+                            $queryBuilder
+                            -> andWhere      ( 'entity.ROLES LIKE :role'    )
+                            -> setParameter  ( 'role', '%ROLE_STUDENT%'     )
+                            ;
+                        }
+                    )
+                    -> setFormTypeOptions 
+                        (
+                            [
+                            'by_reference' => false,
+                            ]
+                        ) 
+                    -> onlyOnForms (),
+
+
+                TextEditorField::new ( 'tutor' )
+                    ->formatValue (
+                        function ( $value, $entity )
+                        {
+                            return $value;
+                        }
+                    ) -> hideOnForm (),
+
+                TextEditorField::new ( 'studenten' )
+                    ->formatValue (
+                        function ( $value, $entity )
+                        {
+                            return join ( "\n", $value -> getValues () );
+                        }
+                    ) -> hideOnForm (),
+
+            ];
+        }
+
+        if ( $user -> isExtern () )
+        {
+            return [
+                IdField::new            ( 'id'              ) -> hideOnForm  (),
+                IdField::new            ( 'id'              ) -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                TextField::new          ( 'name'            ),
+                TextField::new          ( 'kuerzel'         ),
+                AssociationField::new   ( 'skript'          ),
+
+                AssociationField::new   ( 'tutor'           ) 
+                    -> setQueryBuilder ( 
+                        function ( $queryBuilder ) 
+                        {
+                            $queryBuilder
+                            -> andWhere      ( 'entity.ROLES LIKE :role'    )
+                            -> setParameter  ( 'role', '%ROLE_TUTOR%'       )
+                            ;
+                        }
+                    ) 
+                    -> onlyOnForms (),
+                
+                AssociationField::new   ( 'studenten'       )  
+                    -> setQueryBuilder ( 
+                        function ( $queryBuilder )               
+                        {
+                            $queryBuilder
+                            -> andWhere      ( 'entity.ROLES LIKE :role'    )
+                            -> setParameter  ( 'role', '%ROLE_STUDENT%'     )
+                            ;
+                        }
+                    )
+                    -> setFormTypeOptions 
+                        (
+                            [
+                            'by_reference' => false,
+                            ]
+                        ) 
+                    -> onlyOnForms(),
+
+
+                TextEditorField::new ( 'tutor' )
+                    ->formatValue (
+                        function ( $value, $entity )
+                        {
+                            return $value;
+                        }
+                    ) -> hideOnForm (),
+
+                TextEditorField::new ( 'studenten' )
+                    ->formatValue (
+                        function ( $value, $entity )
+                        {
+                            return join ( "\n", $value -> getValues () );
+                        }
+                    ) -> hideOnForm (),
+
+            ];
+        }
+
+        if ( $user -> isVerwaltung () )
+        {
+            return [
+                IdField::new            ( 'id'              ) -> hideOnForm  (),
+                IdField::new            ( 'id'              ) -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                TextField::new          ( 'name'            ),
+                TextField::new          ( 'kuerzel'         ),
+                AssociationField::new   ( 'skript'          ),
+                
                 AssociationField::new   ( 'tutor'           ) 
                     -> setQueryBuilder ( function ( $queryBuilder ) 
                         {
@@ -176,6 +373,7 @@ class ModulCrudController extends AbstractCrudController
                             ;
                         }) 
                     -> onlyOnForms(),
+
                 AssociationField::new   ( 'studenten'       )  
                     -> setQueryBuilder ( function ( $queryBuilder )               
                         {
@@ -193,214 +391,21 @@ class ModulCrudController extends AbstractCrudController
                     -> onlyOnForms(),
 
 
-                    TextEditorField::new('tutor')
-                    // callables also receives the entire entity instance as the second argument
-                    ->formatValue(function ($value, $entity) {
-                        return $value;
-                    }) -> hideOnForm(),
+                TextEditorField::new ( 'tutor' )
+                    ->formatValue (
+                        function ( $value, $entity )
+                        {
+                            return $value;
+                        }
+                    ) -> hideOnForm (),
 
-                    TextEditorField::new('studenten')
-                    // callables also receives the entire entity instance as the second argument
-                    ->formatValue(function ($value, $entity) {
-                        return join("\n", $value->getValues());
-                    }) -> hideOnForm(),
-
-
-            ];
-        }
-
-        if ( $user -> isStudent () )
-        {
-            return [
-                IdField::new            ( 'id'              ) -> hideOnForm(),
-                IdField::new            ( 'id'              ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
-                TextField::new          ( 'name'            ),
-                TextField::new          ( 'kuerzel'         ),
-                AssociationField::new   ( 'skript'          ),
-                AssociationField::new   ( 'tutor'           ) 
-                -> setQueryBuilder ( function ( $queryBuilder ) 
-                    {
-                        $queryBuilder
-                        -> andWhere      ( 'entity.ROLES LIKE :role'    )
-                        -> setParameter  ( 'role', '%ROLE_TUTOR%'       )
-                        ;
-                    }) 
-                -> onlyOnForms(),
-            AssociationField::new   ( 'studenten'       )  
-                -> setQueryBuilder ( function ( $queryBuilder )               
-                    {
-                        $queryBuilder
-                        -> andWhere      ( 'entity.ROLES LIKE :role'    )
-                        -> setParameter  ( 'role', '%ROLE_STUDENT%'     )
-                        ;
-                    })
-                -> setFormTypeOptions 
-                    (
-                        [
-                        'by_reference' => false,
-                        ]
-                    ) 
-                -> onlyOnForms(),
-
-
-                TextEditorField::new('tutor')
-                // callables also receives the entire entity instance as the second argument
-                ->formatValue(function ($value, $entity) {
-                    return $value;
-                }) -> hideOnForm(),
-
-                TextEditorField::new('studenten')
-                // callables also receives the entire entity instance as the second argument
-                ->formatValue(function ($value, $entity) {
-                    return join("\n", $value->getValues());
-                }) -> hideOnForm(),
-
-            ];
-        }
-
-        if ( $user -> isTutor () )
-        {
-            return [
-                IdField::new            ( 'id'              ) -> hideOnForm(),
-                IdField::new            ( 'id'              ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
-                TextField::new          ( 'name'            ),
-                TextField::new          ( 'kuerzel'         ),
-                AssociationField::new   ( 'skript'          ),
-                AssociationField::new   ( 'tutor'           ) 
-                -> setQueryBuilder ( function ( $queryBuilder ) 
-                    {
-                        $queryBuilder
-                        -> andWhere      ( 'entity.ROLES LIKE :role'    )
-                        -> setParameter  ( 'role', '%ROLE_TUTOR%'       )
-                        ;
-                    }) 
-                -> onlyOnForms(),
-            AssociationField::new   ( 'studenten'       )  
-                -> setQueryBuilder ( function ( $queryBuilder )               
-                    {
-                        $queryBuilder
-                        -> andWhere      ( 'entity.ROLES LIKE :role'    )
-                        -> setParameter  ( 'role', '%ROLE_STUDENT%'     )
-                        ;
-                    })
-                -> setFormTypeOptions 
-                    (
-                        [
-                        'by_reference' => false,
-                        ]
-                    ) 
-                -> onlyOnForms(),
-
-
-                TextEditorField::new('tutor')
-                // callables also receives the entire entity instance as the second argument
-                ->formatValue(function ($value, $entity) {
-                    return $value;
-                }) -> hideOnForm(),
-
-                TextEditorField::new('studenten')
-                // callables also receives the entire entity instance as the second argument
-                ->formatValue(function ($value, $entity) {
-                    return join("\n", $value->getValues());
-                }) -> hideOnForm(),
-
-            ];
-        }
-
-        if ( $user -> isExtern () )
-        {
-            return [
-                IdField::new            ( 'id'              ) -> hideOnForm(),
-                IdField::new            ( 'id'              ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
-                TextField::new          ( 'name'            ),
-                TextField::new          ( 'kuerzel'         ),
-                AssociationField::new   ( 'skript'          ),
-                AssociationField::new   ( 'tutor'           ) 
-                -> setQueryBuilder ( function ( $queryBuilder ) 
-                    {
-                        $queryBuilder
-                        -> andWhere      ( 'entity.ROLES LIKE :role'    )
-                        -> setParameter  ( 'role', '%ROLE_TUTOR%'       )
-                        ;
-                    }) 
-                -> onlyOnForms(),
-            AssociationField::new   ( 'studenten'       )  
-                -> setQueryBuilder ( function ( $queryBuilder )               
-                    {
-                        $queryBuilder
-                        -> andWhere      ( 'entity.ROLES LIKE :role'    )
-                        -> setParameter  ( 'role', '%ROLE_STUDENT%'     )
-                        ;
-                    })
-                -> setFormTypeOptions 
-                    (
-                        [
-                        'by_reference' => false,
-                        ]
-                    ) 
-                -> onlyOnForms(),
-
-
-                TextEditorField::new('tutor')
-                // callables also receives the entire entity instance as the second argument
-                ->formatValue(function ($value, $entity) {
-                    return $value;
-                }) -> hideOnForm(),
-
-                TextEditorField::new('studenten')
-                // callables also receives the entire entity instance as the second argument
-                ->formatValue(function ($value, $entity) {
-                    return join("\n", $value->getValues());
-                }) -> hideOnForm(),
-
-            ];
-        }
-
-        if ( $user -> isVerwaltung () )
-        {
-            return [
-                IdField::new            ( 'id'              ) -> hideOnForm(),
-                IdField::new            ( 'id'              ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
-                TextField::new          ( 'name'            ),
-                TextField::new          ( 'kuerzel'         ),
-                AssociationField::new   ( 'skript'          ),
-                AssociationField::new   ( 'tutor'           ) 
-                -> setQueryBuilder ( function ( $queryBuilder ) 
-                    {
-                        $queryBuilder
-                        -> andWhere      ( 'entity.ROLES LIKE :role'    )
-                        -> setParameter  ( 'role', '%ROLE_TUTOR%'       )
-                        ;
-                    }) 
-                -> onlyOnForms(),
-            AssociationField::new   ( 'studenten'       )  
-                -> setQueryBuilder ( function ( $queryBuilder )               
-                    {
-                        $queryBuilder
-                        -> andWhere      ( 'entity.ROLES LIKE :role'    )
-                        -> setParameter  ( 'role', '%ROLE_STUDENT%'     )
-                        ;
-                    })
-                -> setFormTypeOptions 
-                    (
-                        [
-                        'by_reference' => false,
-                        ]
-                    ) 
-                -> onlyOnForms(),
-
-
-                TextEditorField::new('tutor')
-                // callables also receives the entire entity instance as the second argument
-                ->formatValue(function ($value, $entity) {
-                    return $value;
-                }) -> hideOnForm(),
-
-                TextEditorField::new('studenten')
-                // callables also receives the entire entity instance as the second argument
-                ->formatValue(function ($value, $entity) {
-                    return join("\n", $value->getValues());
-                }) -> hideOnForm(),
+                TextEditorField::new ( 'studenten' )
+                    ->formatValue (
+                        function ( $value, $entity )
+                        {
+                            return join ( "\n", $value -> getValues () );
+                        }
+                    ) -> hideOnForm (),
 
             ];
         }
@@ -424,8 +429,9 @@ class ModulCrudController extends AbstractCrudController
         {
             return $actions
                 // ...
-                -> add ( Crud::PAGE_INDEX,  Action::DETAIL )
-                -> remove ( Crud::PAGE_DETAIL,   Action::EDIT )
+                -> add    ( Crud::PAGE_INDEX,    Action::DETAIL )
+
+                -> remove ( Crud::PAGE_DETAIL,   Action::EDIT   )
                 -> remove ( Crud::PAGE_DETAIL,   Action::DELETE )
         ;
         }
@@ -434,11 +440,13 @@ class ModulCrudController extends AbstractCrudController
         {
             return $actions
                 // ...
-                -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
-                -> remove ( Crud::PAGE_INDEX,   Action::NEW )
-                -> remove ( Crud::PAGE_INDEX,   Action::EDIT )
-                -> remove ( Crud::PAGE_INDEX,   Action::DELETE )
-                -> remove ( Crud::PAGE_DETAIL,   Action::EDIT )
+                -> add    ( Crud::PAGE_INDEX,    Action::DETAIL )
+                -> remove ( Crud::PAGE_INDEX,    Action::NEW    )
+
+                -> remove ( Crud::PAGE_INDEX,    Action::EDIT   )
+                -> remove ( Crud::PAGE_INDEX,    Action::DELETE )
+
+                -> remove ( Crud::PAGE_DETAIL,   Action::EDIT   )
                 -> remove ( Crud::PAGE_DETAIL,   Action::DELETE )
             ;
         }
@@ -447,10 +455,10 @@ class ModulCrudController extends AbstractCrudController
         {
             return $actions
                 // ...
-                -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
-                -> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
-                -> remove ( Crud::PAGE_INDEX,   Action::DELETE )
-                -> remove ( Crud::PAGE_DETAIL,   Action::DELETE )
+                -> add    ( Crud::PAGE_INDEX,    Action::DETAIL               )
+                -> add    ( Crud::PAGE_EDIT,     Action::SAVE_AND_ADD_ANOTHER )
+                -> remove ( Crud::PAGE_INDEX,    Action::DELETE               )
+                -> remove ( Crud::PAGE_DETAIL,   Action::DELETE               )
             ;
         }
 
@@ -466,14 +474,14 @@ class ModulCrudController extends AbstractCrudController
         return $actions;
     }
 
-    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
+    public function createIndexQueryBuilder ( SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters ): QueryBuilder
     {
-        parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+        parent::createIndexQueryBuilder ( $searchDto, $entityDto, $fields, $filters );
 
-        $user = $this->userService->getCurrentUser();
-        $userId = $user->getId();
+        $user = $this -> userService -> getCurrentUser ();
+        $userId = $user -> getId ();
 
-        $response = $this->get(EntityRepository::class)->createQueryBuilder($searchDto, $entityDto, $fields, $filters);
+        $query = $this -> get ( EntityRepository::class ) -> createQueryBuilder ( $searchDto, $entityDto, $fields, $filters );
 
         if( $user->isTutor() ) 
         {
@@ -484,14 +492,15 @@ class ModulCrudController extends AbstractCrudController
                 throw new \Exception("Sie haben keine Module zugewiesen");
             }
 
-            $response -> where('entity.tutor = :userId')
-            ->setParameter('userId', $userId);
+            $query 
+                -> where        ( 'entity.tutor = :userId' )
+                -> setParameter ( 'userId', $userId );
         }
 
-        return $response;
+        return $query;
     }
 
-    public function configureFilters(Filters $filters): Filters
+    public function configureFilters ( Filters $filters ): Filters
     {
         return $filters
             -> add ( 'name'     )

@@ -7,6 +7,7 @@ use App\Entity\Kommentar;
 use App\Service\UserService;
 use App\Service\FehlerService;
 use Doctrine\ORM\QueryBuilder;
+use App\Filter\UnbearbeitetTageFilter;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
@@ -21,8 +22,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\ArrayFilter;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\NumericFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
@@ -37,16 +42,17 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
  */
 class FehlerCrudController extends AbstractCrudController
 {
-    private UserService   $userService;
-    private FehlerService $fehlerService;
+    private $userService;
+    private $fehlerService;
 
     public function __construct ( 
-        UserService   $userService,
-        FehlerService $fehlerService,
+        UserService      $userService,
+        FehlerService    $fehlerService,
     ) 
     {
-        $this -> userService    = $userService;
-        $this -> fehlerService  = $fehlerService;
+        $this -> userService   = $userService;
+        $this -> fehlerService = $fehlerService;
+        $this -> fehlerService -> escalateFehler ();
     }
     
     public static function getEntityFqcn (): string
@@ -57,28 +63,29 @@ class FehlerCrudController extends AbstractCrudController
 
     public function configureCrud ( $crud ): Crud
     {
+        $crud = Crud::new();
+
+        $crud 
+            -> setDateFormat ( 'd.m.Y' )
+            -> setTimeFormat ( 'H:i:s' );
+
         $user = $this -> userService -> getCurrentUser ();
 
         if ( $user -> isAdmin () )
         {
-            return Crud::new()
+            return $crud
                 -> setPageTitle ( 'index',  'Fehlermeldungen'   )
                 -> setPageTitle ( 'new',    'Fehler melden'     )
                 -> setPageTitle ( 'detail', fn ( Fehler $fehler ) => sprintf ( 'Fehlermeldung <b>%s</b> betrachten',    $fehler -> __toString () ) )
                 -> setPageTitle ( 'edit',   fn ( Fehler $fehler ) => sprintf ( 'Fehler <b>%s</b> bearbeiten',           $fehler -> __toString () ) )
     
                 -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
-
-                // ->overrideTemplates([
-                //     'crud/index' => 'admin/pages/index.html.twig',
-                //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
-                // ])
             ;
         }
 
         if ( $user -> isStudent () )
         {
-            return Crud::new()
+            return $crud
                 -> setPageTitle ( 'index',  'Fehlermeldungen'   )
                 -> setPageTitle ( 'new',    'Fehler melden'     )
                 -> setPageTitle ( 'detail', fn ( Fehler $fehler ) => sprintf ( 'Fehlermeldung <b>%s</b> betrachten',    $fehler -> __toString () ) )
@@ -90,7 +97,7 @@ class FehlerCrudController extends AbstractCrudController
 
         if ( $user -> isTutor () )
         {
-            return Crud::new()
+            return $crud
                 -> setPageTitle ( 'index',  'Fehlermeldungen'   )
                 -> setPageTitle ( 'new',    'Fehler melden'     )
                 -> setPageTitle ( 'detail', fn ( Fehler $fehler ) => sprintf ( 'Fehlermeldung <b>%s</b> betrachten',    $fehler -> __toString () ) )
@@ -99,12 +106,6 @@ class FehlerCrudController extends AbstractCrudController
                 -> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
             ;
         }
-
-        if ( $user -> isExtern () )
-        {
-            //TODO FehlerCrudController configureCrud isExtern
-        }
-        
     }
 
     public function configureActions ( Actions $actions ): Actions
@@ -115,19 +116,17 @@ class FehlerCrudController extends AbstractCrudController
         {
             return $actions
                 // ...
-                -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
-                -> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
-                -> remove ( Crud::PAGE_DETAIL,   Action::DELETE )
+                -> add    ( Crud::PAGE_INDEX,    Action::DETAIL               )
+                -> add    ( Crud::PAGE_EDIT,     Action::SAVE_AND_ADD_ANOTHER )
+                -> remove ( Crud::PAGE_DETAIL,   Action::DELETE               )
             ;
         }
 
         if ( $user -> isTutor () || $user -> isStudent () )
         {
             return $actions
-                // ...
-                -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
-                //-> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
-                -> remove ( Crud::PAGE_INDEX,   Action::DELETE )
+                -> add    ( Crud::PAGE_INDEX,    Action::DETAIL )
+                -> remove ( Crud::PAGE_INDEX,    Action::DELETE )
                 -> remove ( Crud::PAGE_DETAIL,   Action::DELETE )
             ;
         }
@@ -157,93 +156,185 @@ class FehlerCrudController extends AbstractCrudController
         */
         $user                = $this -> userService -> getCurrentUser ();
         $statusChoices       = $this -> getStatusChoices ();
-        $statusChoicesKeys   = array_keys   ($statusChoices);
-        $statusChoicesValues = array_values ($statusChoices);
+        $statusChoicesKeys   = array_keys   ( $statusChoices );
+        $statusChoicesValues = array_values ( $statusChoices );
 
-        // dd([ $statusChoicesKeys[0] => $statusChoicesValues[0] ]);
         if ( $user -> isAdmin () )
         {
             return [
-                IdField::new            (   'id'               )    -> hideOnForm  (),
-                IdField::new            (   'id'               )    -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
-                AssociationField::new   (   'einreicher'       )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' ),
-                TextField::new          (   'name'             ),
-                ChoiceField::new        (   'status'           )    -> setChoices ( $statusChoices ) -> hideOnIndex  (),
-                TextField::new          (   'status'           )    -> onlyOnIndex  (),
-                NumberField::new        (   'seite'            ),
-                AssociationField::new   (   'skript'           ),
-                TextEditorField::new    (   'kommentar'        )    -> onlyWhenCreating  (),
-                AssociationField::new   (   'verwandteFehler'  )    -> hideOnIndex()
-                -> setFormTypeOptions 
-                (
-                    [
-                    'by_reference' => false,
-                    ]
-                ),
-                DateField::new          (   'datum_erstellt'   )    -> hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                IdField::new            ( 'id'     ) -> hideOnForm  (),
+                IdField::new            ( 'id'     ) -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                TextField::new          ( 'name'   ),
+                ChoiceField::new        ( 'status' ) -> setChoices  ( $statusChoices ) -> hideOnIndex(),
+                TextField::new          ( 'status' ) 
+                    -> formatValue ( 
+                        function ( $val,$entity ) 
+                        { 
+                            return $this -> formatFehlerStatus ( $val,$entity );
+                        }
+                    ) 
+                    -> onlyOnIndex  (),
 
-                TextEditorField::new('verwandteFehler')
-                // callables also receives the entire entity instance as the second argument
-                ->formatValue(function ($value, $entity) {
-                    return join("\n", $value->getValues());
-                }) 
+                NumberField::new        ( 'seite'           ),
+                AssociationField::new   ( 'skript'          ),
+                TextEditorField::new    ( 'kommentar'       ) -> onlyWhenCreating  (),
 
-                -> hideOnForm(),
+                AssociationField::new   ( 'verwandteFehler' ) -> hideOnIndex       ()
+                    -> setFormTypeOptions 
+                    (
+                        [
+                        'by_reference' => false,
+                        ]
+                    )
+                    -> hideOnIndex(),
+
+                TextEditorField::new    ( 'verwandteFehler' )
+                    -> formatValue (
+                        function ( $value, $entity )
+                        {
+                            return join ( "\n", $value -> getValues () );
+                        }
+                    ) 
+                    -> setSortable ( false )
+                    -> hideOnForm(),
+                
+                AssociationField::new   ( 'einreicher'      ) -> hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
+
+                DateTimeField::new      ( 'datumLetzteAenderung', 'Unbearbeitet (Tage)') -> hideWhenCreating () 
+                    -> formatValue (
+                        function ( $val, $entity )
+                        {
+                            return $this -> getUnbearbeitetTage ( $entity );
+                        }
+                    )
+                    -> hideOnForm (),
+                            
+                DateTimeField::new      ( 'datumLetzteAenderung', 'Erstellungsdatum' ) 
+                    -> onlyWhenUpdating  ()
+                    -> setFormTypeOption ( 'disabled', 'disabled' )
+                ,
+                
+                DateTimeField::new      ( 'datumErstellt',        'Erstellungsdatum'  ) 
+                    -> hideWhenCreating () 
+                    -> setSortable ( true )
+                    -> setFormTypeOption ( 'disabled', 'disabled' )
             ];
         }
 
         if ( $user -> isStudent () )
         {
             return [
-                IdField::new            (   'id'               )    -> hideOnForm  (),
-                IdField::new            (   'id'               )    -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
-                TextField::new          (   'name'             ),
-                ChoiceField::new        (   'status'           )    -> hideWhenCreating () -> setChoices ( $statusChoices ),
-                NumberField::new        (   'seite'            ),
-                AssociationField::new   (   'skript'           ),
-                TextField::new    (   'descriptionKommentar'        )    
+                IdField::new            ( 'id'                   ) -> hideOnForm  (),
+                IdField::new            ( 'id'                   ) -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                TextField::new          ( 'name'                 ),
+                ChoiceField::new        ( 'status'               ) -> hideWhenCreating () -> hideOnIndex () -> setChoices  ( $statusChoices ),
+
+                TextField::new          ( 'status'               )    
+                    -> formatValue ( 
+                        function ( $val,$entity )
+                        { 
+                            return $this -> formatFehlerStatus ( $val,$entity );
+                        }
+                    ) 
+                    -> onlyOnIndex  (),
+
+                NumberField::new        ( 'seite'                ),
+                AssociationField::new   ( 'skript'               ),
+
+                TextField::new          ( 'descriptionKommentar' )    
                     -> hideWhenCreating  () 
                     -> setFormTypeOption ( 'disabled', 'disabled' ) 
-                    -> formatValue(function($val, $obj){
-                        return $obj->getDescriptionKommentar();
-                    }),
-                TextEditorField::new    (   'kommentar'        )    -> onlyWhenCreating  (),
-                DateField::new          (   'datum_erstellt'   )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                    -> formatValue(
+                        function ( $val, $obj )
+                        {
+                            return $obj -> getDescriptionKommentar ();
+                        }
+                    ),
+                
+                TextEditorField::new    ( 'kommentar'      )  -> onlyWhenCreating (),
+                AssociationField::new   ( 'einreicher'     )  -> hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
+
+
+                DateTimeField::new      ( 'datumLetzteAenderung', 'Unbearbeitet (Tage)') -> hideWhenCreating () 
+                    -> formatValue (
+                        function ( $val, $entity )
+                        {
+                            return $this -> getUnbearbeitetTage ( $entity );
+                        }
+                    )
+                    -> hideOnForm (),
+                            
+                DateTimeField::new      ( 'datumLetzteAenderung', 'Erstellungsdatum' ) 
+                    -> onlyWhenUpdating  ()
+                    -> setFormTypeOption ( 'disabled', 'disabled' )
+                ,
+                
+                DateTimeField::new      ( 'datumErstellt',        'Erstellungsdatum'  ) 
+                    -> hideWhenCreating () 
+                    -> setSortable ( true )
+                    -> setFormTypeOption ( 'disabled', 'disabled' )
             ];
         }
 
         if ( $user -> isTutor () )
         {
             return [
-                IdField::new            (   'id'               )    -> hideOnForm  (),
-                IdField::new            (   'id'               )    -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
-                AssociationField::new   (   'einreicher'       )    -> hideWhenCreating  () -> setFormTypeOption ( 'disabled', 'disabled' ),
-                TextField::new          (   'name'             ),
-                ChoiceField::new        (   'status'           )    -> setChoices ( $statusChoices ),
-                NumberField::new        (   'seite'            ),
-                AssociationField::new   (   'skript'           ),
-                TextEditorField::new    (   'kommentar'        )    -> onlyWhenCreating  (),
-                AssociationField::new   (   'verwandteFehler'  )
-                -> setFormTypeOptions 
-                (
-                    [
-                    'by_reference' => false,
-                    ]
-                ) 
-                -> hideOnIndex(),
-                DateField::new          (   'datum_erstellt'   )    -> hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                IdField::new            ( 'id'              ) -> hideOnForm  (),
+                IdField::new            ( 'id'              ) -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                TextField::new          ( 'name'            ),
+                ChoiceField::new        ( 'status'          ) -> setChoices  ( $statusChoices ) -> hideOnIndex (),
 
-                TextEditorField::new('verwandteFehler')
-                // callables also receives the entire entity instance as the second argument
-                ->formatValue(function ($value, $entity) {
-                    return join("\n", $value->getValues());
-                }) -> hideOnForm(),
+                TextField::new          ( 'status'          )
+                    -> formatValue (
+                        function ( $val,$entity )
+                        {
+                            return $this -> formatFehlerStatus ( $val,$entity ); 
+                        } 
+                    ) -> onlyOnIndex  (),
+                
+                NumberField::new        ( 'seite'           ),
+                AssociationField::new   ( 'skript'          ),
+                TextEditorField::new    ( 'kommentar'       ) -> onlyWhenCreating  (),
+
+                AssociationField::new   ( 'verwandteFehler' )
+                    -> setFormTypeOptions (
+                        [
+                        'by_reference' => false,
+                        ]
+                    ) 
+                    -> hideOnIndex(),
+
+                TextEditorField::new    ( 'verwandteFehler' )
+                    ->formatValue ( 
+                        function  ( $value, $entity ) 
+                        {
+                            return join( "\n", $value -> getValues () );
+                        }
+                    )
+                    -> setSortable ( false )
+                    -> hideOnForm(),
+                
+                AssociationField::new   ( 'einreicher'     ) -> hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
+                
+                DateTimeField::new      ( 'datumLetzteAenderung', 'Unbearbeitet (Tage)') -> hideWhenCreating () 
+                    -> formatValue (
+                        function ( $val, $entity )
+                        {
+                            return $this -> getUnbearbeitetTage ( $entity );
+                        }
+                    )
+                    -> hideOnForm (),
+                            
+                DateTimeField::new      ( 'datumLetzteAenderung', 'Erstellungsdatum' ) 
+                    -> onlyWhenUpdating  ()
+                    -> setFormTypeOption ( 'disabled', 'disabled' )
+                ,
+                
+                DateTimeField::new      ( 'datumErstellt',        'Erstellungsdatum'  ) 
+                    -> hideWhenCreating () 
+                    -> setSortable ( true )
+                    -> setFormTypeOption ( 'disabled', 'disabled' )
             ];
-        }
-
-        if ( $user -> isExtern () )
-        {
-            //TODO FehlerCrudController configureFields
         }
     }
 
@@ -252,8 +343,8 @@ class FehlerCrudController extends AbstractCrudController
      */
     public function getStatusChoices () 
     {
-        $user = $this -> userService -> getCurrentUser ();
-        return $this -> fehlerService -> getStatusChoices ( $user );
+        $user = $this -> userService   -> getCurrentUser ();
+        return  $this -> fehlerService -> getStatusChoices ( $user );
     }
 
     /*
@@ -271,126 +362,127 @@ class FehlerCrudController extends AbstractCrudController
         // Datum Trait
         $entity -> setDatumLetzteAenderung   ( $currentDateTime );
         $entity -> setDatumErstellt          ( $currentDateTime );
-        //dd($entity->getDatumErstellt());
+
         // Einreicher Trait
         $entity -> setEinreicher             ( $currentUser     );
 
-        // return $this->redirect($this->request->headers->get('referer'));
         return $entity;
-        //return $this->redirect($this->request->headers->get('referer'));
     }
-
-    /*
-        After the insertation to DB / persistence
-        
-        @author karim.saad ( karim.saad@iubh.de )
-        @date 22.12.2021 13:45
-    */
-
-    /*public function persistEntity ( EntityManagerInterface $em, $entity) : void
-    {
-        $currentUser         = $this -> userService -> getCurrentUser ();
-
-        $entity = $this -> fehlerService -> openWithKommentar ( $entity, $currentUser );
-
-        //$this -> updateSlug     ( $entity );
-        parent::persistEntity   ( $em, $entity );
-    }*/
 
     public function persistEntity ( EntityManagerInterface $em, $entity) : void     
     {         
-        $currentUser         = $this -> userService -> getCurrentUser ();          
-        $entity = $this -> fehlerService -> openWithKommentar ( $entity, $currentUser );          
-        // $this -> updateSlug     ( $entity );         
+        $currentUser = $this -> userService   -> getCurrentUser ();          
+        $entity      = $this -> fehlerService -> openWithKommentar ( $entity, $currentUser );
+        
         parent::persistEntity   ( $em, $entity );     
     }
     
 
-    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
+    public function createIndexQueryBuilder ( SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters ): QueryBuilder
     {
-        parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+        parent::createIndexQueryBuilder ( $searchDto, $entityDto, $fields, $filters );
 
-        $user = $this -> userService -> getCurrentUser ();
-        $userId = $user->getId();
+        $user   = $this -> userService -> getCurrentUser ();
+        $userId = $user -> getId();
 
-
-        $response = $this -> get ( EntityRepository::class ) -> createQueryBuilder ( $searchDto, $entityDto, $fields, $filters );
+        $query = $this -> get ( EntityRepository::class ) -> createQueryBuilder ( $searchDto, $entityDto, $fields, $filters );
 
         if ( $user -> isAdmin () )
         {
-            $response
-                -> addOrderBy (
-                    'CASE entity.status 
-                    when \'OPEN\' THEN 4 
-                    when \'WAITING\' THEN 3 
-                    when \'ESCALATED\' THEN 2 
-                    when \'REJECTED\' THEN 1 
-                    ELSE 0 END', 'DESC')
-            ;
+            $query = $this -> addOrderByToResponse ( $query );
         }
 
 
         if ( $user -> isStudent () )
         {
-            $response   -> andWhere     ( 'entity.einreicher = :userId' )
-                        -> setParameter ( 'userId', $userId             )
-                        -> addOrderBy (
-                            'CASE entity.status 
-                            when \'OPEN\' THEN 4 
-                            when \'WAITING\' THEN 3 
-                            when \'ESCALATED\' THEN 2 
-                            when \'REJECTED\' THEN 1 
-                            ELSE 0 END', 'DESC')
+            $query 
+                -> andWhere     ( 'entity.einreicher = :userId' )
+                -> setParameter ( 'userId', $userId             )
             ;
+
+            $query = $this -> addOrderByToResponse ( $query );
         }
 
         if ( $user -> isTutor () )
         {
             $userModuleIds = $user -> getOnlyIdsFromTutorIn ();
 
-            //$userModuleIdsString = implode(",", $userModuleIds);
-            
-            if  ( count($userModuleIds) == 0  ) 
+            if  ( count ( $userModuleIds ) == 0  ) 
             {
-                //dd("tutor hat keine module");
-                throw new \Exception("Sie haben keine Module zugewiesen");
+                // Tutor hat keine Module
+                throw new \Exception("keine Module zugewiesen");
             }
 
-            $response
-                -> join('entity.skript', 's')
-                //-> add ( 'andWhere', $response->expr() -> in ( 's.modul', $userModuleIds ) ) //bug here
-                -> andWhere('s.modul IN (:module) AND entity.status <> \'CLOSED\'')
-                
-                -> addOrderBy('CASE entity.status 
+            $query
+                -> join         ( 'entity.skript', 's' )
+                -> andWhere     ( "s.modul IN (:module) AND entity.status <> 'CLOSED' ");
+            
+            $query = $this -> addOrderByToResponse ( $query );
+
+            $query -> setParameter( ':module', $userModuleIds, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY );
+        }
+
+        //-> addOrderBy('entity.status', 'ASC');
+        return $query;
+    }
+
+    private function addOrderByToResponse ( $query )
+    {
+        return $query 
+            -> addOrderBy (
+                'CASE entity.status 
                 when \'OPEN\' THEN 4 
                 when \'WAITING\' THEN 3 
                 when \'ESCALATED\' THEN 2 
                 when \'REJECTED\' THEN 1 
-                ELSE 0 END', 'DESC')
-                
-                -> setParameter(':module', $userModuleIds, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY)
-                ;
-        }
-
-        //-> addOrderBy('entity.status', 'ASC');
-        return $response;
+                ELSE 0 END', 'DESC'
+            )
+        ;
     }
-
 
     private function getArrayFilterStatusChoices () 
     {
-        return ArrayFilter::new ( 'status' ) -> setChoices ( $this -> getStatusChoices () );
+        return ArrayFilter::new ( 'status' ) 
+            -> setChoices (
+                $this -> getStatusChoices ()
+            )
+        ;
     }
 
-    public function configureFilters(Filters $filters): Filters
+    public function configureFilters ( Filters $filters ): Filters
     {
         $statusChoices = $this -> getArrayFilterStatusChoices ();
+
         return $filters
             -> add ( 'name'         )
             -> add ( 'seite'        )
             -> add ( 'skript'       )
             -> add ( $statusChoices )
+            -> add ( 
+                UnbearbeitetTageFilter::new('unbearbeitetTage')
+                    -> setFormTypeOption ( 'mapped', false )
+            
+            )
         ;
     }
 
+    public function formatFehlerStatus ( $val, $entity )
+    {
+        $badgeInfo = $entity -> badgeByStatus ();
+        
+        if($badgeInfo === null)
+            throw new \Exception ("badgeStatus is Null (FelerCrudController)");
+        
+        $badgeType = $badgeInfo [0]; // Type
+        $badgeText = $badgeInfo [1]; // Text
+
+        return '<span class="badge '.$badgeType.'">'.$badgeText.'</span>';
+    }
+
+    private function getUnbearbeitetTage ( $entity )
+    {
+        $d = $this -> fehlerService -> loadUnbearbeitetTage ( $entity );
+        $entity        -> setUnbearbeitetTage ( $d -> getUnbearbeitetTage () );
+        return $entity -> getUnbearbeitetTage ();
+    }
 }

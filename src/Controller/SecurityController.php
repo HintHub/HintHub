@@ -14,28 +14,26 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
  *  compare https://symfony.com/doc/current/security.html#the-user
  * 
  *  @author karim.saad ( karim.saad@iubh.de )
+ *  code formatting fix 30.01.02.2022-01.02.2022 2300-0100 (karim.saad@iubh.de)
  */
 class SecurityController extends AbstractController
 {
     /**
      * @Route("/login", name="app_login")
      */
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function login ( AuthenticationUtils $authenticationUtils ): Response
     {
-        // if ($this->getUser()) {
-        //     return $this->redirectToRoute('target_path');
-        // }
+        if ( $this -> getUser () )
+            return $this -> redirectToRoute ( 'admin' );
 
-        // get the login error if there is one
-        $error          = $authenticationUtils -> getLastAuthenticationError();
-        // last username entered by the user
-        $lastUsername   = $authenticationUtils -> getLastUsername();
+        $error          = $authenticationUtils -> getLastAuthenticationError ();
+        $lastUsername   = $authenticationUtils -> getLastUsername            ();
 
         return $this -> render ( 
             'security/login.html.twig',
             [
                 'last_username' => $lastUsername,
-                'error' => $error
+                'error'         => $error
             ]
         );
     }
@@ -43,7 +41,7 @@ class SecurityController extends AbstractController
     /**
      * @Route("/logout", name="app_logout")
      */
-    public function logout()
+    public function logout ()
     {
         throw new \LogicException ( 'This method can be blank - it will be intercepted by the logout key on your firewall.' );
     }

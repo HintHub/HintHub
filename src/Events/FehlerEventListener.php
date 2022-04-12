@@ -10,6 +10,7 @@ use Psr\Log\LoggerInterface;
 use App\Service\FehlerService;
 use App\Service\KommentarService;
 use App\Repository\FehlerRepository;
+use App\Service\BenachrichtigungService;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -20,110 +21,124 @@ use Symfony\Component\HttpFoundation\Session\Session;
  * @author ali-kemal.yalama ( ali-kemal.yalama@iubh.de  )
  * @author karim.saad       ( karim.saad@iubh.de        )
  * 
- * Laste Edit 19.01.22
+ * Before Last Edit 19.01.22
+ * Last Edit 01.02.22 (code formatting fix)
  */
 class FehlerEventListener 
 {
-    private     $session;
+    private $session;
 
-    private     $maximumDeleteOperations = 100;
-    private     $notClosedOrRejectedIds  = [];
+    private $maximumDeleteOperations = 100;
+    private $notClosedOrRejectedIds  = [];
 
-    private     $fehlerService;
-    private     $fehlerRepository;
+    private $fehlerService;
+    private $fehlerRepository;
 
     private $userService;
-
     private $kommentarService;
+    private $benachrichtigungService;
+    
 
-    public function __construct ( Session $session, FehlerService $fehlerService, FehlerRepository $fehlerRepository, 
-                                UserService $userService, KommentarService $kommentarService)
+    public function __construct ( 
+        Session                 $session,
+        FehlerService           $fehlerService,
+        FehlerRepository        $fehlerRepository, 
+        UserService             $userService,
+        KommentarService        $kommentarService,
+        BenachrichtigungService $benachrichtigungService
+    )
     {
-        $this -> session = $session;
-        $this -> fehlerService = $fehlerService;
-        $this -> fehlerRepository = $fehlerRepository;
-        $this -> userService = $userService;
-        $this -> kommentarService = $kommentarService;
+        $this -> session                    = $session;
+        $this -> fehlerService              = $fehlerService;
+        $this -> fehlerRepository           = $fehlerRepository;
+        $this -> userService                = $userService;
+        $this -> kommentarService           = $kommentarService;
+        $this -> benachrichtigungService    = $benachrichtigungService;
     }
 
     public function preRemove   ( LifecycleEventArgs $args ): void
     {
-        $entityManager = $args->getObjectManager();
-        $entity = $args -> getObject();
+        $entityManager  = $args -> getObjectManager ();
+        $entity         = $args -> getObject        ();
 
         if ( !$entity instanceof Fehler ) 
-        {
             return;
-        }
 
-        $fehlerId = $entity -> getId();
+        $fehlerId = $entity -> getId ();
 
-        if ( !$entity -> isClosed() || ! $entity -> isRejected() ) 
+        if ( !$entity -> isClosed () || ! $entity -> isRejected () ) 
         {
             $id = $entity -> getId ();
-            
-            array_push($this -> notClosedOrRejectedIds, $id);
-
+            array_push ( $this -> notClosedOrRejectedIds, $id );
             return;
         }
 
         // Detachen der offenen Fehler -> Löschen der closed/rejected
-        $entity         ->  detachNotClosedChildren();
+        $entity         ->  detachNotClosedChildren ();
 
         // Flush Entity Manager
         $entityManager  ->  flush ();
     }
 
-    public function fehlerChangeEvent( OnFlushEventArgs $args ) 
+    public function fehlerChangeEvent ( OnFlushEventArgs $args ) 
     {
-
-        //fuer onflush
-
-        $entityManager  = $args          -> getEntityManager();
-        $unitOfWork     = $entityManager -> getUnitOfWork   ();
-
-        $entities       = $unitOfWork    -> getScheduledEntityUpdates();
-
-        $foo = [];
+        $foo            = [];
+        $entityManager  = $args          -> getEntityManager          ();
+        $unitOfWork     = $entityManager -> getUnitOfWork             ();
+        $entities       = $unitOfWork    -> getScheduledEntityUpdates ();
 
         $currentUser    = $this ->  userService -> getCurrentUser ();
 
-        if($currentUser === null) 
+        if ( $currentUser === null ) 
             return;
-        
-
-
+      
         foreach ( $entities as $entity ) 
         {
-            
             //continue only if the object to be updated is a Fehler
             if ( $entity instanceof Fehler ) 
             {
-                
                 //get all the changed properties of the Fehler object
-                $changes_set    = $unitOfWork -> getEntityChangeSet ( $entity );
-                $changes        = array_keys ( $changes_set );
+                $changer           = $currentUser;
+                $changes_set       = $unitOfWork -> getEntityChangeSet ( $entity );
+                $changes           = array_keys ( $changes_set );
+                $message           = $this -> generateStatusMessage ( $changes_set, $entity );
 
-                $message        = $this -> generateStatusMessage ( $changes_set );
+                if ( $changes [ 0 ] == 'datumLetzteAenderung' && count ( $changes ) <= 1 )
+                {
+                    $beforeValue = $changes_set [ $changes [ 0 ] ] [ 0 ];    // beforeValue
+                    $entity -> setNoUpdateDatumAenderung  ( true );         // prevent Override
+                    $entity -> setDatumLetzteAenderung    ( $beforeValue );
+                    continue;
+                }
+                
+                if ( $entity -> getSystemUpdate () )
+                {
+                    $changer = "System";
+                }
 
-                $message        = "$currentUser hat die Fehlermeldung geändert:\n$message";
-
+                $message           = "$changer hat die Fehlermeldung geändert:\n$message";
                 $kommentarInstance = $this -> createKommentar ( $message, $entity, $currentUser );
-
                 array_push( $foo, $kommentarInstance );
             }
         }
-        if( isset($foo[0]) ) 
-        {
-            $entityManager  ->  persist( $foo[0] );
-            $kommentarClass = get_class( $foo[0] );
-            $classMetadata  = $entityManager -> getClassMetadata ( $kommentarClass );
-            $unitOfWork     -> computeChangeSet( $classMetadata, $foo[0] );
-        }
+        
 
+        if( !isset ( $foo[0] ) ) 
+            return;
+        
+        $entityManager  ->  persist ( $foo [0] );
+        $kommentarClass = get_class ( $foo [0] );
+        $classMetadata  = $entityManager -> getClassMetadata ( $kommentarClass );
+        $unitOfWork     -> computeChangeSet ( $classMetadata, $foo[0] );
+
+        // TRIGGER BENACHRICHTIGUNG
+        $fehler = $foo [0] -> getFehler  ();
+        $text   = $foo [0] -> getText    ();
+
+        $this -> benachrichtigungService -> fireBenachrichtigungen ( $fehler, $text );
     }
 
-    private function generateStatusMessage ( $changeSet )  
+    private function generateStatusMessage ( $changeSet, $fehler )  
     {
         $message = "";
 
@@ -131,22 +146,48 @@ class FehlerEventListener
         {
             foreach ( $changeSet as $key => $value ) 
             {
-                $subMessage = "'$key' wurde von '$value[0]' auf '$value[1]' gesetzt\n";
-                $message .= $subMessage;
+                $contentBefore = $value [0];
+                $contentAfter  = $value [1];
+
+                if ( $contentBefore instanceof \DateTime )
+                {
+                    
+                    $contentBefore = $contentBefore -> format ( 'd.m.Y H:i:s' );
+                    $contentAfter  = $contentAfter  -> format ( 'd.m.Y H:i:s' );
+                }
+                
+                if ( $key != 'datumLetzteAenderung' )
+                {
+                    if ( $contentAfter == 'ESCALATED' )
+                    {
+                        $d = $this   -> fehlerService -> loadUnbearbeitetTage ( $fehler );
+                        $d = $d -> getUnbearbeitetTage ();
+
+                        $subMessage = "Diese Fehlermeldung war $d Tage(n) unbearbeitet.\n\n";
+                        $subMessage .= "'$key' wurde von '$contentBefore' auf '$contentAfter' gesetzt\n";
+                        $message .= $subMessage;
+                    }
+                    else 
+                    {
+                        $subMessage = "'$key' wurde von '$contentBefore' auf '$contentAfter' gesetzt\n";
+                        $message .= $subMessage;
+                    }
+                }
             }
 
         } 
         catch ( Exception $e ) 
         {
+            dd ( $e);
             dd( $changeSet );
         }
 
         return $message;
     }
 
-    private function createKommentar( $text, $fehler, $currentUser ) 
+    private function createKommentar ( $text, $fehler, $currentUser ) 
     {
-        $dt = new \DateTime();
+        $dt = new \DateTime ();
         $kommentar = new Kommentar ();
         $kommentar -> setFehler               ( $fehler      );
         $kommentar -> setText                 ( $text        );
@@ -159,7 +200,6 @@ class FehlerEventListener
 
     public function onFlush ( OnFlushEventArgs $onFlushEventArgs ): void
     {
-        
         $this -> fehlerChangeEvent ( $onFlushEventArgs );
         
         $rePersistedIds = [];
@@ -221,7 +261,7 @@ class FehlerEventListener
         }
 
 
-        $idsStr = implode(',', $this -> notClosedOrRejectedIds);
+        $idsStr = implode ( ',', $this -> notClosedOrRejectedIds );
 
         if ( strlen ( $idsStr ) > 0 )
         {

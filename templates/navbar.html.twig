@@ -15,6 +15,11 @@
     background-color: #d9d9d9;
   }
 
+  .navbar-dark .navbar-nav .nav-link 
+  {
+    color: white !important;
+  }
+
 </style>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -56,10 +61,18 @@
         </li>
         #}
       </ul>
+    
+    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+      <li class="nav-item">
+        <a class="nav-link" href="impressum">Impressum</a>
+      </li>
+    </ul>
+    </div>
+      {#
       <form class="d-flex">
         <input class="form-control me-2" type="search" placeholder="Suchbegriff" aria-label="Search">
         <button class="btn btn-outline-success" type="submit">Suchen</button>
       </form>
-    </div>
+      #}
   </div>
 </nav>

@@ -36,36 +36,29 @@ class SkriptCrudController extends AbstractCrudController
         $this -> userService = $userService;
     }
     
-    public static function getEntityFqcn(): string
+    public static function getEntityFqcn (): string
     {
         return Skript::class;
     }
 
-    public function configureCrud ($crud): Crud
+    public function configureCrud ( $crud ): Crud
     {
         $user = $this -> userService -> getCurrentUser ();
 
         if ( $user -> isAdmin () )
         {
             return Crud::new()
-                -> setPageTitle ( 'index',  'Skripte'  )
-                -> setPageTitle ( 'new',    'Skript anlegen'     )
-                -> setPageTitle ( 'detail', fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> betrachten',    $skript -> __toString() ) )
-                -> setPageTitle ( 'edit',   fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> bearbeiten',    $skript -> __toString() ) )
-
-                //-> overrideTemplate ( 'crud/detail', 'bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig' )
-
-                // ->overrideTemplates([
-                //     'crud/index' => 'admin/pages/index.html.twig',
-                //     'crud/field/textarea' => 'admin/fields/dynamic_textarea.html.twig',
-                // ])
+                -> setPageTitle ( 'index',  'Skripte'        )
+                -> setPageTitle ( 'new',    'Skript anlegen' )
+                -> setPageTitle ( 'detail', fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> betrachten',    $skript -> __toString () ) )
+                -> setPageTitle ( 'edit',   fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> bearbeiten',    $skript -> __toString () ) )
             ;
         }
 
         if ( $user -> isStudent () )
         {
             return Crud::new()
-                -> setPageTitle ( 'detail', fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> betrachten',    $skript -> __toString() ) )
+                -> setPageTitle ( 'detail', fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> betrachten',    $skript -> __toString () ) )
             ;
         }
 
@@ -74,8 +67,8 @@ class SkriptCrudController extends AbstractCrudController
             return Crud::new()
                 -> setPageTitle ( 'index',  'Skripte'        )
                 -> setPageTitle ( 'new',    'Skript anlegen' )
-                -> setPageTitle ( 'detail', fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> betrachten',    $skript -> __toString() ) )
-                -> setPageTitle ( 'edit',   fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> bearbeiten',    $skript -> __toString() ) )
+                -> setPageTitle ( 'detail', fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> betrachten',    $skript -> __toString () ) )
+                -> setPageTitle ( 'edit',   fn ( Skript $skript ) => sprintf ( 'Skript <b>%s</b> bearbeiten',    $skript -> __toString () ) )
             ;
         }
 
@@ -103,6 +96,7 @@ class SkriptCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         $user = $this -> userService -> getCurrentUser ();
+
         /*
             Fields:
                 id,
@@ -110,21 +104,23 @@ class SkriptCrudController extends AbstractCrudController
                 modul,
                 fehler
         */
-
         if ( $user -> isAdmin () )
         {
             return [
-                IdField::new            ( 'id'      ) -> hideOnForm(),
-                IdField::new            ( 'id'      ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                IdField::new            ( 'id'      ) -> hideOnForm  (),
+                IdField::new            ( 'id'      ) -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          ( 'name'    ),
                 NumberField::new        ( 'version' ),
-                AssociationField::new   ( 'fehler'  ) -> hideOnIndex(),
+                AssociationField::new   ( 'fehler'  ) -> hideOnIndex (),
                 TextEditorField::new    ( 'fehler'  )
                     // callables also receives the entire entity instance as the second argument
-                    ->formatValue( function ( $value, $entity ) {
-                        return join( "\n", $value->getValues() );
-                    }) 
-                    -> hideOnForm(),
+                    -> formatValue (
+                        function ( $value, $entity )
+                        {
+                            return join ( "\n", $value -> getValues () );
+                        }
+                    ) 
+                    -> hideOnForm (),
                 AssociationField::new   ( 'modul'   )
             ];
         }
@@ -133,8 +129,8 @@ class SkriptCrudController extends AbstractCrudController
         if ( $user -> isStudent () )
         {
             return [
-                IdField::new            ( 'id'      ) -> hideOnForm(),
-                IdField::new            ( 'id'      ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                IdField::new            ( 'id'      ) -> hideOnForm  (),
+                IdField::new            ( 'id'      ) -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          ( 'name'    ),
                 NumberField::new        ( 'version' ),
                 AssociationField::new   ( 'modul'   )
@@ -144,17 +140,21 @@ class SkriptCrudController extends AbstractCrudController
         if ( $user -> isTutor () )
         {
             return [
-                IdField::new            ( 'id'      ) -> hideOnForm(),
-                IdField::new            ( 'id'      ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                IdField::new            ( 'id'      ) -> hideOnForm  (),
+                IdField::new            ( 'id'      ) -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          ( 'name'    ),
                 NumberField::new        ( 'version' ),
-                AssociationField::new   ( 'fehler'  ) -> hideOnIndex(),
+                AssociationField::new   ( 'fehler'  ) -> hideOnIndex (),
+
                 TextEditorField::new    ( 'fehler'  )
-                    // callables also receives the entire entity instance as the second argument
-                    ->formatValue( function ( $value, $entity ) {
-                        return join( "\n", $value->getValues() );
-                    }) 
-                    -> hideOnForm(),
+                    -> formatValue (
+                        function ( $value, $entity )
+                        {
+                            return join ( "\n", $value -> getValues () );
+                        }
+                    ) 
+                    -> hideOnForm (),
+
                 AssociationField::new   ( 'modul'   )
             ];
         }
@@ -162,17 +162,21 @@ class SkriptCrudController extends AbstractCrudController
         if ( $user -> isExtern () )
         {
             return [
-                IdField::new            ( 'id'      ) -> hideOnForm(),
-                IdField::new            ( 'id'      ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                IdField::new            ( 'id'      ) -> hideOnForm  (),
+                IdField::new            ( 'id'      ) -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          ( 'name'    ),
                 NumberField::new        ( 'version' ),
-                AssociationField::new   ( 'fehler'  ) -> hideOnIndex(),
+                AssociationField::new   ( 'fehler'  ) -> hideOnIndex (),
+
                 TextEditorField::new    ( 'fehler'  )
-                    // callables also receives the entire entity instance as the second argument
-                    ->formatValue( function ( $value, $entity ) {
-                        return join( "\n", $value->getValues() );
-                    }) 
-                    -> hideOnForm(),
+                    -> formatValue (
+                        function ( $value, $entity ) 
+                        {
+                            return join ( "\n", $value -> getValues () );
+                        }
+                    ) 
+                    -> hideOnForm (),
+                
                 AssociationField::new   ( 'modul'   )
             ];
         }
@@ -180,17 +184,21 @@ class SkriptCrudController extends AbstractCrudController
         if ( $user -> isVerwaltung () )
         {
             return [
-                IdField::new            ( 'id'      ) -> hideOnForm(),
-                IdField::new            ( 'id'      ) -> onlyOnForms() ->  hideWhenCreating() -> setFormTypeOption ( 'disabled', 'disabled' ),
+                IdField::new            ( 'id'      ) -> hideOnForm  (),
+                IdField::new            ( 'id'      ) -> onlyOnForms () ->  hideWhenCreating () -> setFormTypeOption ( 'disabled', 'disabled' ),
                 TextField::new          ( 'name'    ),
                 NumberField::new        ( 'version' ),
-                AssociationField::new   ( 'fehler'  ) -> hideOnIndex(),
+                AssociationField::new   ( 'fehler'  ) -> hideOnIndex (),
+
                 TextEditorField::new    ( 'fehler'  )
-                    // callables also receives the entire entity instance as the second argument
-                    ->formatValue( function ( $value, $entity ) {
-                        return join( "\n", $value->getValues() );
-                    }) 
-                    -> hideOnForm(),
+                    -> formatValue ( 
+                        function ( $value, $entity ) 
+                        {
+                            return join ( "\n", $value -> getValues () );
+                        }
+                    ) 
+                    -> hideOnForm (),
+                
                 AssociationField::new   ( 'modul'   )
             ];
         }
@@ -212,10 +220,8 @@ class SkriptCrudController extends AbstractCrudController
         if ( $user -> isStudent () )
         {
             return $actions
-                // ...
-                -> add ( Crud::PAGE_INDEX,  Action::DETAIL )
-                //-> remove ( Crud::PAGE_DETAIL,   Action::ADD )
-                -> remove ( Crud::PAGE_DETAIL,   Action::EDIT )
+                -> add    ( Crud::PAGE_INDEX,    Action::DETAIL )
+                -> remove ( Crud::PAGE_DETAIL,   Action::EDIT   )
                 -> remove ( Crud::PAGE_DETAIL,   Action::DELETE )
             ;
         }
@@ -224,10 +230,10 @@ class SkriptCrudController extends AbstractCrudController
         {
             return $actions
                 // ...
-                -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
-                -> remove ( Crud::PAGE_INDEX,   Action::NEW )
-                -> remove ( Crud::PAGE_INDEX,   Action::EDIT )
-                -> remove ( Crud::PAGE_INDEX,   Action::DELETE )
+                -> add    ( Crud::PAGE_INDEX,    Action::DETAIL )
+                -> remove ( Crud::PAGE_INDEX,    Action::NEW    )
+                -> remove ( Crud::PAGE_INDEX,    Action::EDIT   )
+                -> remove ( Crud::PAGE_INDEX,    Action::DELETE )
                 -> remove ( Crud::PAGE_DETAIL,   Action::DELETE )
             ;
         }
@@ -236,9 +242,9 @@ class SkriptCrudController extends AbstractCrudController
         {
             return $actions
                 // ...
-                -> add ( Crud::PAGE_INDEX,  Action::DETAIL               )
-                -> add ( Crud::PAGE_EDIT,   Action::SAVE_AND_ADD_ANOTHER )
-                -> remove ( Crud::PAGE_INDEX,   Action::DELETE )
+                -> add    ( Crud::PAGE_INDEX,   Action::DETAIL               )
+                -> add    ( Crud::PAGE_EDIT,    Action::SAVE_AND_ADD_ANOTHER )
+                -> remove ( Crud::PAGE_INDEX,   Action::DELETE               )
             ;
         }
 
@@ -254,35 +260,35 @@ class SkriptCrudController extends AbstractCrudController
         return $actions;
     }
 
-    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
+    public function createIndexQueryBuilder ( SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters ): QueryBuilder
     {
-        parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+        parent::createIndexQueryBuilder ( $searchDto, $entityDto, $fields, $filters );
 
         $user = $this -> userService -> getCurrentUser ();
-        $userId = $user->getId();
+        $userId = $user -> getId ();
 
 
-        $response = $this -> get ( EntityRepository::class ) -> createQueryBuilder ( $searchDto, $entityDto, $fields, $filters );
+        $query = $this -> get ( EntityRepository::class ) -> createQueryBuilder ( $searchDto, $entityDto, $fields, $filters );
 
         if ( $user -> isTutor () )
         {
             $userModuleIds = $user -> getOnlyIdsFromTutorIn ();
 
-            if  ( count($userModuleIds) == 0  ) 
+            // Tutor hat keine Module
+            if  ( count ( $userModuleIds ) == 0  ) 
             {
-                //dd("tutor hat keine module");
-                throw new \Exception("Sie haben keine Module zugewiesen");
+                throw new \Exception ( "keine Module zugewiesen!" );
             }
             
-            $response
-                -> join('entity.modul', 'm')
-                -> add ( 'where', $response->expr() -> in ( 'm', $userModuleIds ) );
+            $query
+                -> join ( 'entity.modul', 'm' )
+                -> add  ( 'where', $query->expr() -> in ( 'm', $userModuleIds ) );
         }
 
-        return $response;
+        return $query;
     }
 
-    public function configureFilters(Filters $filters): Filters
+    public function configureFilters ( Filters $filters ): Filters
     {
         return $filters
             -> add ( 'name'     )

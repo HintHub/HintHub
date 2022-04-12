@@ -2,10 +2,12 @@
 namespace App\Service;
 
 use App\Entity\User;
-use Doctrine\ORM\EntityManager;
 
 use App\Repository\UserRepository;
+
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -14,7 +16,12 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  * Provides the User Service
  *  
  * @author Ali Kemal Yalama (ali-kemal.yalama@iubh.de)
+ * @authro stefan.beitschun (stefan.baltschun@iubh.de)
+ * @author karim.saad       (karim.saad@iubh.de)
+ * 
  * @date 03.12.2021
+ * 
+ * lastEdit: 01.02.2022 0133 by karim.saad (karim.saad@iub.de) (code format fixing)
  */
 class UserService 
 {
@@ -38,7 +45,7 @@ class UserService
     }
 
     //findById
-    public function findById(int $id): User 
+    public function findById ( int $id ): User 
     {
         return $this -> userRepository -> find ( $id );
     }
@@ -63,20 +70,22 @@ class UserService
     {
         $toUpdate = $this -> findById ( $user -> getId ( ) );
 
-        $toUpdate   ->  setROLES        ($user  ->  getROLES        () );
-        $toUpdate   ->  setEmail        ($user  ->  getEmail        () );
-        $toUpdate   ->  setPfplink      ($user  ->  getPfplink      () ); 
-        $toUpdate   ->  setIsActive     ($user  ->  getIsActive     () );
-        $toUpdate   ->  setIsVerified   ($user  ->  getIsVerified   () );
+        $toUpdate   ->  setROLES        ( $user  ->  getROLES        () );
+        $toUpdate   ->  setEmail        ( $user  ->  getEmail        () );
+        $toUpdate   ->  setPfplink      ( $user  ->  getPfplink      () ); 
+        $toUpdate   ->  setIsActive     ( $user  ->  getIsActive     () );
+        $toUpdate   ->  setIsVerified   ( $user  ->  getIsVerified   () );
+        
+        $this -> entityManager -> persist ( $toUpdate );
+        $this -> entityManager -> flush ();
 
-        $this -> entityManager -> flush();
         return $toUpdate;
     }
 
     //delete
     public function delete ( int $id ): int
     {
-        $toDelete = $this -> findById ($id);
+        $toDelete = $this -> findById ( $id );
 
         $this -> entityManager -> remove      ( $toDelete );
         $this -> entityManager -> flush       ();
@@ -94,7 +103,8 @@ class UserService
         if ( $this -> tokenStorage -> getToken () === null                ) return null;
         if ( $this -> tokenStorage -> getToken () -> getUser () === null  ) return null;
 
-        return $this -> tokenStorage -> getToken () -> getUser ();
+        $currentUser = $this -> tokenStorage -> getToken () -> getUser ();
+        return $currentUser;
     }
 
     /**
@@ -114,7 +124,7 @@ class UserService
     /**
      * Gets the Hashed PW
      */
-    public function getHashedPW ($user, $pw )
+    public function getHashedPW ( $user, $pw )
     {
         return $this -> pwHasher -> hashPassword
         (
@@ -149,12 +159,12 @@ class UserService
 
         $roles = 
         [
-            'isAdmin'       => $isAdmin,
-            'isTutor'       => $isTutor,
-            'isStudent'     => $isStudent,
-            'isVerwaltung'  => $isVerwaltung,
-            'isExtern'      => $isExtern,
-            'isDisplayChart'=> !$isExtern
+            'isAdmin'        => $isAdmin,
+            'isTutor'        => $isTutor,
+            'isStudent'      => $isStudent,
+            'isVerwaltung'   => $isVerwaltung,
+            'isExtern'       => $isExtern,
+            'isDisplayChart' => !$isExtern
         ];
 
         return $roles;

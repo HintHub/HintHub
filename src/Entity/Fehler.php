@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Model\DatumTrait;
 use App\Model\EinreicherTrait;
+use App\Service\FehlerService;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\FehlerRepository;
 use Doctrine\Common\Collections\Collection;
@@ -54,8 +55,11 @@ class Fehler
     private $name;
 
     // unmapped fields
-    private $kommentar; // added by karim.saad@iubh.de - 22.12.2021 10:33 - used for FehlerCrudController (as ROLE_STUDENT)
-    
+    private $kommentar;                 // added by karim.saad@iubh.de - 22.12.2021 1033 - used for FehlerCrudController (as ROLE_STUDENT)
+    private $unbearbeitetTage;          // added by karim.saad@iubh.de - 01.02.2022 0213 - used for FehlerCrudDetailView
+    private $systemUpdate;              // added by karim.saad@iubh.de - 01.02.2022 0459 - used for fireBenachrichtigungen
+    private $noUpdateDatumAenderung;    // noUpdate in EasyAdminSubscriber?
+
     // Traits
     use DatumTrait;
     use EinreicherTrait; // added by karim.saad (karim.saad@iubh.de) - 20.12.2021 03:26
@@ -178,37 +182,66 @@ class Fehler
 
     public function removeVerwandteFehler ( self $verwandteFehler): self
     {
-        
         if ( $this -> verwandteFehler -> contains ( $verwandteFehler ) )
         {
             $this -> verwandteFehler -> removeElement ( $verwandteFehler );
 
-            if($verwandteFehler -> getVerwandteFehler() -> contains($this)) 
+            if ( $verwandteFehler -> getVerwandteFehler() -> contains ( $this ) ) 
             {
-                $verwandteFehler -> removeVerwandteFehler ($this);
+                $verwandteFehler -> removeVerwandteFehler ( $this );
             }            
         }
+
         return $this;
     }
 
     public function open ()
     {
         $this -> setStatus ( 'OPEN' );
+        $this -> setDatumLetzteAenderung ( new \DateTime () );
     }
 
     public function close () 
     {
         $this -> setStatus ( 'CLOSED' );
+        $this -> setDatumLetzteAenderung ( new \DateTime () );
     }
 
     public function escalate () 
     {
-        $this -> setStatus ( 'ESCALATED' );
+        $this -> setStatus               ( 'ESCALATED' );
+        $this -> setDatumLetzteAenderung ( new \DateTime () );
     }
 
     public function wait ()
     {
         $this -> setStatus ( 'WAITING' );
+        $this -> setDatumLetzteAenderung ( new \DateTime () );
+    }
+
+    public function isOpened ()
+    {
+        return ( $this -> getStatus() == 'OPEN'    );
+    }
+
+    public function isClosed ()
+    {
+        return ( $this -> getStatus() == 'CLOSED'    );
+    }
+
+    public function isWaiting ()
+    {
+        return ( $this -> getStatus() == 'WAITING'   );
+    }
+
+    public function isRejected ()
+    {
+        return ( $this -> getStatus() == 'REJECTED'  );
+    }
+
+    public function isEscalated ()
+    {
+        return ( $this -> getStatus() == 'ESCALATED' );
     }
 
     public function getSkript (): ?Skript
@@ -233,32 +266,73 @@ class Fehler
         return $this;
     }
 
-    public function isClosed() 
-    {
-        return $this -> getStatus() == "CLOSED";
-    }
 
-    public function isRejected()
-    {
-        return $this -> getStatus() == "REJECTED";
-    }
+    public function detachNotClosedChildren ()
+    { 
+        $arr = $this -> getVerwandteFehler () -> getValues ();
+        $len = count ( $arr );
 
-
-    public function detachNotClosedChildren()
-    {
-        
-        $arr = $this -> getVerwandteFehler() -> getValues();
-        $len = count ($arr);
-
-        for ($i = 0; $i < $len; $i++) 
+        for ( $i = 0; $i < $len; $i++ )
         {
-            $fehler     = $arr[$i];
-            $tempStatus = $fehler -> getStatus();
+            $fehler     = $arr [$i];
+            $tempStatus = $fehler -> getStatus ();
 
-            if ( !$fehler -> isClosed() ) 
+            if ( !$fehler -> isClosed () ) 
             {
                 $this -> removeVerwandteFehler ( $fehler );
             }
         }
+    }
+
+
+    public function badgeByStatus ()
+    {
+        $badgeText = FehlerService::getFehlerStatusTextByType ( $this -> getStatus() );
+        
+        if ( $this -> isOpened   ()  )
+            return [ "badge-danger",  $badgeText ];
+
+        if ( $this -> isClosed   ()  )
+            return [ "badge-success", $badgeText ];
+        
+        if ( $this -> isWaiting  ()  )
+            return [ "badge-warning", $badgeText ];
+
+        if ( $this -> isRejected ()  )
+            return [ "badge-primary", $badgeText ];
+
+        if ( $this -> isEscalated () )
+            return [ "badge-secondary", $badgeText ];    
+    }
+
+
+    public function setUnbearbeitetTage ( $t )
+    {
+        $this -> unbearbeitetTage = $t;
+    }
+
+    public function getUnbearbeitetTage ()
+    {
+        return $this -> unbearbeitetTage;
+    }
+
+    public function setSystemUpdate ( $y )
+    {
+        $this -> systemUpdate = $y;
+    }
+
+    public function getSystemUpdate ( )
+    {
+        return $this -> systemUpdate;
+    }
+
+    public function setNoUpdateDatumAenderung ( $b )
+    {
+        $this -> noUpdateDatumAenderung = $b;
+    }
+
+    public function isNoUpdateDatumAenderung ()
+    {
+        return $this->noUpdateDatumAenderung;
     }
 }

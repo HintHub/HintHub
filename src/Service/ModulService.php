@@ -11,12 +11,14 @@ use Doctrine\ORM\EntityManagerInterface;
  *
  * @author Ali Kemal Yalama (ali-kemal.yalama@iubh.de)
  * @date 18.12.2021
+ * 
+ * lastEdit: 01.02.2022 0133 by karim.saad (karim.saad@iub.de) (code format fixing)
  */
 class ModulService 
 {
 
-    private ModulRepository $modulRepository;
-    private                 $entityManager;
+    private $modulRepository;
+    private $entityManager;
 
     public function __construct ( 
         ModulRepository         $modulRepository, 
@@ -29,7 +31,7 @@ class ModulService
 
     public function findById ( int $id ): Modul
     {
-        return $this -> modulRepository -> find    ($id);
+        return $this -> modulRepository -> find ( $id );
     }
 
     public function findAll(): array 
@@ -47,14 +49,14 @@ class ModulService
 
     public function update ( Modul $modul ): Modul 
     {
-        $modul  =   $this -> findById ( $modul ->  getId () );
+        $toUpdate  =   $this -> findById ( $modul ->  getId () );
 
-        $modul  ->  setSkript  ( $modul -> getSkript () );
-        $modul  ->  setKuerzel          ( $modul -> getKuerzel         () );
-        $modul  ->  setName             ( $modul -> getName            () );
-        $modul  ->  setTutor            ( $modul -> getTutor           () );
+        $toUpdate  ->  setSkript   ( $modul -> getSkript  () );
+        $toUpdate  ->  setKuerzel  ( $modul -> getKuerzel () );
+        $toUpdate  ->  setName     ( $modul -> getName    () );
+        $toUpdate  ->  setTutor    ( $modul -> getTutor   () );
 
-        return $modul;
+        return $toUpdate;
     }
 
     public function delete ( int $id ): int 
