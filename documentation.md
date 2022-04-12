@@ -1,11 +1,11 @@
-# HintHub Technical Documentation 
-First of all this a educational project and has no real world use. We use a bunch of Frameworks and Bundles in our unviersity project at the [IU University](https://www.iu.de/) :de: which also delivers as International University courses in plain English!
+# HintHub Technical Documentation :de: :uk: :us: 
+First of all this a educational project and has no real world use. We use a bunch of Frameworks and Bundles in our unviersity project at the [IU University](https://www.iu.de/) :de: which also offers recommended studies in plain English at the International University!
 
-However we use two main Frameworks:
+We use two main Framework components:
 - The [Symfony Framework](https://symfony.com/) provides a MVC structure, allows us to reuse components and wiring additional Bundles ("Plugins").
 - The [Doctrine 2](https://www.doctrine-project.org/) ORM Bundle provides versioning of DB models, automatically creation and running of migrations etc.
 
-Organisatorial we are using [OpenProject](https://www.openproject.org/) and a Scrum (agile, sprint like) Project Management (PM) model but we adapted elements of the Waterfall PM Model too, however not a strict linearly model and not part of this documentation.
+Organizational we are using [OpenProject](https://www.openproject.org/), with a Scrum (agile, sprint like) Project Management (PM) model and we adapted elements of the Waterfall PM Model too, but not strict lineary. However, this is not part of this documentation. 
 
 ## Project Directory Hierachy 
 However due to the framework`s possibilities and restrictions we used the following structures (only most important are shown)
