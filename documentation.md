@@ -1,7 +1,8 @@
 # HintHub Technical Documentation
 The framework provides a MVC structure, which allows us to reuse components and wiring additional Bundles ("Plugins").
 The Doctrine ORM provided capabilities of automatically running migrations, without writing a single line of code for them. 
-Hint: Organisatorial we used OpenProject and a Scrum (agile, sprint like) Project Management (PM) model. 
+Organisatorial we used OpenProject and a Scrum (agile, sprint like) Project Management (PM) model, but we adapted elements of the Waterfall PM Model too, however not a strict linearly model. 
+
 ## Project Directory Hierachy 
 However due to the framework`s possibilities and restrictions we used the following structures (only most important are shown)
 - assets (all assets)
