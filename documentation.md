@@ -59,7 +59,7 @@ Additional configuration included making the services lazy loaded - it improves 
 We used a PDF parser to extract the [modules of the Informatics course modules](https://res.cloudinary.com/iubh/image/upload/v1646139139/15%20-%20Dokumente/Modulhandbuch/ba_informatik_180_de.pdf) and reshaped the document to a easy readable text file shown here: 
 - https://github.com/HintHub/HintHub/blob/main/src/DataFixtures/testData/testmodule_skript.txt
 
-The worst file format CSV helped us in this case ;-) The file is loaded into AppFixtures.php and generates out of it a lot of test data, so called dump data. Which being used during deployment and testing.
+The [worst file format CSV](https://alexgaynor.net/2020/sep/24/csv-good-bad-ugly/) helped us in this case ;-) The file is loaded into AppFixtures.php and generates out of it a lot of test data, so called dump data. Which being used during deployment and testing.
 
 ## Usage of chartJS
 [Chart.js](https://www.chartjs.org/) is a JS library that was used in a Symfony Bundle to make it easier to show statistics to the user. We are using it in the Dashboards, adapted to each individual user. 
