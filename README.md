@@ -10,7 +10,7 @@ Hinthub uses Symfony 5.3+ and EasyAdmin 3.x. Symfony uses Doctrine 2, the Twig T
 
 ## deep-dive Tech Documentation
 - [documentation.md](/documentation.md)
-
+- [More Screenshots](/screenshots)
 ## Installation
 For the Installation, please look at 
 
