@@ -20,7 +20,7 @@ For the Installation, please look at [HH-Prodstack](https://github.com/HintHub/h
 Please look at [upgrades.md](UPGRADES.md)
 
 ## Law and License issues
-To summarize: We won't provide any warranty. We are not responsible for your usage of the code (or resulting damages) or the code itself. We are considering security as most-important aspect in Software Engineering. We take care but we didn't for this small, very time-limited University project during our studies.
+To summarize: We never provide(d) any warranty. We are not responsible for your usage of the code (or resulting damages) or the code itself. We are considering security as most-important aspect in Software Engineering. We take care but we didn't for this small, very time-limited University project during our studies. Therefore we don't allow you to use it anywhere except on your local computer for a Software Test or Viewing Purposes. However, we don't touch any of the rights of third party libraries and saying a lot of thanks to them! 🌞
 
 - Read further: [LICENSE.md](LICENSE.md)
 
