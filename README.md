@@ -4,6 +4,8 @@ This system improves the [IU (IUBH)](https://www.iu.org/) University Quality Man
 
 Hinthub uses [Symfony 5.3+](https://symfony.com/) and [EasyAdmin 3.x](https://symfony.com/bundles/EasyAdminBundle/current/index.html). Symfony uses [Doctrine 2](https://www.doctrine-project.org/), the [Twig Templating Engine](https://twig.symfony.com/) and other various packages (upgradeable with [composer](https://getcomposer.org/), [npm](https://www.npmjs.com/) and [yarn](https://yarnpkg.com/) ). Furthermore [docker](https://www.docker.com/) and  [docker-compose](https://docs.docker.com/compose/) is being used.
 
+Unlimited teas and coffees to the developers of Open Source Software such as [LibreOffice](https://de.libreoffice.org/) and [Draw.io](https://github.com/jgraph/drawio) and last but not least [GNU/Linux and the Debian Project](https://www.debian.org/index.de.html)
+
 <img alt="HintHub Dashboard" src="screenshots/2.png?raw=true" width="100%" height="75%" />
 <img alt="HintHub Login" src="screenshots/1.png?raw=true" width="50%" height="50%" />
 
