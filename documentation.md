@@ -22,10 +22,8 @@ We are using the following architecture as shown in this repository (only the im
 Generally we use two docker-compose setups, which are not public yet. The first setup is the production setup, the other setup is the development setup, however this is usually called a CD/CI pipeline.
 
 ## Usage of EasyAdmin 
-We are using EasyAdmin due to it's usability.
-### additional extensions of EasyAdmin
-We extended a few views and modified the extended Code, sometimes heavily. For example one of our requirements included a Textbox and Comment Listing, so we included that in our Code.
-You can find examples for these modifications here:
+We are using EasyAdmin due to it's usability and flexibility. We extended a few views and modified the extended Code, sometimes heavily. For example one of our requirements included a Textbox and Comment Listing, so we included that in our Code.
+#### You can find examples for these modifications here:
 - controller: https://github.com/HintHub/HintHub/blob/main/src/Controller/Admin/KommentarCrudController.php 
 - views: https://github.com/HintHub/HintHub/blob/main/templates/bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig
 
@@ -35,13 +33,13 @@ We use Doctrine2 as ORM and MariaDB as mysql-like DBMS. This providedes us with 
 ### Entities
 Entities allowing a OOP like abstraction of domain driven Models which are used in the DB inside of ORM. 
 
-We have the following Entities in this project:
+#### We have the following Entities in this project:
 - Benachrichtigung (Notification)
 - Fehler (Mistake/Report)
 - Kommentar (Comment)
-- Modul (Module)
+- Modul (Uni Modules e.g.: "Software Engineering Module I")
 - Skript (A university material e.g. a Script of a Module)
-- User
+- User (model for users who can login etc. like Admins, Tutors, Students etc)
 
 During work we created a large UML Diagram, however this is not public yet. 
 
