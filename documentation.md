@@ -1,7 +1,11 @@
-# HintHub Technical Documentation
-The framework provides a MVC structure, which allows us to reuse components and wiring additional Bundles ("Plugins").
-The Doctrine ORM provided capabilities of automatically running migrations, without writing a single line of code for them. 
-Organisatorial we used OpenProject and a Scrum (agile, sprint like) Project Management (PM) model, but we adapted elements of the Waterfall PM Model too, however not a strict linearly model. 
+# HintHub Technical Documentation 
+First of all this a educational project and has no real world use. We use a bunch of Frameworks and Bundles in our unviersity project at the [IU University](https://www.iu.de/) :de: which also delivers as International University courses in plain English!
+
+However we use two main Frameworks:
+- The [Symfony Framework](https://symfony.com/) provides a MVC structure, allows us to reuse components and wiring additional Bundles ("Plugins").
+- The [Doctrine 2](https://www.doctrine-project.org/) ORM Bundle provides versioning of DB models, automatically creation and running of migrations etc.
+
+Organisatorial we are using [OpenProject](https://www.openproject.org/) and a Scrum (agile, sprint like) Project Management (PM) model but we adapted elements of the Waterfall PM Model too, however not a strict linearly model and not part of this documentation.
 
 ## Project Directory Hierachy 
 However due to the framework`s possibilities and restrictions we used the following structures (only most important are shown)
@@ -20,15 +24,15 @@ However due to the framework`s possibilities and restrictions we used the follow
 
 
 ## Our Setup
-Generally we use two docker-compose setups, which are not public yet. The first setup is the production setup, the other setup is the development setup, however this is usually called a CD/CI pipeline.
+Generally we use two [Ddocker-Dompose](https://docs.docker.com/compose/) setups, which are not public yet. The first setup is the production setup, the other setup is the development setup, however this is usually called a [CD/CI](https://www.redhat.com/de/topics/devops/what-cicd-pipeline) pipeline.
 
 ![Screenshot_dashboard](screenshots/doc_1.png?raw=true=250x250)
 
 ## Usage of EasyAdmin 
 We are using EasyAdmin due to it's usability and flexibility. We extended a few views and modified the extended Code, sometimes heavily. For example one of our requirements included a Textbox and Comment Listing, so we included that in our Code.
 #### You can find examples for these modifications here:
-- controller: https://github.com/HintHub/HintHub/blob/main/src/Controller/Admin/KommentarCrudController.php 
-- views: https://github.com/HintHub/HintHub/blob/main/templates/bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig
+- controller: [src/Controller/Admin/KommentarCrudController.php)[src/Controller/Admin/KommentarCrudController.php]
+- views: [templates/bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig](templates/bundles/EasyAdminBundle/crud/FehlerCrudDetail.html.twig)
 
 ## Usage of Doctrine 2
 We use Doctrine2 as ORM and MariaDB as mysql-like DBMS. This providedes us with a very strong foundation without reinventing the wheel and focussing on the core aspects of our project.
@@ -49,10 +53,13 @@ During work we created a large UML Diagram, however this is not public yet.
 ## Symfony Services
 We use Service Wrappers for a lot of functionalities, especially regarding posting comments, profile editing etc. 
 Additional configuration included making the services lazy loaded - it improves reloadability,  improves resource usage and it removes possible collision conflicts e.g. when a service was already loaded in another service.
-- See here: https://github.com/HintHub/HintHub/blob/main/config/services.yaml 
+- See: [config/services.yaml](https://github.com/HintHub/HintHub/blob/main/config/services.yaml)
 
 ## Test and Dump Data (using Appfixture Bundle)
-We used a PDF parser to extract the modules of the Informatics course modules and reshaped the document to a easy readable text file shown here: 
+We used a PDF parser to extract the [modules of the Informatics course modules](https://res.cloudinary.com/iubh/image/upload/v1646139139/15%20-%20Dokumente/Modulhandbuch/ba_informatik_180_de.pdf) and reshaped the document to a easy readable text file shown here: 
 - https://github.com/HintHub/HintHub/blob/main/src/DataFixtures/testData/testmodule_skript.txt
 
 The worst file format CSV helped us in this case ;-) The file is loaded into AppFixtures.php and generates out of it a lot of test data, so called dump data. Which being used during deployment and testing.
+
+## Usage of chartJS
+[Chart.js](https://www.chartjs.org/) is a JS library that was used in a Symfony Bundle to make it easier to show statistics to the user. We are using it in the Dashboards, adapted to each individual user. 
