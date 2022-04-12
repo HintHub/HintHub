@@ -19,4 +19,4 @@ For the Installation, please look at [HH-Prodstack (not public yet)](https://git
 ## Upgrades
 Please look at [upgrades.md](UPGRADES.md)
 
-***Last Edit: HintHub Dev Team 12.04.2022 04/12/2022 ***
+**Last Edit: HintHub Dev Team 12.04.2022 04/12/2022**
