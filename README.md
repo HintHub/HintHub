@@ -14,9 +14,14 @@ Unlimited teas and coffees to the developers of Open Source Software such as [Op
 - [documentation.md](/documentation.md)
 - [More Screenshots](/screenshots)
 ## Installation
-For the Installation, please look at [HH-Prodstack (not public yet)](https://github.com/HintHub/hh-prodstack)
+For the Installation, please look at [HH-Prodstack](https://github.com/HintHub/hh-prodstack)
 
 ## Upgrades
 Please look at [upgrades.md](UPGRADES.md)
+
+## Law and License issues
+To summarize: We won't provide any warranty. We are not responsible for your usage of the code (or resulting damages) or the code itself. We are considering security as most-important aspect in Software Engineering. We take care but we didn't for this small, very time-limited University project during our studies.
+
+- Read further: [LICENSE.md](LICENSE.md)
 
 **Last Edit: HintHub Dev Team 12.04.2022 04/12/2022**
