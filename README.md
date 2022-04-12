@@ -5,6 +5,7 @@ This system should provide the University IUBH with Quality Management capabilit
 It uses Symfony 5.3+ and EasyAdmin 3.x.  Symfony uses Doctrine 2, the Twig Templating Engine and other various packages (upgradeable with composer, npm and yarn).
 
 ![Screenshot_Login](screenshots/1.png?raw=true=250x250)
+![Screenshot_dashboard](screenshots/2.png?raw=true=250x250)
 
 ## Installation
 
