@@ -29,4 +29,4 @@ To summarize: We never provide(d) any warranty. We are not responsible for your 
 * Reminder: This project was done by four people, only two are shown in this repository, since we had to transfer it after a security inicdent on the IU Gitlab, which had a expired SSL certificate*
 
 
-**Last Edit: HintHub Dev Team 12.04.2022 04/12/2022 | 24.05.2022 **
+**Last Edit: HintHub Dev Team 12.04.2022 04/12/2022 | 24.05.2022**
